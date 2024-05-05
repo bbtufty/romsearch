@@ -1,0 +1,44 @@
+[project]
+
+name = "romsearch"
+version = "0.0.1"
+description = "One Stop ROM Shop"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+
+authors = [
+    {name = "bbtufty"},
+]
+maintainers = [
+    {name = "bbtufty"},
+]
+
+classifiers = [
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Alpha",
+
+  # License
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+
+  "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "discordwebhook",
+    "numpy",
+    "packaging",
+    "pathvalidate",
+    "xmltodict",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/bbtufty/romsearch"
+"Bug Reports" = "https://github.com/bbtufty/romsearch/issues"
+"Source" = "https://github.com/bbtufty/romsearch"
+
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
