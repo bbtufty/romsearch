@@ -1,0 +1,390 @@
+regions:
+  pattern: "\\((([regions])(,\\s?)?)*\\)"
+  type: "list"
+  flags: "NOFLAG"
+
+languages:
+  pattern: "\\((([languages])(,\\s?)?)*\\)"
+  type: "list"
+  flags: "NOFLAG"
+
+multi_disc:
+  pattern: "\\((Dis[ck]|Seite) [0-9A-Z]\\)"
+
+date:
+  pattern: "\\s?\\((?:\\d{8}|\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|\\d{2}-\\d{2}-\\d{2}|\\d{4}-\\d{2}-\\d{2}T\\d{6}|~?\\d{4}-(?:\\d{2}|xx)-xx|(?:January|February|March|April|May|June|July|August|September|October|November|December),\\s?\\d{4})\\)"
+  type: "str"
+
+alt:
+  pattern: "\\(Alt.*?\\)"
+  group: "alternate"
+
+# APPLICATIONS
+
+bracket_program:
+  pattern: "\\((?:Test )?Program\\)"
+  group: "applications"
+
+non_bracket_program:
+  pattern: "(Check|Sample) Program"
+  search_tags: false
+  group: "applications"
+
+# BAD DUMP
+
+bad_dump:
+  pattern: "\\[b\\]"
+  search_tags: false
+  group: "bad_dumps"
+
+# CONSOLE
+
+bios:
+  pattern: "\\[BIOS\\]\\s?"
+  search_tags: false
+  group: "console"
+
+enhancement_chip:
+  pattern: "\\(Enhancement Chip\\)"
+  group: "console"
+
+# DEMOS
+barai:
+  pattern: "\\(@barai\\)"
+  group: "demos"
+
+demo:
+  pattern: "\\((?:\\w[-.]?\\s*)*Demo(?:(?:,?\\s|-)[\\w0-9\\.]*)*\\)"
+  group: "demos"
+
+preview:
+  pattern: "\\(Preview\\)"
+  group: "demos"
+
+sample:
+  pattern: "\\(Sample(?:\\s[0-9]*|\\s\\d{4}-\\d{2}-\\d{2})?\\)"
+  group: "demos"
+
+taikenban_brackets:
+  pattern: "\\((.*?)Taikenban(.*?)\\)"
+  search_tags: false
+  group: "demos"
+
+taikenban:
+  pattern: "Taikenban"
+  search_tags: false
+  group: "demos"
+
+trial:
+  pattern: "\\(Trial (Disc|Edition|Version|ver\\.)\\)"
+  group: "demos"
+
+trial_non_bracket:
+  pattern: "Trial (Disc|Edition|Version|ver\\.)"
+  search_tags: false
+  group: "demos"
+
+# PRE-PRODUCTION
+alpha:
+  pattern: "\\((?:\\w*?\\s)*Alpha(?:\\s\\d+)?\\)"
+  group: "preproduction"
+
+beta:
+  pattern: "\\((?:\\w*?\\s)*Beta(?:\\s\\d+)?\\)"
+  group: "preproduction"
+
+debug:
+  pattern: "\\(Debug\\)"
+  group: "preproduction"
+
+dev:
+  pattern: "\\(Dev\\)"
+  group: "preproduction"
+
+prepro:
+  pattern: "\\((?:Pre-production|Prerelease)\\)"
+  group: "preproduction"
+
+proto:
+  pattern: "\\((?:\\w*?\\s)*Proto(?:type)?(?:\\s\\d+)?\\)"
+  group: "preproduction"
+
+# PROMOTIONAL
+promo:
+  pattern: "EPK|Press Kit|\\(Promo\\)"
+  group: "promotional"
+  search_tags: false
+
+# VERSIONS
+version_no:
+  pattern: "\\(v[\\.0-9].*?\\)"
+  type: "str"
+  group: "version"
+
+long_version:
+  pattern: "(?!Version Vol\\.|Version \\(|Version$|Version -|Version \\d-)(?: - )?\\(?(?:\\((?:\\w[\\.\\-]?\\s*)*|)[Vv]ers(?:ion|ao)\\s?(?:[\\d\\.\\-]+)+[A-Za-z]?(?: (?:\\d-?)+)?.*?(?:(?:\\w[\\.\\-]?\\s*)*\\))?"
+  type: "str"
+  transform_pattern: ".*([\\d\\.\\-]+)"
+  transform_repl: "v\\1"
+  group: "version"
+
+revision:
+  pattern: "\\(R[eE][vV](?:[ -][0-9A-Z].*?)?\\)"
+  type: "str"
+  transform_pattern: "R[eE][vV][ -]([0-9A-Z].*?)?"
+  transform_repl: "v\\1"
+  group: "version"
+
+# UNLICENSED
+aftermarket:
+  pattern: "\\(Aftermarket\\)"
+  group: "unlicensed"
+
+homebrew:
+  pattern: "\\(Homebrew\\)"
+  group: "unlicensed"
+
+pirate:
+  pattern: "\\(Pirate\\)"
+  group: "pirate"
+
+unl:
+  pattern: "\\(Unl\\)"
+  group: "unlicensed"
+
+# IMPROVED VERSIONS
+controller_set:
+  pattern: "\\(Controller Set\\)"
+  group: "improved_version"
+
+culture_publishers:
+  pattern: "\\(Culture Publishers\\)"
+
+dx_pack:
+  pattern: "\\(DX Pack\\)"
+  group: "improved_version"
+
+edc:
+  pattern: "\\(EDC\\)"
+  group: "improved_version"
+
+enhanced:
+  pattern: "\\(Enhanced\\)"
+  group: "improved_version"
+
+gentei:
+  pattern: "\\((?:(?!\\(|Gentei.*?)[\\s\\S])*Gentei.*?\\)"
+  group: "improved_version"
+
+np:
+  pattern: "\\(NP\\)"
+  group: "improved_version"
+
+psone_books:
+  pattern: "\\(PSone Books\\)"
+  group: "improved_version"
+
+renkaban:
+  pattern: "\\(Renkaban\\)"
+  group: "improved_version"
+
+# BUDGET EDITIONS
+
+artdink:
+  pattern: "\\(Artdink Best Choice\\)"
+  group: "budget_edition"
+
+best_of_the_best:
+  pattern: "\\(Best of the Best\\)"
+  group: "budget_edition"
+
+best_wing:
+  pattern: "\\(Best Wing 2800\\)"
+  group: "budget_edition"
+
+bps_the_choice:
+  pattern: "\\(BPS the Choice\\)"
+  group: "budget_edition"
+
+cyclone_best:
+  pattern: "\\(Cyclone's Best\\)"
+  group: "budget_edition"
+
+digicube:
+  pattern: "\\(DigiCube Best Selection\\)"
+  group: "budget_edition"
+
+fukyuuban:
+  pattern: "\\(Fukyuuban\\)"
+  group: "budget_edition"
+
+fukyuuban_1500:
+  pattern: "\\(Fukyuuban 1500\\)"
+  group: "budget_edition"
+
+honkakuha:
+  pattern: "\\(Honkakuha de 1300\\)"
+  group: "budget_edition"
+
+koei_the_best:
+  pattern: "\\(Koei the Best\\)"
+  group: "budget_edition"
+
+major_wave:
+  pattern: "\\(Major Wave\\)"
+  group: "budget_edition"
+
+playstation_the_best:
+  pattern: "\\(PlayStation the Best\\)"
+  group: "budget_edition"
+
+playstation_the_best_for_family:
+  pattern: "\\(PlayStation the Best for Family\\)"
+  group: "budget_edition"
+
+spike_library:
+  pattern: "\\(Spike Library\\)"
+  group: "budget_edition"
+
+value_1500:
+  pattern: "\\(Value 1500\\)"
+  group: "budget_edition"
+
+# MODERN VERSIONS
+
+battle_net:
+  pattern: "\\(Battle\\.net\\)"
+  group: "modern_version"
+
+castlevania_anniversary:
+  pattern: "\\(Castlevania Anniversary Collection\\)"
+  group: "modern_version"
+
+castlevania_advance:
+  pattern: "\\(Castlevania Advance Collection\\)"
+  group: "modern_version"
+
+capcom_town:
+  pattern: "\\(Capcom Town\\)"
+  group: "modern_version"
+
+collection_of_mana:
+  pattern: "\\(Collection of Mana\\)"
+  group: "modern_version"
+
+columbus_circle:
+  pattern: "\\(Columbus Circle\\)"
+  group: "modern_version"
+
+contra_anniversary:
+  pattern: "\\(Contra Anniversary Collection\\)"
+  group: "modern_version"
+
+cowabunga_collection:
+  pattern: "\\(The Cowabunga Collection\\)"
+  group: "modern_version"
+
+cowabunga_collection_the:
+  pattern: "\\(Cowabunga Collection, The\\)"
+  group: "modern_version"
+
+cozmic_collection:
+  pattern: "\\(Darius Cozmic Collection\\)"
+  group: "modern_version"
+
+disney_classic_games:
+  pattern: "\\(Disney Classic Games\\)"
+  group: "modern_version"
+
+gamecube:
+  pattern: "\\(Game[Cc]ube.*?\\)"
+  group: "modern_version"
+
+mega_man_x_legacy:
+  pattern: "\\(Mega Man X Legacy Collection\\)"
+  group: "modern_version"
+
+qubyte_classic:
+  pattern: "\\(QUByte Classics\\)"
+  group: "modern_version"
+
+retro_bit:
+  pattern: "\\(Retro-Bit\\)"
+  group: "modern_version"
+
+seiken_denetsu_collection:
+  pattern: "\\(Seiken Densetsu Collection\\)"
+  group: "modern_version"
+
+steam:
+  pattern: "\\(Steam\\)"
+  group: "modern_version"
+
+switch:
+  pattern: "\\(Switch\\)"
+  group: "modern_version"
+
+switch_version:
+  pattern: "\\s?\\((?:\\w*?,?\\s)*Switch Version(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+switch_release:
+  pattern: "\\s?\\((?:\\w*?,?\\s)*Switch Release(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+switch_online:
+  pattern: "\\s?\\((?:\\w*?,?\\s)*Switch Online(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+virtual_console:
+  pattern: "\\(Virtual Console\\)"
+  group: "modern_version"
+
+wii:
+  pattern: "\\(Wii\\)"
+  group: "modern_version"
+
+# DEMOTED VERSIONS
+arcade:
+  pattern: "\\(Arcade\\)"
+  group: "demoted_version"
+
+debug_version:
+  pattern: "\\(Debug Version\\)"
+  group: "demoted_version"
+
+earlier:
+  pattern: "\\(Earlier\\)"
+  group: "demoted_version"
+
+early:
+  pattern: "\\(Early\\)"
+  group: "demoted_version"
+
+competition_cart:
+  pattern: "\\(Competition Cart.*?\\)"
+  group: "demoted_version"
+
+limited_run:
+  pattern: "\\(Limited Run Games\\)"
+  group: "demoted_version"
+
+piko_interactive:
+  pattern: "\\(Piko Interactive\\)"
+  group: "demote_version"
+
+reprint:
+  pattern: "\\(Reprint\\)"
+  group: "demoted_version"
+
+shokai_seisanban:
+  pattern: "\\(Shokai Seisanban\\)"
+  group: "demoted_version"
+
+# GENERALLY IGNORE
+
+strictly_limited:
+  pattern: "\\(Strictly Limited Games\\)"
+
+rerelease:
+  pattern: "\\(Rerelease\\)"

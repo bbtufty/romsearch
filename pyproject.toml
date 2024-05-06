@@ -4,7 +4,7 @@ name = "romsearch"
 version = "0.0.1"
 description = "One Stop ROM Shop"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = {file = "LICENSE"}
 
 authors = [
@@ -15,15 +15,21 @@ maintainers = [
 ]
 
 classifiers = [
-  #   3 - Alpha
-  #   4 - Beta
-  #   5 - Production/Stable
-  "Development Status :: 3 - Alpha",
+    #   3 - Alpha
+    #   4 - Beta
+    #   5 - Production/Stable
+    "Development Status :: 3 - Alpha",
 
-  # License
-  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    # License
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
 
-  "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
 ]
 
 dependencies = [
@@ -31,7 +37,14 @@ dependencies = [
     "numpy",
     "packaging",
     "pathvalidate",
+    "pyyaml",
     "xmltodict",
+]
+
+[project.optional-dependencies]
+docs = [
+    "sphinx-automodapi",
+    "sphinx-rtd-theme",
 ]
 
 [project.urls]
@@ -40,5 +53,10 @@ dependencies = [
 "Source" = "https://github.com/bbtufty/romsearch"
 
 [build-system]
-requires = ["setuptools>=43.0.0", "wheel", "setuptools_scm"]
+requires = [
+    "setuptools>=43.0.0",
+    "wheel",
+    "setuptools_scm",
+]
+
 build-backend = "setuptools.build_meta"
