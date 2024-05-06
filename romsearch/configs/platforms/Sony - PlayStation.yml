@@ -1,0 +1,5 @@
+group: "Redump"
+ftp_dir: "/Redump/Sony - PlayStation"
+unzip: true
+additional_dirs:
+  SBI: "/Redump/Sony - PlayStation - SBI Subchannels"

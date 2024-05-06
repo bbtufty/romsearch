@@ -1,0 +1,15 @@
+name: Console request
+description: Suggest a new console for this project
+title: '[CONSOLE]: '
+labels: ['feature', 'console']
+assignees: 'bbtufty'
+
+body:
+  - type: input
+    id: console_name
+    attributes:
+      label: Console Name
+      description: What is the full name of the console you would like to add?
+      placeholder: ex. Nintendo Wii
+    validations:
+      required: true

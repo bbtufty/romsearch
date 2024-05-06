@@ -1,0 +1,45 @@
+####
+1G1R
+####
+
+ROMSearch operates on a "one game, one ROM" (1G1R) philosophy. This means that for each game, it will find the
+ROM file that it believes to be the best. The approach ROMSearch takes depends mostly on regions, languages,
+versioning, and optional name priority, with regions being the ultimate discriminator.
+
+Languages
+---------
+
+Many ROMs are tagged with languages (En, Es, etc), that will be parsed out during the run. If a ROM does not contain
+the language the user has specified (most likely En), then this will be removed from the choice.
+
+A lot of ROMs do not have any language tags (particularly US ones). For these, we currently do not cut them out,
+but this may change in the future to associate a region with an implicit language.
+
+Versions
+--------
+
+There may be different versions of ROMs (e.g. Rev 1, v2.0, etc). For these, we will take the latest one per unique
+region combination as the latest and greatest version.
+
+Priority
+--------
+
+Some files are essentially stripped down versions of games and so should be de-prioritised versus others. To get
+a priority, we use the ``retool`` clonelists.
+
+Regions
+-------
+
+After the various cuts, there will still be a number ROMs that pass all check. We therefore do a final filter by
+region (e.g. USA, Europe) to get to a final ROM. ROMSearch will choose the ROM with the highest region preference
+for each game, so order is important here!
+
+Others
+------
+
+There are some other cuts that go into deciding the best ROM. These include:
+
+* Improved version tags (e.g. "EDC" for PS1 games)
+* Removing of demos/preproduction ROMs
+
+The final result is that you should get the single best ROM for your preferences. Hooray!

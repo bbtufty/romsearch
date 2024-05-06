@@ -1,0 +1,13 @@
+url: "http://redump.org/datfile"
+
+Nintendo - GameCube:
+  web_mapping: "gc"
+  file_mapping: "Nintendo - GameCube - Datfile"
+
+Sony - PlayStation:
+  web_mapping: "psx"
+  file_mapping: "Sony - PlayStation - Datfile"
+
+Sony - PlayStation 2:
+  web_mapping: "ps2"
+  file_mapping: "Sony - PlayStation 2 - Datfile"
