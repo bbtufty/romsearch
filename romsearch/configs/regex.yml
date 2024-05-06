@@ -115,7 +115,7 @@ promo:
   group: "promotional"
   search_tags: false
 
-# VERSIONS
+# VERSIONS AND REVISIONS
 version_no:
   pattern: "\\(v[\\.0-9].*?\\)"
   type: "str"
@@ -133,7 +133,6 @@ revision:
   type: "str"
   transform_pattern: "R[eE][vV][ -]([0-9A-Z].*?)?"
   transform_repl: "v\\1"
-  group: "version"
 
 # UNLICENSED
 aftermarket:
@@ -373,6 +372,10 @@ piko_interactive:
   pattern: "\\(Piko Interactive\\)"
   group: "demote_version"
 
+rerelease:
+  pattern: "\\(Rerelease\\)"
+  group: "demoted_version"
+
 reprint:
   pattern: "\\(Reprint\\)"
   group: "demoted_version"
@@ -385,6 +388,3 @@ shokai_seisanban:
 
 strictly_limited:
   pattern: "\\(Strictly Limited Games\\)"
-
-rerelease:
-  pattern: "\\(Rerelease\\)"
