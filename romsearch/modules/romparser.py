@@ -221,6 +221,10 @@ class ROMParser:
             if found_cat:
                 continue
 
+            # If we don't have titles within the dupe dict, skip
+            if "titles" not in retool_dict:
+                continue
+
             retool_variants = [f["searchTerm"].lower() for f in retool_dict["titles"]]
 
             if game_name.lower() in retool_variants:
