@@ -186,11 +186,20 @@ class GameFinder:
             found_parent_name = get_parent_name(game_name=g,
                                                 dupe_dict=dupes,
                                                 )
-            if found_parent_name not in game_dict:
+
+            found_parent_name_lower = found_parent_name.lower()
+            game_dict_keys = [key for key in game_dict.keys()]
+            game_dict_keys_lower = [key.lower() for key in game_dict.keys()]
+
+            if found_parent_name_lower not in game_dict_keys_lower:
                 game_dict[found_parent_name] = {}
+                final_parent_name = copy.deepcopy(found_parent_name)
+            else:
+                final_parent_idx = game_dict_keys_lower.index(found_parent_name_lower)
+                final_parent_name = game_dict_keys[final_parent_idx]
 
             priority = get_priority(dupe_dict=dupes, parent_name=found_parent_name, game_name=g)
 
-            game_dict[found_parent_name][g] = {"priority": priority}
+            game_dict[final_parent_name][g] = {"priority": priority}
 
         return game_dict

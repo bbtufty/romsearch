@@ -197,11 +197,16 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
 def get_best_roms(files, rom_dict):
     """Get the best ROM(s) from a list, using a scoring system"""
 
+    # Positive scores
     improved_version_score = 1
+    version_score = 10
+    revision_score = 100
+    budget_edition_score = 1000
+
+    # Negative scores
     demoted_version_score = -1
     alternate_version_score = -1
     modern_version_score = -10
-    version_score = 100
     priority_score = -100
 
     file_scores = np.zeros(len(files))
@@ -209,10 +214,12 @@ def get_best_roms(files, rom_dict):
     # Improved or demoted versions
     file_scores += improved_version_score * np.array([int(rom_dict[f]["improved_version"]) for f in files])
     file_scores += demoted_version_score * np.array([int(rom_dict[f]["demoted_version"]) for f in files])
+    file_scores += budget_edition_score * np.array([int(rom_dict[f]["budget_edition"]) for f in files])
     file_scores += alternate_version_score * np.array([int(rom_dict[f]["alternate"]) for f in files])
 
     # Version numbering, which needs to be parsed
     file_scores += version_score * add_versioned_score(files, rom_dict, "version")
+    file_scores += revision_score * add_versioned_score(files, rom_dict, "revision")
 
     # Downweight modern versions
     file_scores += modern_version_score * np.array([int(rom_dict[f]["modern_version"]) for f in files])
@@ -425,6 +432,7 @@ class ROMChooser:
             self.logger.debug("Getting best version")
             rom_dict = get_best_version(rom_dict)
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="improved_versions", check_type="include")
+            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="budget_edition", check_type="include")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="demoted_versions", check_type="exclude")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="modern_versions", check_type="exclude")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="alternate", check_type="exclude")
