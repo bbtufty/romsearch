@@ -87,6 +87,7 @@ class GameFinder:
         self.logger.info(create_bar(f"START GameFinder"))
 
         games_dict = self.get_game_dict(files)
+        games_dict = dict(sorted(games_dict.items()))
 
         self.logger.info(f"Found {len(games_dict)} games:")
         for g in games_dict:
@@ -109,16 +110,17 @@ class GameFinder:
                                                     self.exclude_games,
                                                     )
 
-            for i in sorted(games_to_remove, reverse=True):
-                games.pop(i)
+            if games_to_remove is not None:
+                for i in sorted(games_to_remove, reverse=True):
+                    games.pop(i)
 
         # Include only included files
         if self.include_games is not None:
             games_to_include = self.get_game_matches(games,
                                                      self.include_games,
                                                      )
-
-            games = np.asarray(games)[games_to_include]
+            if games_to_include is not None:
+                games = np.asarray(games)[games_to_include]
 
         # We need to trim down dupes here. Otherwise, the
         #  dict is just the list we already have
@@ -142,9 +144,12 @@ class GameFinder:
         games_matched = []
 
         if isinstance(games_to_match, dict):
-            games_to_match = games_to_match.get(self.platform, [])
+            games_to_match = games_to_match.get(self.platform, None)
         else:
             games_to_match = copy.deepcopy(games_to_match)
+
+        if games_to_match is None:
+            return None
 
         games_matched.extend(games_to_match)
 

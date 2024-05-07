@@ -91,12 +91,13 @@ class DupeParser:
 
         dupe_dict = {}
 
-        if self.use_dat:
-            self.logger.info("Gettings dupes from dat file")
-            dupe_dict = self.get_dat_dupes(dupe_dict)
+        # Prefer retool dupes first
         if self.use_retool:
             self.logger.info("Gettings dupes from retool file")
             dupe_dict = self.get_retool_dupes(dupe_dict)
+        if self.use_dat:
+            self.logger.info("Gettings dupes from dat file")
+            dupe_dict = self.get_dat_dupes(dupe_dict)
 
         dupe_dict = dict(sorted(dupe_dict.items()))
 
@@ -174,6 +175,11 @@ class DupeParser:
 
         retool_dupes = self.get_retool_dupe_dict()
         for retool_dupe in retool_dupes:
+
+            # If we don't have titles within the dupe dict, skip
+            if "titles" not in retool_dupe:
+                continue
+
             group = retool_dupe["group"]
             group_titles = [get_short_name(f["searchTerm"],
                                            default_config=self.default_config,
