@@ -1,3 +1,20 @@
+0.0.3 (Unreleased)
+==================
+
+Features
+--------
+
+- Added Sony - PlayStation 2
+
+Fixes
+-----
+
+Configs
+~~~~~~~
+
+- Included dash between disc and number/letter for disc matching
+- Added specific regex options for PS2
+
 0.0.2 (2024-05-07)
 ==================
 

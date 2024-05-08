@@ -9,7 +9,7 @@ languages:
   flags: "NOFLAG"
 
 multi_disc:
-  pattern: "\\((Dis[ck]|Seite) [0-9A-Z]\\)"
+  pattern: "\\((Dis[ck]|Seite)[-\\s][0-9A-Z]\\)"
 
 date:
   pattern: "\\s?\\((?:\\d{8}|\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|\\d{2}-\\d{2}-\\d{2}|\\d{4}-\\d{2}-\\d{2}T\\d{6}|~?\\d{4}-(?:\\d{2}|xx)-xx|(?:January|February|March|April|May|June|July|August|September|October|November|December),\\s?\\d{4})\\)"
@@ -195,6 +195,10 @@ ideatek:
   pattern: "\\(Idea-Tek\\)"
   group: "improved_version"
 
+infinity_plus:
+  pattern: "\\(Infinity Plus\\)"
+  group: "improved_version"
+
 later:
   pattern: "\\(Later\\)"
   group: "improved_version"
@@ -213,6 +217,10 @@ nina_06:
 
 np:
   pattern: "\\(NP\\)"
+  group: "improved_version"
+
+premium_pack:
+  pattern: "\\(Premium Pack\\)"
   group: "improved_version"
 
 psone_books:
@@ -235,8 +243,24 @@ super_mega:
   pattern: "\\(Super Mega\\)"
   group: "improved_version"
 
+super_value_set:
+  pattern: "\\(Super Value Set\\)"
+  group: "improved_version"
+
+tatacon_doukon_set:
+  pattern: "\\(Tatacon Doukon Set\\)"
+  group: "improved_version"
+
+tokubetsu:
+  pattern: "\\((?:(?!\\(|Tokubetsu-ban.*?)[\\s\\S])*Tokubetsu-ban.*?\\)"
+  group: "improved_version"
+
 txc:
   pattern: "\\(TXC\\)"
+  group: "improved_version"
+
+usb_mic_doukonban:
+  pattern: "\\(USB Mic Doukonban\\)"
   group: "improved_version"
 
 # BUDGET EDITIONS
@@ -247,6 +271,10 @@ artdink:
 
 best_of_the_best:
   pattern: "\\(Best of the Best\\)"
+  group: "budget_edition"
+
+best_hit_selection:
+  pattern: "\\(Best Hit Selection\\)"
   group: "budget_edition"
 
 best_wing:
@@ -273,6 +301,14 @@ fukyuuban_1500:
   pattern: "\\(Fukyuuban 1500\\)"
   group: "budget_edition"
 
+greatest_hits:
+  pattern: "\\(Greatest Hits\\)"
+  group: "budget_edition"
+
+gust_best_price:
+  pattern: "\\(Gust Best Price\\)"
+  group: "budget_edition"
+
 honkakuha:
   pattern: "\\(Honkakuha de 1300\\)"
   group: "budget_edition"
@@ -285,6 +321,9 @@ major_wave:
   pattern: "\\(Major Wave\\)"
   group: "budget_edition"
 
+mega_hits:
+  pattern: "\\(Mega Hits!\\)"
+
 playstation_the_best:
   pattern: "\\(PlayStation the Best\\)"
   group: "budget_edition"
@@ -293,8 +332,28 @@ playstation_the_best_for_family:
   pattern: "\\(PlayStation the Best for Family\\)"
   group: "budget_edition"
 
+playstation_2_the_best:
+  pattern: "\\(PlayStation 2 the Best\\)"
+  group: "budget_edition"
+
+rockstar_classics:
+  pattern: "\\(Rockstar Classics\\)"
+  group: "budget_edition"
+
 spike_library:
   pattern: "\\(Spike Library\\)"
+  group: "budget_edition"
+
+spike_the_best:
+  pattern: "\\(Spike the Best\\)"
+  group: "budget_edition"
+
+super_value_2800:
+  pattern: "\\(Super Value 2800\\)"
+  group: "budget_edition"
+
+ultimate_hits:
+  pattern: "\\(Ultimate Hits\\)"
   group: "budget_edition"
 
 value_1500:
@@ -554,6 +613,9 @@ shokai_seisanban:
 
 strictly_limited:
   pattern: "\\(Strictly Limited Games\\)"
+
+multi_tap_doukoban:
+  pattern: "\\(Multi Tap.*?Doukonban\\)"
 
 ntdec:
   pattern: "\\(NTDEC\\)"

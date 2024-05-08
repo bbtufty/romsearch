@@ -31,8 +31,10 @@ Currently, ROMSearch is in early development, and so many features may be added 
 has the capability for:
 
 * Nintendo - GameCube
+* Nintendo - Nintendo Entertainment System
 * Nintendo - Super Nintendo Entertainment System
 * Sony - PlayStation
+* Sony - PlayStation 2
 
 but be aware there may be quirks that will only become apparent over time. We encourage users to open
 `issues <https://github.com/bbtufty/romsearch/issues>`_ as and where they find them. Known issues can be found at
