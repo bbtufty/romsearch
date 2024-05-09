@@ -246,11 +246,12 @@ def add_versioned_score(files, rom_dict, key):
     versions_clean = [key for key, value in Counter(versions).most_common()]
     version_vals = sorted(range(len(versions_clean)), key=versions.__getitem__)
 
+    versions_sorted = versions[version_vals]
+
     file_scores_version = np.zeros(len(files))
-    for v_idx, v in enumerate(versions_clean):
-        for f_idx, f in enumerate(files):
-            if version.parse(rom_dict[f][key]) == v:
-                file_scores_version[f_idx] += version_vals[v_idx]
+    for i, v in enumerate(versions_sorted):
+        v_idx = np.where(versions == v)[0]
+        file_scores_version[v_idx] += i
 
     return file_scores_version
 

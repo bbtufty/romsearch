@@ -1,3 +1,14 @@
+0.0.4 (Unreleased)
+==================
+
+Fixes
+-----
+
+ROMChooser
+~~~~~~~~~~
+
+- Fixed a bug with version scoring
+
 0.0.3 (2024-05-08)
 ==================
 
