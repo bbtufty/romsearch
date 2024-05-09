@@ -9,6 +9,7 @@ platforms:
   - "Nintendo - Super Nintendo Entertainment System"
   - "Sony - PlayStation"
   - "Sony - PlayStation 2"
+  - "Sony - PlayStation Portable"
 
 video_types:
   - "NTSC"

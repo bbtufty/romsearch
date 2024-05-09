@@ -24,11 +24,13 @@ alt:
 bracket_program:
   pattern: "\\((?:Test )?Program\\)"
   group: "applications"
+  include_in_short_name: true
 
 non_bracket_program:
   pattern: "(Check|Sample) Program"
   search_tags: false
   group: "applications"
+  include_in_short_name: true
 
 # BAD DUMP
 
@@ -43,51 +45,62 @@ bios:
   pattern: "\\[BIOS\\]\\s?"
   search_tags: false
   group: "console"
+  include_in_short_name: true
 
 enhancement_chip:
   pattern: "\\(Enhancement Chip\\)"
   group: "console"
+  include_in_short_name: true
 
 # DEMOS
 barai:
   pattern: "\\(@barai\\)"
   group: "demos"
+  include_in_short_name: true
 
 demo:
   pattern: "\\((?:\\w[-.]?\\s*)*Demo(?:(?:,?\\s|-)[\\w0-9\\.]*)*\\)"
   group: "demos"
+  include_in_short_name: true
 
 kiosk:
   pattern: "\\((?:\\w-?\\s*)*?Kiosk,?(?:\\s\\w*?)*\\)|Kiosk Demo Disc|(PSP System|PS2) Kiosk"
   group: "demos"
   search_tags: false
+  include_in_short_name: true
 
 preview:
   pattern: "\\(Preview\\)"
   group: "demos"
+  include_in_short_name: true
 
 sample:
   pattern: "\\(Sample(?:\\s[0-9]*|\\s\\d{4}-\\d{2}-\\d{2})?\\)"
   group: "demos"
+  include_in_short_name: true
 
 taikenban_brackets:
   pattern: "\\((.*?)Taikenban(.*?)\\)"
   search_tags: false
   group: "demos"
+  include_in_short_name: true
 
 taikenban:
   pattern: "Taikenban"
   search_tags: false
   group: "demos"
+  include_in_short_name: true
 
 trial:
   pattern: "\\(Trial (Disc|Edition|Version|ver\\.)\\)"
   group: "demos"
+  include_in_short_name: true
 
 trial_non_bracket:
   pattern: "Trial (Disc|Edition|Version|ver\\.)"
   search_tags: false
   group: "demos"
+  include_in_short_name: true
 
 # PRE-PRODUCTION
 alpha:
@@ -119,6 +132,7 @@ promo:
   pattern: "EPK|Press Kit|\\(Promo\\)"
   group: "promotional"
   search_tags: false
+  include_in_short_name: true
 
 # VERSIONS AND REVISIONS
 version_no:
@@ -147,6 +161,7 @@ aftermarket:
 homebrew:
   pattern: "\\(Homebrew\\)"
   group: "unlicensed"
+  include_in_short_name: true
 
 pirate:
   pattern: "\\(Pirate\\)"
@@ -191,6 +206,10 @@ gentei:
   pattern: "\\((?:(?!\\(|Gentei.*?)[\\s\\S])*Gentei.*?\\)"
   group: "improved_version"
 
+gps_receiver_doukonban:
+  pattern: "\\(GPS Receiver Doukonban\\)"
+  group: "improved_version"
+
 ideatek:
   pattern: "\\(Idea-Tek\\)"
   group: "improved_version"
@@ -205,6 +224,10 @@ later:
 
 mega_soft:
   pattern: "\\(Mega Soft\\)"
+  group: "improved_version"
+
+microphone_doukoban:
+  pattern: "\\(Microphone Doukonban\\)"
   group: "improved_version"
 
 nina_03:
@@ -269,6 +292,10 @@ artdink:
   pattern: "\\(Artdink Best Choice\\)"
   group: "budget_edition"
 
+best_collection:
+  pattern: "\\(Best Collection\\)"
+  group: "budget_edition"
+
 best_of_the_best:
   pattern: "\\(Best of the Best\\)"
   group: "budget_edition"
@@ -291,6 +318,10 @@ cyclone_best:
 
 digicube:
   pattern: "\\(DigiCube Best Selection\\)"
+  group: "budget_edition"
+
+ea_best_hits:
+  pattern: "\\(EA Best Hits\\)"
   group: "budget_edition"
 
 fukyuuban:
@@ -334,6 +365,10 @@ playstation_the_best_for_family:
 
 playstation_2_the_best:
   pattern: "\\(PlayStation 2 the Best\\)"
+  group: "budget_edition"
+
+psp_the_best:
+  pattern: "\\(PSP The Best\\)"
   group: "budget_edition"
 
 rockstar_classics:
@@ -630,3 +665,9 @@ pal:
 
 43_406_pcb:
   pattern: "\\(43-406 PCB\\)"
+
+fw:
+  pattern: "\\(FW[0-9].*?\\)"
+
+u_numbers:
+  pattern: "\\(U[CLT][EJUS][BST]-\\d{5}\\)"

@@ -69,6 +69,12 @@ def get_short_name(f,
         regex_config = load_yml(regex_file)
 
     for regex_key in regex_config:
+
+        # If we have patterns that we do want to keep in the long name, then skip
+        include_in_short_title = regex_config[regex_key].get("include_in_short_name", False)
+        if include_in_short_title:
+            continue
+
         regex_type = regex_config[regex_key].get("type", "bool")
         regex_flags = regex_config[regex_key].get("flags", "I")
 
