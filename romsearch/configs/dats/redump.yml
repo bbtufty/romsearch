@@ -11,3 +11,7 @@ Sony - PlayStation:
 Sony - PlayStation 2:
   web_mapping: "ps2"
   file_mapping: "Sony - PlayStation 2 - Datfile"
+
+Sony - PlayStation Portable:
+  web_mapping: "psp"
+  file_mapping: "Sony - PlayStation Portable - Datfile "

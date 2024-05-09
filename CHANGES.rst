@@ -1,13 +1,25 @@
 0.0.4 (Unreleased)
 ==================
 
+Features
+--------
+
+- Added Sony - PlayStation Portable
+
 Fixes
 -----
 
 ROMChooser
 ~~~~~~~~~~
 
+- Added regex terms for PSP
 - Fixed a bug with version scoring
+
+Util
+~~~~
+
+- Added feature to flag up tags but not remove them from the short name (e.g. "Demo" should be included in the name,
+  but should be used to flag up demo ROMs)
 
 0.0.3 (2024-05-08)
 ==================

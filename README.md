@@ -28,6 +28,7 @@ works for the following consoles:
 * Nintendo - Super Nintendo Entertainment System
 * Sony - PlayStation
 * Sony - PlayStation 2
+* Sony - PlayStation Portable
 
 but be aware there may be quirks that will only become apparent over time. We encourage users to open
 [issues](https://github.com/bbtufty/romsearch/issues) as and where they find them.
