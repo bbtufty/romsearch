@@ -9,13 +9,22 @@ from ..util import load_yml, setup_logger, create_bar, unzip_file, load_json, sa
 class ROMMover:
 
     def __init__(self,
-                 config_file,
                  platform,
-                 game
+                 game,
+                 config_file=None,
+                 config=None,
+                 platform_config=None,
                  ):
         """ROM Moving and cache updating tool
 
         Because we do this per-platform, per-game, they need to be specified here
+
+        Args:
+            platform (str): Platform name
+            game (str): Game name
+            config_file (str, optional): path to config file. Defaults to None.
+            config (dict, optional): configuration dictionary. Defaults to None.
+            platform_config (dict, optional): platform configuration dictionary. Defaults to None.
         """
 
         logger_add_dir = str(os.path.join(platform, game))
@@ -25,17 +34,22 @@ class ROMMover:
                                    additional_dir=logger_add_dir,
                                    )
 
-        config = load_yml(config_file)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
 
-        self.raw_dir = config.get("raw_dir", None)
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
+
+        self.raw_dir = self.config.get("raw_dir", None)
         if self.raw_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
 
-        self.rom_dir = config.get("rom_dir", None)
+        self.rom_dir = self.config.get("rom_dir", None)
         if self.rom_dir is None:
             raise ValueError("rom_dir needs to be defined in config")
 
-        cache_file = config.get("rommover", {}).get("cache_file", None)
+        cache_file = self.config.get("rommover", {}).get("cache_file", None)
         if cache_file is None:
             cache_file = os.path.join(os.getcwd(), f"cache ({platform}).json")
 
@@ -51,10 +65,12 @@ class ROMMover:
 
         # Pull in platform config that we need
         mod_dir = os.path.dirname(romsearch.__file__)
-        platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
-        platform_config = load_yml(platform_config_file)
 
+        if platform_config is None:
+            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
+
         self.unzip = self.platform_config.get("unzip", False)
 
     def run(self,

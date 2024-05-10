@@ -21,39 +21,53 @@ from ..util import (load_yml,
 class ROMSearch:
 
     def __init__(self,
-                 config_file,
+                 config_file=None,
+                 config=None,
+                 default_config=None,
+                 regex_config=None,
                  ):
-        """General search tool to get ROMs downloaded and organized into files"""
+        """General search tool to get ROMs downloaded and organized into files
 
-        self.config_file = config_file
-        config = load_yml(self.config_file)
+        Args:
+            config_file (str, optional): path to config file. Defaults to None.
+            config (dict, optional): configuration dictionary. Defaults to None.
+            default_config (dict, optional): default configuration dictionary. Defaults to None.
+            regex_config (dict, optional): regex configuration dictionary. Defaults to None.
+        """
+
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
+
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
 
         self.logger = setup_logger("info", "ROMSearch")
 
         # Read in the various pre-set configs we've got
-        mod_dir = os.path.dirname(romsearch.__file__)
+        self.mod_dir = os.path.dirname(romsearch.__file__)
 
-        default_config_file = os.path.join(mod_dir, "configs", "defaults.yml")
-        default_config = load_yml(default_config_file)
-
+        if default_config is None:
+            default_file = os.path.join(self.mod_dir, "configs", "defaults.yml")
+            default_config = load_yml(default_file)
         self.default_config = default_config
 
-        regex_config_file = os.path.join(mod_dir, "configs", "regex.yml")
-        regex_config = load_yml(regex_config_file)
-
+        if regex_config is None:
+            regex_file = os.path.join(self.mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
         self.regex_config = regex_config
 
         # Pull in variables from the yaml file
-        self.raw_dir = config.get("raw_dir", None)
+        self.raw_dir = self.config.get("raw_dir", None)
         if self.raw_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
 
-        self.rom_dir = config.get("rom_dir", None)
+        self.rom_dir = self.config.get("rom_dir", None)
         if self.rom_dir is None:
             raise ValueError("rom_dir needs to be defined in config")
 
         # Pull out platforms, make sure they're all valid
-        platforms = config.get("platforms", None)
+        platforms = self.config.get("platforms", None)
         if platforms is None:
             platforms = []
         if isinstance(platforms, str):
@@ -64,16 +78,16 @@ class ROMSearch:
         self.platforms = platforms
 
         # Which modules to run
-        self.run_romdownloader = config.get("run_romdownloader", True)
-        self.run_datparser = config.get("run_datparser", True)
-        self.run_dupeparser = config.get("run_dupeparser", True)
-        self.run_romchooser = config.get("run_romchooser", True)
-        self.run_rommover = config.get("run_rommover", True)
+        self.run_romdownloader = self.config.get("run_romdownloader", True)
+        self.run_datparser = self.config.get("run_datparser", True)
+        self.run_dupeparser = self.config.get("run_dupeparser", True)
+        self.run_romchooser = self.config.get("run_romchooser", True)
+        self.run_rommover = self.config.get("run_rommover", True)
 
         # Finally, the discord URL if we're sending messages
-        self.discord_url = config.get("discord", {}).get("webhook_url", None)
+        self.discord_url = self.config.get("discord", {}).get("webhook_url", None)
 
-        self.dry_run = config.get("romsearch", {}).get("dry_run", False)
+        self.dry_run = self.config.get("romsearch", {}).get("dry_run", False)
 
     def run(self):
         """Run ROMSearch"""
@@ -88,12 +102,17 @@ class ROMSearch:
 
             self.logger.info(f"Running ROMSearch for {platform}")
 
+            # Pull in platform-specific config
+            platform_config_file = os.path.join(self.mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config = load_yml(platform_config_file)
+
             raw_dir = os.path.join(self.raw_dir, platform)
 
             # Run the rclone sync
             if self.run_romdownloader:
-                downloader = ROMDownloader(config_file=self.config_file,
-                                           platform=platform,
+                downloader = ROMDownloader(platform=platform,
+                                           config=self.config,
+                                           platform_config=platform_config,
                                            )
                 downloader.run()
 
@@ -107,7 +126,6 @@ class ROMSearch:
             # Parse this into a dictionary with some useful info for each file
             all_file_dict = {}
             for f in all_files:
-
                 short_name = get_short_name(f,
                                             regex_config=self.regex_config,
                                             default_config=self.default_config,
@@ -122,21 +140,26 @@ class ROMSearch:
 
             # Parse DAT files here, if we're doing that
             if self.run_datparser:
-                dat_parser = DATParser(config_file=self.config_file,
-                                       platform=platform,
+                dat_parser = DATParser(platform=platform,
+                                       config=self.config,
+                                       platform_config=platform_config,
                                        )
                 dat_parser.run()
 
             # Get dupes here, if we're doing that
             if self.run_dupeparser:
-                dupe_parser = DupeParser(config_file=self.config_file,
-                                         platform=platform,
+                dupe_parser = DupeParser(platform=platform,
+                                         config=self.config,
+                                         default_config=self.default_config,
+                                         regex_config=self.regex_config,
                                          )
                 dupe_parser.run()
 
             # Find files
-            finder = GameFinder(config_file=self.config_file,
-                                platform=platform,
+            finder = GameFinder(platform=platform,
+                                config=self.config,
+                                default_config=self.default_config,
+                                regex_config=self.regex_config,
                                 )
 
             all_games = finder.run(files=all_file_dict)
@@ -159,24 +182,29 @@ class ROMSearch:
                         games_idx = games_lower.index(file_short_name_lower)
                         rom_files[f] = {
                             "priority": priorities[games_idx],
-                                        }
+                        }
 
                         if all_file_dict[f]["matched"]:
                             raise ValueError(f"{f} has already been matched! This should not happen")
 
                         all_file_dict[f]["matched"] = True
 
-                parse = ROMParser(self.config_file,
-                                  platform=platform,
+                parse = ROMParser(platform=platform,
                                   game=game,
+                                  config=self.config,
+                                  platform_config=platform_config,
+                                  regex_config=self.regex_config,
+                                  default_config=self.default_config,
                                   )
                 rom_dict = parse.run(rom_files)
 
                 if self.run_romchooser:
                     # Here, we'll parse down the number of files to one game, one ROM
-                    chooser = ROMChooser(self.config_file,
-                                         platform=platform,
+                    chooser = ROMChooser(platform=platform,
                                          game=game,
+                                         config=self.config,
+                                         regex_config=self.regex_config,
+                                         default_config=self.default_config,
                                          )
                     rom_dict = chooser.run(rom_dict)
 
@@ -196,9 +224,10 @@ class ROMSearch:
                     self.logger.debug("ROMMover is not running, will not move anything")
                     continue
 
-                mover = ROMMover(self.config_file,
-                                 platform=platform,
+                mover = ROMMover(platform=platform,
                                  game=game,
+                                 config=self.config,
+                                 platform_config=platform_config
                                  )
                 roms_moved = mover.run(rom_dict)
                 all_roms_moved.extend(roms_moved)
