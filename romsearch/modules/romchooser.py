@@ -8,7 +8,6 @@ from packaging import version
 
 import romsearch
 from ..util import (setup_logger,
-                    create_bar,
                     load_yml,
                     )
 
@@ -302,6 +301,7 @@ class ROMChooser:
                  config=None,
                  default_config=None,
                  regex_config=None,
+                 logger=None,
                  ):
         """ROM choose tool
 
@@ -314,18 +314,20 @@ class ROMChooser:
             config (dict, optional): Configuration dictionary. Defaults to None.
             default_config (dict, optional): Default configuration dictionary. Defaults to None.
             regex_config (dict, optional): Configuration dictionary. Defaults to None.
+            logger (logging.Logger, optional): Logger instance. Defaults to None.
         """
 
         if platform is None:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        logger_add_dir = str(os.path.join(platform, game))
-
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"ROMChooser",
-                                   additional_dir=logger_add_dir,
-                                   )
+        if logger is None:
+            logger_add_dir = str(os.path.join(platform, game))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMChooser",
+                                  additional_dir=logger_add_dir,
+                                  )
+        self.logger = logger
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -394,11 +396,7 @@ class ROMChooser:
             rom_dict):
         """Run the ROM chooser"""
 
-        self.logger.info(create_bar(f"START ROMChooser"))
-
         rom_dict = self.run_chooser(rom_dict)
-
-        self.logger.info(create_bar(f"FINISH ROMChooser"))
 
         return rom_dict
 

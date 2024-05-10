@@ -1,10 +1,10 @@
 import logging
-import math
 import os
+import sys
 from logging.handlers import RotatingFileHandler
-from pathvalidate import sanitize_filename
 
-from .. import __version__
+import colorlog
+from pathvalidate import sanitize_filename
 
 
 def setup_logger(log_level,
@@ -72,18 +72,18 @@ def setup_logger(log_level,
         logger.critical(f"Invalid log level '{log_level}', defaulting to 'INFO'")
         logger.setLevel(logging.INFO)
 
-    # Define the log message format
-    formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%y %I:%M %p')
+    # Define the log message format for the log files
+    logfile_formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%y %I:%M %p')
 
     # Create a RotatingFileHandler for log files
     handler = RotatingFileHandler(log_file, delay=True, mode="w", backupCount=max_logs)
-    handler.setFormatter(formatter)
+    handler.setFormatter(logfile_formatter)
 
     # Add the file handler to the logger
     logger.addHandler(handler)
 
     # Configure console logging with the specified log level
-    console_handler = logging.StreamHandler()
+    console_handler = colorlog.StreamHandler(sys.stdout)
     if log_level == 'DEBUG':
         console_handler.setLevel(logging.DEBUG)
     elif log_level == 'INFO':
@@ -92,6 +92,7 @@ def setup_logger(log_level,
         console_handler.setLevel(logging.CRITICAL)
 
     # Add the console handler to the logger
+    console_handler.setFormatter(colorlog.ColoredFormatter("%(log_color)s%(levelname)s: %(message)s"))
     logger.addHandler(console_handler)
 
     # Overwrite previous logger if exists
@@ -99,31 +100,4 @@ def setup_logger(log_level,
     logging.getLogger(script_name).addHandler(handler)
     logging.getLogger(script_name).addHandler(console_handler)
 
-    # Insert version number at the head of every log file
-    name = script_name.replace("_", " ").upper()
-    logger.info(create_bar(f"{name} Version: {__version__}"))
-
     return logger
-
-
-def create_bar(middle_text):
-    """
-    Creates a separation bar with provided text in the center
-
-    Args:
-        middle_text (str): The text to place in the center of the separation bar
-
-    Returns:
-        str: The formatted separation bar
-    """
-    total_length = 80
-    if len(middle_text) == 1:
-        remaining_length = total_length - len(middle_text) - 2
-        left_side_length = 0
-        right_side_length = remaining_length
-        return f"\n{middle_text * left_side_length}{middle_text}{middle_text * right_side_length}\n"
-    else:
-        remaining_length = total_length - len(middle_text) - 4
-        left_side_length = math.floor(remaining_length / 2)
-        right_side_length = remaining_length - left_side_length
-        return f"\n{'*' * left_side_length} {middle_text} {'*' * right_side_length}\n"

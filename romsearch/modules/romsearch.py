@@ -11,7 +11,6 @@ from .rommover import ROMMover
 from .romparser import ROMParser
 from ..util import (load_yml,
                     setup_logger,
-                    create_bar,
                     discord_push,
                     split,
                     get_short_name,
@@ -25,6 +24,7 @@ class ROMSearch:
                  config=None,
                  default_config=None,
                  regex_config=None,
+                 logger=None,
                  ):
         """General search tool to get ROMs downloaded and organized into files
 
@@ -42,7 +42,9 @@ class ROMSearch:
             config = load_yml(config_file)
         self.config = config
 
-        self.logger = setup_logger("info", "ROMSearch")
+        if logger is None:
+            logger = setup_logger("info", "ROMSearch")
+        self.logger = logger
 
         # Read in the various pre-set configs we've got
         self.mod_dir = os.path.dirname(romsearch.__file__)
@@ -92,9 +94,7 @@ class ROMSearch:
     def run(self):
         """Run ROMSearch"""
 
-        self.logger.info(create_bar(f"START ROMSearch"))
-
-        self.logger.info(f"Looping over platforms: {self.platforms}")
+        self.logger.info(f"Looping over platforms: {', '.join(self.platforms)}")
 
         all_roms_per_platform = {}
 
@@ -113,6 +113,7 @@ class ROMSearch:
                 downloader = ROMDownloader(platform=platform,
                                            config=self.config,
                                            platform_config=platform_config,
+                                           logger=self.logger,
                                            )
                 downloader.run()
 
@@ -143,6 +144,7 @@ class ROMSearch:
                 dat_parser = DATParser(platform=platform,
                                        config=self.config,
                                        platform_config=platform_config,
+                                       logger=self.logger,
                                        )
                 dat_parser.run()
 
@@ -152,6 +154,7 @@ class ROMSearch:
                                          config=self.config,
                                          default_config=self.default_config,
                                          regex_config=self.regex_config,
+                                         logger=self.logger,
                                          )
                 dupe_parser.run()
 
@@ -160,16 +163,17 @@ class ROMSearch:
                                 config=self.config,
                                 default_config=self.default_config,
                                 regex_config=self.regex_config,
+                                logger=self.logger,
                                 )
 
             all_games = finder.run(files=all_file_dict)
-            self.logger.info(f"Searching through {len(all_games)} games")
+            self.logger.info(f"Searching through {len(all_games)} game(s)")
 
             all_roms_moved = []
 
             for i, game in enumerate(all_games):
 
-                self.logger.info(f"{i + 1}/{len(all_games)}: {game} (aliases {', '.join(all_games[game])}):")
+                self.logger.info(f"{i + 1}/{len(all_games)}: {game} (aliases {', '.join(all_games[game])})")
 
                 # Parse by the short name, include the priority in there as well
                 rom_files = {}
@@ -195,6 +199,7 @@ class ROMSearch:
                                   platform_config=platform_config,
                                   regex_config=self.regex_config,
                                   default_config=self.default_config,
+                                  logger=self.logger,
                                   )
                 rom_dict = parse.run(rom_files)
 
@@ -205,6 +210,7 @@ class ROMSearch:
                                          config=self.config,
                                          regex_config=self.regex_config,
                                          default_config=self.default_config,
+                                         logger=self.logger,
                                          )
                     rom_dict = chooser.run(rom_dict)
 
@@ -214,7 +220,7 @@ class ROMSearch:
 
                 # Print out all the ROMs we've now matched
                 rom_files = [f for f in rom_dict]
-                self.logger.info(f"Found ROM file(s): {rom_files}")
+                self.logger.info(f"Found ROM file(s): {', '.join(rom_files)}")
 
                 if self.dry_run:
                     self.logger.info("Dry run, will not move any files")
@@ -227,7 +233,8 @@ class ROMSearch:
                 mover = ROMMover(platform=platform,
                                  game=game,
                                  config=self.config,
-                                 platform_config=platform_config
+                                 platform_config=platform_config,
+                                 logger=self.logger,
                                  )
                 roms_moved = mover.run(rom_dict)
                 all_roms_moved.extend(roms_moved)
@@ -256,7 +263,5 @@ class ROMSearch:
             for f in all_file_dict:
                 if not all_file_dict[f]["matched"]:
                     self.logger.warning(f"{f} not matched to anything")
-
-        self.logger.info(create_bar(f"FINISH ROMSearch"))
 
         return True
