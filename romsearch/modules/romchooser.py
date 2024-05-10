@@ -154,6 +154,7 @@ def get_best_rom_per_region(rom_dict,
 
     return rom_dict
 
+
 def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
     """Remove unwanted ROMs from the dict
 
@@ -295,13 +296,24 @@ def filter_by_list(rom_dict,
 class ROMChooser:
 
     def __init__(self,
-                 config_file,
                  platform,
-                 game
+                 game,
+                 config_file=None,
+                 config=None,
+                 default_config=None,
+                 regex_config=None,
                  ):
         """ROM choose tool
 
         This works per-game, per-platform, so must be specified here
+
+        Args:
+            platform (str): Platform name
+            game (str): Game name
+            config_file (str, optional): Path to config file. Defaults to None.
+            config (dict, optional): Configuration dictionary. Defaults to None.
+            default_config (dict, optional): Default configuration dictionary. Defaults to None.
+            regex_config (dict, optional): Configuration dictionary. Defaults to None.
         """
 
         if platform is None:
@@ -315,18 +327,27 @@ class ROMChooser:
                                    additional_dir=logger_add_dir,
                                    )
 
-        config = load_yml(config_file)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
+
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
 
         mod_dir = os.path.dirname(romsearch.__file__)
 
-        default_config_file = os.path.join(mod_dir, "configs", "defaults.yml")
-        self.default_config = load_yml(default_config_file)
+        if default_config is None:
+            default_file = os.path.join(mod_dir, "configs", "defaults.yml")
+            default_config = load_yml(default_file)
+        self.default_config = default_config
 
-        platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
-        self.platform_config = load_yml(platform_config_file)
+        if regex_config is None:
+            regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
+        self.regex_config = regex_config
 
         # Region preference (usually set USA for retroachievements, can also be a list to fall back to)
-        region_preferences = config.get("region_preferences", self.default_config["default_region"])
+        region_preferences = self.config.get("region_preferences", self.default_config["default_region"])
         if isinstance(region_preferences, str):
             region_preferences = [region_preferences]
 
@@ -337,7 +358,7 @@ class ROMChooser:
         self.region_preferences = region_preferences
 
         # Language preference (usually set En, can also be a list to fall back to)
-        language_preferences = config.get("language_preferences", self.default_config["default_language"])
+        language_preferences = self.config.get("language_preferences", self.default_config["default_language"])
         if isinstance(language_preferences, str):
             language_preferences = [language_preferences]
 
@@ -348,7 +369,7 @@ class ROMChooser:
         self.language_preferences = language_preferences
 
         # Various filters. First are the boolean ones
-        bool_filters = config.get("romchooser", {}).get("bool_filters", "all_but_games")
+        bool_filters = self.config.get("romchooser", {}).get("bool_filters", "all_but_games")
         if "all" in bool_filters:
             all_bool_filters = copy.deepcopy(BOOL_FILTERS)
             if "all_but" in bool_filters:
@@ -362,12 +383,12 @@ class ROMChooser:
             all_bool_filters = bool_filters
         self.bool_filters = all_bool_filters
 
-        self.filter_regions = config.get("romchooser", {}).get("filter_regions", True)
-        self.filter_languages = config.get("romchooser", {}).get("filter_languages", True)
-        self.allow_multiple_regions = config.get("romchooser", {}).get("allow_multiple_regions", False)
-        self.use_best_version = config.get("romchooser", {}).get("use_best_version", True)
+        self.filter_regions = self.config.get("romchooser", {}).get("filter_regions", True)
+        self.filter_languages = self.config.get("romchooser", {}).get("filter_languages", True)
+        self.allow_multiple_regions = self.config.get("romchooser", {}).get("allow_multiple_regions", False)
+        self.use_best_version = self.config.get("romchooser", {}).get("use_best_version", True)
 
-        self.dry_run = config.get("romchooser", {}).get("dry_run", False)
+        self.dry_run = self.config.get("romchooser", {}).get("dry_run", False)
 
     def run(self,
             rom_dict):

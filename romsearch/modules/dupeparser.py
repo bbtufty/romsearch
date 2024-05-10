@@ -22,14 +22,28 @@ ID_CLONE_KEYS = [
 class DupeParser:
 
     def __init__(self,
-                 config_file,
-                 platform,
+                 platform=None,
+                 config_file=None,
+                 config=None,
+                 default_config=None,
+                 regex_config=None,
                  ):
         """Tool for figuring out a list of dupes
+
+        Args:
+            platform (str, optional): Platform name. Defaults to None, which will throw a ValueError.
+            config_file (str, optional): Path to config file. Defaults to None
+            config (dict, optional): Configuration dictionary. Defaults to None
+            default_config (dict, optional): Default configuration dictionary. Defaults to None
+            regex_config (dict, optional): Configuration dictionary for regex search. Defaults to None
 
         TODO:
             - At some point, we might want to consider adding in the retool supersets
         """
+
+        if platform is None:
+            raise ValueError("platform must be specified")
+        self.platform = platform
 
         logger_add_dir = str(os.path.join(platform))
 
@@ -38,20 +52,23 @@ class DupeParser:
                                    additional_dir=logger_add_dir,
                                    )
 
-        config = load_yml(config_file)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
 
-        self.use_dat = config.get("dupeparser", {}).get("use_dat", True)
-        self.use_retool = config.get("dupeparser", {}).get('use_retool', True)
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
 
-        self.parsed_dat_dir = config.get("parsed_dat_dir", None)
+        self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
+        self.use_retool = self.config.get("dupeparser", {}).get('use_retool', True)
+
+        self.parsed_dat_dir = self.config.get("parsed_dat_dir", None)
         if self.use_dat and self.parsed_dat_dir is None:
             raise ValueError("Must specify parsed_dat_dir if using dat files")
 
-        self.dupe_dir = config.get("dupe_dir", None)
+        self.dupe_dir = self.config.get("dupe_dir", None)
         if self.dupe_dir is None:
             raise ValueError("dupe_dir should be specified in config file")
-
-        self.platform = platform
 
         # Pull in platform config that we need
         mod_dir = os.path.dirname(romsearch.__file__)
@@ -61,11 +78,15 @@ class DupeParser:
         self.retool_url = retool_config.get("url", None)
         self.retool_platform_file = retool_config.get(platform, None)
 
-        default_file = os.path.join(mod_dir, "configs", "defaults.yml")
-        self.default_config = load_yml(default_file)
+        if default_config is None:
+            default_file = os.path.join(mod_dir, "configs", "defaults.yml")
+            default_config = load_yml(default_file)
+        self.default_config = default_config
 
-        regex_file = os.path.join(mod_dir, "configs", "regex.yml")
-        self.regex_config = load_yml(regex_file)
+        if regex_config is None:
+            regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
+        self.regex_config = regex_config
 
     def run(self):
         """Run the dupe parser"""

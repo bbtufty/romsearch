@@ -58,12 +58,20 @@ def get_tidy_files(glob_pattern):
 class ROMDownloader:
 
     def __init__(self,
-                 config_file,
                  platform=None,
+                 config_file=None,
+                 config=None,
+                 platform_config=None,
                  ):
         """Downloader tool via rclone
 
         This works per-platform, so must be specified here
+
+        Args:
+            platform (str, optional): Platform name. Defaults to None, which will throw a ValueError
+            config (str, optional): Configuration file. Defaults to None
+            config (dict, optional): Configuration dictionary. Defaults to None
+            platform_config (dict, optional): Platform configuration dictionary. Defaults to None
         """
 
         if platform is None:
@@ -75,51 +83,56 @@ class ROMDownloader:
                                    additional_dir=platform,
                                    )
 
-        config = load_yml(config_file)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
 
-        out_dir = config.get("raw_dir", None)
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
+
+        out_dir = self.config.get("raw_dir", None)
         if out_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
         self.out_dir = os.path.join(out_dir, platform)
 
         # Get any specific includes/excludes
-        include_games = config.get("include_games", None)
+        include_games = self.config.get("include_games", None)
         if isinstance(include_games, dict):
             include_games = include_games.get(platform, None)
         else:
             include_games = copy.deepcopy(include_games)
         self.include_games = include_games
 
-        exclude_games = config.get("exclude_games", None)
+        exclude_games = self.config.get("exclude_games", None)
         if isinstance(exclude_games, dict):
             exclude_games = exclude_games.get(platform, None)
         else:
             exclude_games = copy.deepcopy(exclude_games)
         self.exclude_games = exclude_games
 
-        remote_name = config.get("romdownloader", {}).get("remote_name", None)
+        remote_name = self.config.get("romdownloader", {}).get("remote_name", None)
         if remote_name is None:
             raise ValueError("remote_name must be specified in config")
         self.remote_name = remote_name
 
-        sync_all = config.get("romdownloader", {}).get("sync_all", True)
+        sync_all = self.config.get("romdownloader", {}).get("sync_all", True)
         self.sync_all = sync_all
 
         # Read in the specific platform configuration
         mod_dir = os.path.dirname(romsearch.__file__)
 
-        platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
-        platform_config = load_yml(platform_config_file)
+        if platform_config is None:
+            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config = load_yml(platform_config_file)
+        self.platform_config = platform_config
 
-        ftp_dir = platform_config.get("ftp_dir", None)
+        ftp_dir = self.platform_config.get("ftp_dir", None)
         if ftp_dir is None:
             raise ValueError(f"ftp_dir should be defined in the platform config file!")
         self.ftp_dir = ftp_dir
 
-        self.platform_config = platform_config
-
-        self.discord_url = config.get("discord", {}).get("webhook_url", None)
-        self.dry_run = config.get("romdownloader", {}).get("dry_run", False)
+        self.discord_url = self.config.get("discord", {}).get("webhook_url", None)
+        self.dry_run = self.config.get("romdownloader", {}).get("dry_run", False)
 
     def run(self,
             ):

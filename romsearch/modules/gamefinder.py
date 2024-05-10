@@ -44,13 +44,23 @@ def get_priority(dupe_dict, parent_name, game_name):
 class GameFinder:
 
     def __init__(self,
-                 config_file,
                  platform,
+                 config_file=None,
+                 config=None,
+                 default_config=None,
+                 regex_config=None,
                  ):
         """Tool to find games within a list of files
 
         Will parse through files to get a unique list of games, then pull
         out potential aliases and optionally remove things from user excluded list
+        
+        Args:
+            platform (str): Platform name
+            config_file (str, optional): Path to config file. Defaults to None.
+            config (dict, optional): Configuration dictionary. Defaults to None.
+            default_config (dict, optional): Default configuration dictionary. Defaults to None.
+            regex_config (dict, optional): Dictionary of regex config. Defaults to None.
         """
 
         self.logger = setup_logger(log_level="info",
@@ -62,19 +72,29 @@ class GameFinder:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        config = load_yml(config_file)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
+
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
 
         # Pull in specifics to include/exclude
-        self.include_games = config.get("include_games", None)
-        self.exclude_games = config.get("exclude_games", None)
+        self.include_games = self.config.get("include_games", None)
+        self.exclude_games = self.config.get("exclude_games", None)
 
         # Pull in defaults for finding short game names
         mod_dir = os.path.dirname(romsearch.__file__)
-        default_file = os.path.join(mod_dir, "configs", "defaults.yml")
-        self.default_config = load_yml(default_file)
 
-        regex_file = os.path.join(mod_dir, "configs", "regex.yml")
-        self.regex_config = load_yml(regex_file)
+        if default_config is None:
+            default_file = os.path.join(mod_dir, "configs", "defaults.yml")
+            default_config = load_yml(default_file)
+        self.default_config = default_config
+
+        if regex_config is None:
+            regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
+        self.regex_config = regex_config
 
         # Info for dupes
         self.dupe_dir = config.get("dupe_dir", None)

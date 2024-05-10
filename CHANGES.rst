@@ -1,3 +1,14 @@
+0.0.5 (Unreleased)
+==================
+
+Fixes
+-----
+
+General
+~~~~~~~
+
+- Overhauled how config files are read in to avoid unneccesary I/O. Speed ups of about a factor 2
+
 0.0.4 (2024-05-09)
 ==================
 

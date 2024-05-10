@@ -9,7 +9,6 @@ from ..util import (setup_logger,
                     create_bar,
                     load_yml,
                     load_json,
-                    get_bracketed_file_pattern,
                     get_game_name,
                     )
 
@@ -89,13 +88,26 @@ def get_file_time(f,
 class ROMParser:
 
     def __init__(self,
-                 config_file,
                  platform,
                  game,
+                 config_file=None,
+                 config=None,
+                 platform_config=None,
+                 default_config=None,
+                 regex_config=None,
                  ):
         """ROM parser tool
 
         This works per-game, per-platform, so must be specified here
+
+        Args:
+            platform (str): Platform name
+            game (str): Game name
+            config_file (str, optional): path to config file. Defaults to None.
+            config (dict, optional): configuration dictionary. Defaults to None.
+            platform_config (dict, optional): platform configuration dictionary. Defaults to None.
+            default_config (dict, optional): default configuration dictionary. Defaults to None.
+            regex_config (dict, optional): regex configuration dictionary. Defaults to None.
 
         TODO:
             - Default implied languages from regions
@@ -112,32 +124,43 @@ class ROMParser:
                                    additional_dir=logger_add_dir,
                                    )
 
-        config = load_yml(config_file)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
+
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
 
         mod_dir = os.path.dirname(romsearch.__file__)
 
-        default_config_file = os.path.join(mod_dir, "configs", "defaults.yml")
-        self.default_config = load_yml(default_config_file)
+        if default_config is None:
+            default_file = os.path.join(mod_dir, "configs", "defaults.yml")
+            default_config = load_yml(default_file)
+        self.default_config = default_config
 
-        regex_file = os.path.join(mod_dir, "configs", "regex.yml")
-        self.regex = load_yml(regex_file)
+        if regex_config is None:
+            regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
+        self.regex_config = regex_config
 
-        platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
-        self.platform_config = load_yml(platform_config_file)
+        if platform_config is None:
+            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config = load_yml(platform_config_file)
+        self.platform_config = platform_config
 
-        self.raw_dir = config.get("raw_dir", None)
+        self.raw_dir = self.config.get("raw_dir", None)
         if not self.raw_dir:
             raise ValueError("raw_dir must be specified in config.yml")
 
-        self.use_dat = config.get("romparser", {}).get("use_dat", True)
-        self.use_retool = config.get("romparser", {}).get("use_retool", True)
-        self.use_filename = config.get("romparser", {}).get("use_filename", True)
-        self.dry_run = config.get("romparser", {}).get("dry_run", False)
+        self.use_dat = self.config.get("romparser", {}).get("use_dat", True)
+        self.use_retool = self.config.get("romparser", {}).get("use_retool", True)
+        self.use_filename = self.config.get("romparser", {}).get("use_filename", True)
+        self.dry_run = self.config.get("romparser", {}).get("dry_run", False)
 
         # If we're using the dat file, pull it out here
         self.dat = None
         if self.use_dat:
-            dat_dir = config.get("parsed_dat_dir", None)
+            dat_dir = self.config.get("parsed_dat_dir", None)
             if dat_dir is None:
                 raise ValueError("parsed_dat_dir must be specified in config.yml")
             dat_file = os.path.join(dat_dir, f"{platform} (dat parsed).json")
@@ -147,7 +170,7 @@ class ROMParser:
         # If we're using the retool file, pull it out here
         self.retool = None
         if self.use_retool:
-            dat_dir = config.get("parsed_dat_dir", None)
+            dat_dir = self.config.get("parsed_dat_dir", None)
             if dat_dir is None:
                 raise ValueError("parsed_dat_dir must be specified in config.yml")
             retool_file = os.path.join(dat_dir, f"{platform} (retool).json")
@@ -295,14 +318,14 @@ class ROMParser:
         # Split file into tags
         tags = [f'({x}' for x in f.strip(".zip").split(' (')][1:]
 
-        for regex_key in self.regex:
+        for regex_key in self.regex_config:
 
-            regex_type = self.regex[regex_key].get("type", "bool")
-            search_tags = self.regex[regex_key].get("search_tags", True)
-            group = self.regex[regex_key].get("group", None)
-            regex_flags = self.regex[regex_key].get("flags", "I")
-            transform_pattern = self.regex[regex_key].get("transform_pattern", None)
-            transform_repl = self.regex[regex_key].get("transform_repl", None)
+            regex_type = self.regex_config[regex_key].get("type", "bool")
+            search_tags = self.regex_config[regex_key].get("search_tags", True)
+            group = self.regex_config[regex_key].get("group", None)
+            regex_flags = self.regex_config[regex_key].get("flags", "I")
+            transform_pattern = self.regex_config[regex_key].get("transform_pattern", None)
+            transform_repl = self.regex_config[regex_key].get("transform_repl", None)
 
             dict_default_val = DICT_DEFAULT_VALS.get(regex_type, None)
             if dict_default_val is None:
@@ -318,7 +341,7 @@ class ROMParser:
             else:
                 raise ValueError("regex_flags should be one of 'NOFLAG', 'I'")
 
-            pattern = self.regex[regex_key]["pattern"]
+            pattern = self.regex_config[regex_key]["pattern"]
 
             pattern_mappings = None
 

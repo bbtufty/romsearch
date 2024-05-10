@@ -40,18 +40,27 @@ def format_dat(dat):
 class DATParser:
 
     def __init__(self,
-                 config_file,
-                 platform,
+                 platform=None,
+                 config_file=None,
+                 config=None,
+                 platform_config=None,
                  ):
         """Parser for dat files from Redump or No-Intro
 
         For Redump dats, we can download directly from the site.
         Users will have to provide their own files for No-Intro,
         since there's no good way to scrape them automatically
+
+        Args:
+            platform (str, optional): Platform name. Defaults to None, which will throw a ValueError
+            config_file (str, optional): Configuration file. Defaults to None
+            config (dict, optional): Configuration dictionary. Defaults to None
+            platform_config (dict, optional): Platform configuration dictionary. Defaults to None
         """
 
-        self.config_file = config_file
-        config = load_yml(self.config_file)
+        if platform is None:
+            raise ValueError("platform must be specified")
+        self.platform = platform
 
         logger_add_dir = str(os.path.join(platform))
 
@@ -60,15 +69,25 @@ class DATParser:
                                    additional_dir=logger_add_dir,
                                    )
 
-        self.dat_dir = config.get("dat_dir", None)
-        self.parsed_dat_dir = config.get("parsed_dat_dir", None)
+        if config_file is None and config is None:
+            raise ValueError("config_file or config must be specified")
+
+        if config is None:
+            config = load_yml(config_file)
+        self.config = config
+
+        self.dat_dir = self.config.get("dat_dir", None)
+        self.parsed_dat_dir = self.config.get("parsed_dat_dir", None)
 
         self.platform = platform
 
         # Read in the specific platform configuration
         mod_dir = os.path.dirname(romsearch.__file__)
-        platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{self.platform}.yml")
-        self.platform_config = load_yml(platform_config_file)
+
+        if platform_config is None:
+            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config = load_yml(platform_config_file)
+        self.platform_config = platform_config
 
         self.group = self.platform_config.get("group", None)
         if self.group is None:
