@@ -5,7 +5,6 @@ import requests
 
 import romsearch
 from ..util import (setup_logger,
-                    create_bar,
                     load_yml,
                     get_parent_name,
                     get_short_name,
@@ -27,6 +26,7 @@ class DupeParser:
                  config=None,
                  default_config=None,
                  regex_config=None,
+                 logger=None,
                  ):
         """Tool for figuring out a list of dupes
 
@@ -36,6 +36,7 @@ class DupeParser:
             config (dict, optional): Configuration dictionary. Defaults to None
             default_config (dict, optional): Default configuration dictionary. Defaults to None
             regex_config (dict, optional): Configuration dictionary for regex search. Defaults to None
+            logger (logging.Logger, optional): Logger instance. Defaults to None
 
         TODO:
             - At some point, we might want to consider adding in the retool supersets
@@ -45,12 +46,12 @@ class DupeParser:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        logger_add_dir = str(os.path.join(platform))
-
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"DupeParser",
-                                   additional_dir=logger_add_dir,
-                                   )
+        if logger is None:
+            logger = setup_logger(log_level="info",
+                                  script_name=f"DupeParser",
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -95,15 +96,11 @@ class DupeParser:
             self.logger.warning("retool config for the platform needs to be present if using retool")
             return False
 
-        self.logger.info(create_bar(f"START DupeParser"))
-
         dupe_dict = self.get_dupe_dict()
 
         # Save out the dupe dict
         out_file = os.path.join(self.dupe_dir, f"{self.platform} (dupes).json")
         save_json(dupe_dict, out_file)
-
-        self.logger.info(create_bar(f"FINISH DupeParser"))
 
         return True
 
@@ -114,10 +111,8 @@ class DupeParser:
 
         # Prefer retool dupes first
         if self.use_retool:
-            self.logger.info("Gettings dupes from retool file")
             dupe_dict = self.get_retool_dupes(dupe_dict)
         if self.use_dat:
-            self.logger.info("Gettings dupes from dat file")
             dupe_dict = self.get_dat_dupes(dupe_dict)
 
         dupe_dict = dict(sorted(dupe_dict.items()))
@@ -209,11 +204,6 @@ class DupeParser:
                             for f in retool_dupe["titles"]]
             priorities = [f.get("priority", 1) for f in retool_dupe["titles"]]
 
-            # Parse down to the game name here
-            # if "(" in group:
-            #     group_parsed = get_game_name(group)
-            # else:
-            #     group_parsed = copy.deepcopy(group)
             group_parsed = get_short_name(group,
                                           default_config=self.default_config,
                                           regex_config=self.regex_config,

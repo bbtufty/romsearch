@@ -6,7 +6,7 @@ from datetime import datetime
 
 import romsearch
 from ..util import (setup_logger,
-                    create_bar,
+
                     load_yml,
                     load_json,
                     get_game_name,
@@ -95,6 +95,7 @@ class ROMParser:
                  platform_config=None,
                  default_config=None,
                  regex_config=None,
+                 logger=None,
                  ):
         """ROM parser tool
 
@@ -108,6 +109,7 @@ class ROMParser:
             platform_config (dict, optional): platform configuration dictionary. Defaults to None.
             default_config (dict, optional): default configuration dictionary. Defaults to None.
             regex_config (dict, optional): regex configuration dictionary. Defaults to None.
+            logger (logging.Logger, optional): logger instance. Defaults to None.
 
         TODO:
             - Default implied languages from regions
@@ -117,12 +119,13 @@ class ROMParser:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        logger_add_dir = str(os.path.join(platform, game))
-
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"ROMParser",
-                                   additional_dir=logger_add_dir,
-                                   )
+        if logger is None:
+            logger_add_dir = str(os.path.join(platform, game))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMParser",
+                                  additional_dir=logger_add_dir,
+                                  )
+        self.logger = logger
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -182,8 +185,6 @@ class ROMParser:
             ):
         """Run the ROM parser"""
 
-        self.logger.info(create_bar(f"START ROMParser"))
-
         game_dict = {}
 
         for f in files:
@@ -191,8 +192,6 @@ class ROMParser:
 
             # Include the priority
             game_dict[f]["priority"] = files[f]["priority"]
-
-        self.logger.info(create_bar(f"FINISH ROMParser"))
 
         return game_dict
 
@@ -220,7 +219,7 @@ class ROMParser:
                                   )
         file_dict["file_mod_time"] = file_time
 
-        self.logger.info(f"{f}: {file_dict}")
+        self.logger.debug(f"{f}: {file_dict}")
 
         return file_dict
 

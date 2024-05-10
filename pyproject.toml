@@ -33,6 +33,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "colorlog",
     "discordwebhook",
     "numpy",
     "packaging",

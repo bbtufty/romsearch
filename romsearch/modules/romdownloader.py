@@ -5,11 +5,10 @@ import subprocess
 
 import romsearch
 from ..util import (setup_logger,
-                    create_bar,
                     load_yml,
                     get_file_pattern,
                     discord_push,
-split,
+                    split,
                     )
 
 
@@ -40,6 +39,7 @@ def add_rclone_filter(pattern=None,
 
     return cmd
 
+
 def get_tidy_files(glob_pattern):
     """Get a tidy list of files from a glob pattern.
 
@@ -62,6 +62,7 @@ class ROMDownloader:
                  config_file=None,
                  config=None,
                  platform_config=None,
+                 logger=None,
                  ):
         """Downloader tool via rclone
 
@@ -72,16 +73,19 @@ class ROMDownloader:
             config (str, optional): Configuration file. Defaults to None
             config (dict, optional): Configuration dictionary. Defaults to None
             platform_config (dict, optional): Platform configuration dictionary. Defaults to None
+            logger (logging.Logger, optional): Logger instance. Defaults to None
         """
 
         if platform is None:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"ROMDownloader",
-                                   additional_dir=platform,
-                                   )
+        if logger is None:
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMDownloader",
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -138,8 +142,6 @@ class ROMDownloader:
             ):
         """Run Rclone sync tool"""
 
-        self.logger.info(create_bar(f"START ROMDownloader"))
-
         start_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
         self.rclone_sync(ftp_dir=self.ftp_dir,
@@ -149,7 +151,6 @@ class ROMDownloader:
         end_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
         if self.discord_url is not None:
-
             name = f"ROMDownloader: {self.platform}"
             self.post_to_discord(start_files,
                                  end_files,
@@ -178,8 +179,6 @@ class ROMDownloader:
                                          end_files,
                                          name=name
                                          )
-
-        self.logger.info(create_bar(f"FINISH ROMDownloader"))
 
     def rclone_sync(self,
                     ftp_dir,

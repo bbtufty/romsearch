@@ -3,7 +3,12 @@ import os
 import shutil
 
 import romsearch
-from ..util import load_yml, setup_logger, create_bar, unzip_file, load_json, save_json
+from ..util import (load_yml,
+                    setup_logger,
+                    unzip_file,
+                    load_json,
+                    save_json
+                    )
 
 
 class ROMMover:
@@ -14,6 +19,7 @@ class ROMMover:
                  config_file=None,
                  config=None,
                  platform_config=None,
+                 logger=None,
                  ):
         """ROM Moving and cache updating tool
 
@@ -25,14 +31,16 @@ class ROMMover:
             config_file (str, optional): path to config file. Defaults to None.
             config (dict, optional): configuration dictionary. Defaults to None.
             platform_config (dict, optional): platform configuration dictionary. Defaults to None.
+            logger (logging.Logger, optional): logger. Defaults to None.
         """
 
-        logger_add_dir = str(os.path.join(platform, game))
-
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"ROMMover",
-                                   additional_dir=logger_add_dir,
-                                   )
+        if logger is None:
+            logger_add_dir = str(os.path.join(platform, game))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMMover",
+                                  additional_dir=logger_add_dir,
+                                  )
+        self.logger = logger
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -77,12 +85,8 @@ class ROMMover:
             rom_dict,
             ):
 
-        self.logger.info(create_bar(f"START ROMMover"))
-
         roms_moved = self.move_roms(rom_dict)
         self.save_cache()
-
-        self.logger.info(create_bar(f"FINISH ROMMover"))
 
         return roms_moved
 

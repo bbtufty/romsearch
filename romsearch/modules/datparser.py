@@ -1,13 +1,11 @@
 import glob
-import json
 import os
-from datetime import datetime
 from urllib.request import urlopen
 
 import xmltodict
 
 import romsearch
-from ..util import load_yml, setup_logger, create_bar, unzip_file, save_json
+from ..util import load_yml, setup_logger, unzip_file, save_json
 
 ALLOWED_GROUPS = [
     "No-Intro",
@@ -44,6 +42,7 @@ class DATParser:
                  config_file=None,
                  config=None,
                  platform_config=None,
+                 logger=None,
                  ):
         """Parser for dat files from Redump or No-Intro
 
@@ -56,18 +55,19 @@ class DATParser:
             config_file (str, optional): Configuration file. Defaults to None
             config (dict, optional): Configuration dictionary. Defaults to None
             platform_config (dict, optional): Platform configuration dictionary. Defaults to None
+            logger (logging.Logger, optional): Logger instance. Defaults to None
         """
 
         if platform is None:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        logger_add_dir = str(os.path.join(platform))
-
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"DATParser",
-                                   additional_dir=logger_add_dir,
-                                   )
+        if logger is None:
+            logger = setup_logger(log_level="info",
+                                  script_name=f"DATParser",
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -108,8 +108,6 @@ class DATParser:
 
     def run(self):
 
-        self.logger.info(create_bar(f"START DATParser"))
-
         run_datparser = True
 
         if self.dat_dir is None:
@@ -124,8 +122,6 @@ class DATParser:
 
         if run_datparser:
             self.run_datparser()
-
-        self.logger.info(create_bar(f"FINISH DATParser"))
 
         return True
 
@@ -145,6 +141,8 @@ class DATParser:
 
         if dat is None:
             return False
+
+        self.logger.info(f"Using dat file {os.path.split(dat_file_name)[-1]}")
 
         rom_dict = format_dat(dat)
 

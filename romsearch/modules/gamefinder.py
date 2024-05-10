@@ -5,7 +5,12 @@ import re
 import numpy as np
 
 import romsearch
-from ..util import setup_logger, load_yml, get_parent_name, get_short_name, create_bar, load_json
+from ..util import (setup_logger,
+                    load_yml,
+                    get_parent_name,
+                    get_short_name,
+                    load_json
+                    )
 
 
 def get_all_games(files,
@@ -49,6 +54,7 @@ class GameFinder:
                  config=None,
                  default_config=None,
                  regex_config=None,
+                 logger=None,
                  ):
         """Tool to find games within a list of files
 
@@ -61,12 +67,15 @@ class GameFinder:
             config (dict, optional): Configuration dictionary. Defaults to None.
             default_config (dict, optional): Default configuration dictionary. Defaults to None.
             regex_config (dict, optional): Dictionary of regex config. Defaults to None.
+            logger (logging.Logger, optional): Logger instance. Defaults to None.
         """
 
-        self.logger = setup_logger(log_level="info",
-                                   script_name=f"GameFinder",
-                                   additional_dir=platform,
-                                   )
+        if logger is None:
+            logger = setup_logger(log_level="info",
+                                  script_name=f"GameFinder",
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
 
         if platform is None:
             raise ValueError("platform must be specified")
@@ -104,14 +113,12 @@ class GameFinder:
             files,
             ):
 
-        self.logger.info(create_bar(f"START GameFinder"))
-
         games_dict = self.get_game_dict(files)
         games_dict = dict(sorted(games_dict.items()))
 
-        self.logger.info(f"Found {len(games_dict)} games:")
+        self.logger.debug(f"Found {len(games_dict)} games:")
         for g in games_dict:
-            self.logger.info(f"{g}: {games_dict[g]}")
+            self.logger.debug(f"{g}: {games_dict[g]}")
 
         return games_dict
 
