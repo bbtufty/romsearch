@@ -1,14 +1,11 @@
-raw_dir: 'F:\Emulation\raw'
-rom_dir: 'F:\Emulation\ROMs'
-dat_dir: 'F:\Emulation\data\dats'
-parsed_dat_dir: 'F:\Emulation\data\dats_parsed'
-dupe_dir: 'F:\Emulation\data\dupes'
-
-run_romdownloader: true
-run_datparser: true
-run_dupeparser: true
-run_romchooser: true
-run_rommover: false
+dirs:
+  raw_dir: 'F:\Emulation\raw'
+  rom_dir: 'F:\Emulation\ROMs'
+  dat_dir: 'F:\Emulation\data\dats'
+  parsed_dat_dir: 'F:\Emulation\data\dats_parsed'
+  dupe_dir: 'F:\Emulation\data\dupes'
+  log_dir: 'F:\Emulation\data\logs'
+  cache_dir: 'F:\Emulation\data\cache'
 
 platforms:
   - Nintendo - Super Nintendo Entertainment System
@@ -24,6 +21,11 @@ include_games:
     - "Chrono Trigger"
 
 romsearch:
+  run_romdownloader: true
+  run_datparser: true
+  run_dupeparser: true
+  run_romchooser: true
+  run_rommover: false
   dry_run: false
 
 romdownloader:

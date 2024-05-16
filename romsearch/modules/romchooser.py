@@ -321,20 +321,22 @@ class ROMChooser:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        if logger is None:
-            logger_add_dir = str(os.path.join(platform, game))
-            logger = setup_logger(log_level="info",
-                                  script_name=f"ROMChooser",
-                                  additional_dir=logger_add_dir,
-                                  )
-        self.logger = logger
-
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
 
         if config is None:
             config = load_yml(config_file)
         self.config = config
+
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger_add_dir = str(os.path.join(platform, game))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMChooser",
+                                  log_dir=log_dir,
+                                  additional_dir=logger_add_dir,
+                                  )
+        self.logger = logger
 
         mod_dir = os.path.dirname(romsearch.__file__)
 

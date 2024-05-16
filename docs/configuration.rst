@@ -27,11 +27,12 @@ many of the ways it decides this if you want to grab multiple files**
 As a minimal example, if we wanted to grab the entire US Catalog of PlayStation games and post what you've added to a
 Discord channel, the config file would look something like this: ::
 
-    raw_dir: 'F:\Emulation\raw'
-    rom_dir: 'F:\Emulation\ROMs'
-    dat_dir: 'F:\Emulation\data\dats'
-    parsed_dat_dir: 'F:\Emulation\data\dats_parsed'
-    dupe_dir: 'F:\Emulation\data\dupes'
+    dirs:
+      raw_dir: 'F:\Emulation\raw'
+      rom_dir: 'F:\Emulation\ROMs'
+      dat_dir: 'F:\Emulation\data\dats'
+      parsed_dat_dir: 'F:\Emulation\data\dats_parsed'
+      dupe_dir: 'F:\Emulation\data\dupes'
 
     platforms:
       - Sony - PlayStation

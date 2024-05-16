@@ -119,20 +119,22 @@ class ROMParser:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        if logger is None:
-            logger_add_dir = str(os.path.join(platform, game))
-            logger = setup_logger(log_level="info",
-                                  script_name=f"ROMParser",
-                                  additional_dir=logger_add_dir,
-                                  )
-        self.logger = logger
-
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
 
         if config is None:
             config = load_yml(config_file)
         self.config = config
+
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger_add_dir = str(os.path.join(platform, game))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMParser",
+                                  log_dir=log_dir,
+                                  additional_dir=logger_add_dir,
+                                  )
+        self.logger = logger
 
         mod_dir = os.path.dirname(romsearch.__file__)
 
@@ -151,7 +153,7 @@ class ROMParser:
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
 
-        self.raw_dir = self.config.get("raw_dir", None)
+        self.raw_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if not self.raw_dir:
             raise ValueError("raw_dir must be specified in config.yml")
 
@@ -163,7 +165,7 @@ class ROMParser:
         # If we're using the dat file, pull it out here
         self.dat = None
         if self.use_dat:
-            dat_dir = self.config.get("parsed_dat_dir", None)
+            dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
             if dat_dir is None:
                 raise ValueError("parsed_dat_dir must be specified in config.yml")
             dat_file = os.path.join(dat_dir, f"{platform} (dat parsed).json")
@@ -173,7 +175,7 @@ class ROMParser:
         # If we're using the retool file, pull it out here
         self.retool = None
         if self.use_retool:
-            dat_dir = self.config.get("parsed_dat_dir", None)
+            dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
             if dat_dir is None:
                 raise ValueError("parsed_dat_dir must be specified in config.yml")
             retool_file = os.path.join(dat_dir, f"{platform} (retool).json")

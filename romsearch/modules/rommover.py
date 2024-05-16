@@ -34,14 +34,6 @@ class ROMMover:
             logger (logging.Logger, optional): logger. Defaults to None.
         """
 
-        if logger is None:
-            logger_add_dir = str(os.path.join(platform, game))
-            logger = setup_logger(log_level="info",
-                                  script_name=f"ROMMover",
-                                  additional_dir=logger_add_dir,
-                                  )
-        self.logger = logger
-
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
 
@@ -49,17 +41,29 @@ class ROMMover:
             config = load_yml(config_file)
         self.config = config
 
-        self.raw_dir = self.config.get("raw_dir", None)
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger_add_dir = str(os.path.join(platform, game))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMMover",
+                                  log_dir=log_dir,
+                                  additional_dir=logger_add_dir,
+                                  )
+        self.logger = logger
+
+        self.raw_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if self.raw_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
 
-        self.rom_dir = self.config.get("rom_dir", None)
+        self.rom_dir = self.config.get("dirs", {}).get("rom_dir", None)
         if self.rom_dir is None:
             raise ValueError("rom_dir needs to be defined in config")
 
-        cache_file = self.config.get("rommover", {}).get("cache_file", None)
-        if cache_file is None:
-            cache_file = os.path.join(os.getcwd(), f"cache ({platform}).json")
+        cache_dir = self.config.get("dirs", {}).get("cache_dir", os.getcwd())
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+
+        cache_file = os.path.join(cache_dir, f"cache ({platform}).json")
 
         if os.path.exists(cache_file):
             cache = load_json(cache_file)
