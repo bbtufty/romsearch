@@ -9,6 +9,7 @@ from pathvalidate import sanitize_filename
 
 def setup_logger(log_level,
                  script_name,
+                 log_dir,
                  additional_dir="",
                  max_logs=9,
                  ):
@@ -18,6 +19,7 @@ def setup_logger(log_level,
     Parameters:
         log_level (str): The log level to use
         script_name (str): The name of the script
+        log_dir (str): The directory to save logs to
         additional_dir (str): Any additional directories to keep log files tidy
         max_logs (int): Maximum number of log files to keep
 
@@ -29,10 +31,9 @@ def setup_logger(log_level,
     additional_dir = [sanitize_filename(f) for f in additional_dir.split(os.path.sep)]
 
     if os.environ.get('DOCKER_ENV'):
-        config_dir = os.getenv('CONFIG_DIR', '/config')
-        log_dir = os.path.join(config_dir, "logs", script_name, *additional_dir)
+        log_dir = os.path.join(log_dir, script_name, *additional_dir)
     else:
-        log_dir = os.path.join(os.getcwd(), "logs", script_name, *additional_dir)
+        log_dir = os.path.join(log_dir, script_name, *additional_dir)
 
     if log_level not in ['debug', 'info', 'critical']:
         log_level = 'info'
@@ -43,7 +44,7 @@ def setup_logger(log_level,
         os.makedirs(log_dir)
 
     # Define the log file path, and sanitize if needs be
-    log_file = f"{log_dir}/{script_name}.log"
+    log_file = os.path.join(log_dir, f"{script_name}.log")
 
     # Check if log file already exists
     if os.path.isfile(log_file):
@@ -54,7 +55,7 @@ def setup_logger(log_level,
                 if os.path.exists(new_log):
                     os.remove(new_log)
                 os.rename(old_log, new_log)
-        os.rename(log_file, f"{log_dir}/{script_name}.log.1")
+        os.rename(log_file, os.path.join(log_dir, f"{script_name}.log.1"))
 
     # Create a logger object with the script name
     logger = logging.getLogger(script_name)

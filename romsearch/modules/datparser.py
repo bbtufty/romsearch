@@ -62,13 +62,6 @@ class DATParser:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        if logger is None:
-            logger = setup_logger(log_level="info",
-                                  script_name=f"DATParser",
-                                  additional_dir=platform,
-                                  )
-        self.logger = logger
-
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
 
@@ -76,8 +69,17 @@ class DATParser:
             config = load_yml(config_file)
         self.config = config
 
-        self.dat_dir = self.config.get("dat_dir", None)
-        self.parsed_dat_dir = self.config.get("parsed_dat_dir", None)
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"DATParser",
+                                  log_dir=log_dir,
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
+
+        self.dat_dir = self.config.get("dirs", {}).get("dat_dir", None)
+        self.parsed_dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
 
         self.platform = platform
 

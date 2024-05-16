@@ -42,8 +42,18 @@ class ROMSearch:
             config = load_yml(config_file)
         self.config = config
 
+        # Pull in directories from the yaml file
+        self.raw_dir = self.config.get("dirs", {}).get("raw_dir", None)
+        if self.raw_dir is None:
+            raise ValueError("raw_dir needs to be defined in config")
+
+        self.rom_dir = self.config.get("dirs", {}).get("rom_dir", None)
+        if self.rom_dir is None:
+            raise ValueError("rom_dir needs to be defined in config")
+
         if logger is None:
-            logger = setup_logger("info", "ROMSearch")
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger = setup_logger("info", script_name="ROMSearch", log_dir=log_dir)
         self.logger = logger
 
         # Read in the various pre-set configs we've got
@@ -59,15 +69,6 @@ class ROMSearch:
             regex_config = load_yml(regex_file)
         self.regex_config = regex_config
 
-        # Pull in variables from the yaml file
-        self.raw_dir = self.config.get("raw_dir", None)
-        if self.raw_dir is None:
-            raise ValueError("raw_dir needs to be defined in config")
-
-        self.rom_dir = self.config.get("rom_dir", None)
-        if self.rom_dir is None:
-            raise ValueError("rom_dir needs to be defined in config")
-
         # Pull out platforms, make sure they're all valid
         platforms = self.config.get("platforms", None)
         if platforms is None:
@@ -80,16 +81,15 @@ class ROMSearch:
         self.platforms = platforms
 
         # Which modules to run
-        self.run_romdownloader = self.config.get("run_romdownloader", True)
-        self.run_datparser = self.config.get("run_datparser", True)
-        self.run_dupeparser = self.config.get("run_dupeparser", True)
-        self.run_romchooser = self.config.get("run_romchooser", True)
-        self.run_rommover = self.config.get("run_rommover", True)
+        self.run_romdownloader = self.config.get("romsearch", {}).get("run_romdownloader", True)
+        self.run_datparser = self.config.get("romsearch", {}).get("run_datparser", True)
+        self.run_dupeparser = self.config.get("romsearch", {}).get("run_dupeparser", True)
+        self.run_romchooser = self.config.get("romsearch", {}).get("run_romchooser", True)
+        self.run_rommover = self.config.get("romsearch", {}).get("run_rommover", True)
+        self.dry_run = self.config.get("romsearch", {}).get("dry_run", False)
 
         # Finally, the discord URL if we're sending messages
         self.discord_url = self.config.get("discord", {}).get("webhook_url", None)
-
-        self.dry_run = self.config.get("romsearch", {}).get("dry_run", False)
 
     def run(self):
         """Run ROMSearch"""

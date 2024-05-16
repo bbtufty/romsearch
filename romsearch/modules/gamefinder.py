@@ -70,13 +70,6 @@ class GameFinder:
             logger (logging.Logger, optional): Logger instance. Defaults to None.
         """
 
-        if logger is None:
-            logger = setup_logger(log_level="info",
-                                  script_name=f"GameFinder",
-                                  additional_dir=platform,
-                                  )
-        self.logger = logger
-
         if platform is None:
             raise ValueError("platform must be specified")
         self.platform = platform
@@ -87,6 +80,15 @@ class GameFinder:
         if config is None:
             config = load_yml(config_file)
         self.config = config
+
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"GameFinder",
+                                  log_dir=log_dir,
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
 
         # Pull in specifics to include/exclude
         self.include_games = self.config.get("include_games", None)
@@ -106,7 +108,7 @@ class GameFinder:
         self.regex_config = regex_config
 
         # Info for dupes
-        self.dupe_dir = config.get("dupe_dir", None)
+        self.dupe_dir = config.get("dirs", {}).get("dupe_dir", None)
         self.filter_dupes = config.get("gamefinder", {}).get("filter_dupes", True)
 
     def run(self,

@@ -7,6 +7,9 @@ Fixes
 General
 ~~~~~~~
 
+- Overhauled directory handling in the config file
+- ROMSearch now has more clearly defined options
+- Exposed log directory and cache directory
 - Overhauled logging system to avoid unnecessary file bloat and I/O. Speed ups of about a factor 3
 - Overhauled how config files are read in to avoid unneccesary I/O. Speed ups of about a factor 2
 

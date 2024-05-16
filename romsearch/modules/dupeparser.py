@@ -46,13 +46,6 @@ class DupeParser:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        if logger is None:
-            logger = setup_logger(log_level="info",
-                                  script_name=f"DupeParser",
-                                  additional_dir=platform,
-                                  )
-        self.logger = logger
-
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
 
@@ -60,14 +53,23 @@ class DupeParser:
             config = load_yml(config_file)
         self.config = config
 
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"DupeParser",
+                                  log_dir=log_dir,
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
+
         self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
         self.use_retool = self.config.get("dupeparser", {}).get('use_retool', True)
 
-        self.parsed_dat_dir = self.config.get("parsed_dat_dir", None)
+        self.parsed_dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
         if self.use_dat and self.parsed_dat_dir is None:
             raise ValueError("Must specify parsed_dat_dir if using dat files")
 
-        self.dupe_dir = self.config.get("dupe_dir", None)
+        self.dupe_dir = self.config.get("dirs", {}).get("dupe_dir", None)
         if self.dupe_dir is None:
             raise ValueError("dupe_dir should be specified in config file")
 

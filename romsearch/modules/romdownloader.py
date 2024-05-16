@@ -80,13 +80,6 @@ class ROMDownloader:
             raise ValueError("platform must be specified")
         self.platform = platform
 
-        if logger is None:
-            logger = setup_logger(log_level="info",
-                                  script_name=f"ROMDownloader",
-                                  additional_dir=platform,
-                                  )
-        self.logger = logger
-
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
 
@@ -94,7 +87,16 @@ class ROMDownloader:
             config = load_yml(config_file)
         self.config = config
 
-        out_dir = self.config.get("raw_dir", None)
+        if logger is None:
+            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            logger = setup_logger(log_level="info",
+                                  script_name=f"ROMDownloader",
+                                  log_dir=log_dir,
+                                  additional_dir=platform,
+                                  )
+        self.logger = logger
+
+        out_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if out_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
         self.out_dir = os.path.join(out_dir, platform)
