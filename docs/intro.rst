@@ -6,7 +6,7 @@ ROMSearch
     :target: https://pypi.org/pypi/romsearch/
 .. image:: https://img.shields.io/pypi/pyversions/romsearch.svg?label=Python&color=yellow&style=flat-square
     :target: https://pypi.org/pypi/romsearch/
-.. image:: https://img.shields.io/github/actions/workflow/status/bbtufty/romsearch/build_test.yaml?branch=main&style=flat-square
+.. image:: https://img.shields.io/github/actions/workflow/status/bbtufty/romsearch/build.yaml?branch=main&style=flat-square
     :target: https://github.com/bbtufty/romsearch/actions
 .. image:: https://readthedocs.org/projects/romsearch/badge/?version=latest&style=flat-square
    :target: https://romsearch.readthedocs.io/en/latest/

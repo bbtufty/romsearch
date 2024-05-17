@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath('..'))
 project = 'romsearch'
 copyright = '2024, bbtufty'
 author = 'bbtufty'
-release = '0.0.5.post1'
+release = '0.0.5.post2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
