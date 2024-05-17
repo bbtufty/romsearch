@@ -1,4 +1,8 @@
 import copy
+import os
+import time
+from datetime import datetime
+
 
 def split(full_list, chunk_size=10):
     """Split a list in chunks of size chunk_size
@@ -53,3 +57,18 @@ def get_parent_name(game_name,
         raise ValueError("Could not find a parent name!")
 
     return found_parent_name
+
+
+def get_file_time(f,
+                  datetime_format,
+                  ):
+    """Get created file time from the file itself"""
+
+    if os.path.exists(f):
+        ti_m = os.path.getmtime(f)
+        date_ti_m = datetime.strptime(time.ctime(ti_m), "%a %b %d %H:%M:%S %Y")
+    else:
+        date_ti_m = datetime(year=1900, month=1, day=1, hour=0, minute=0, second=0)
+    date_ti_m_str = date_ti_m.strftime(format=datetime_format)
+
+    return date_ti_m_str

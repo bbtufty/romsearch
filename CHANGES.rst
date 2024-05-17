@@ -1,8 +1,26 @@
 0.0.5 (Unreleased)
 ==================
 
+Features
+--------
+
+- ROMSearch now has two modes: the first is `filter_then_download` (default), which will use the dat file to filter,
+  then only download relevant files. The second is `download_then_filter`, which will download everything and then
+  filter. For data hoarders!
+
 Fixes
 -----
+
+GameFinder
+~~~~~~~~~~
+
+- Ensure includes/excludes works the same as it does for ROMDownloader
+- Includes/excludes will now search dupes as well, for consistency
+
+ROMDownloader
+~~~~~~~~~~~~~
+
+- Ensure output directory exists before downloading files
 
 General
 ~~~~~~~
