@@ -10,6 +10,8 @@ ROMSearch is designed as a simple-to-inferface with tool that will allow you to 
 local) location, figure out the best ROM, and move it cleanly to a folder that can imported into an emulator. ROMSearch
 is supposed to be a one-shot program to get you from files online to playing games (which is what we want, right?).
 
+ROMSearch also has a GUI! Currently only for Windows, but makes setting up configurations simple and clean.
+
 ROMSearch offers the ability to:
 
 * Sync from remote folder using rclone
