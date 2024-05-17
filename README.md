@@ -3,7 +3,7 @@
 [![](https://img.shields.io/pypi/v/romsearch.svg?label=PyPI&style=flat-square)](https://pypi.org/pypi/romsearch/)
 [![](https://img.shields.io/pypi/pyversions/romsearch.svg?label=Python&color=yellow&style=flat-square)](https://pypi.org/pypi/romsearch/)
 [![Docs](https://readthedocs.org/projects/romsearch/badge/?version=latest&style=flat-square)](https://romsearch.readthedocs.io/en/latest/)
-[![Actions](https://img.shields.io/github/actions/workflow/status/bbtufty/romsearch/build_test.yaml?branch=main&style=flat-square)](https://github.com/bbtufty/romsearch/actions)
+[![Actions](https://img.shields.io/github/actions/workflow/status/bbtufty/romsearch/build.yaml?branch=main&style=flat-square)](https://github.com/bbtufty/romsearch/actions)
 [![License](https://img.shields.io/badge/license-GNUv3-blue.svg?label=License&style=flat-square)](LICENSE)
 
 ROMSearch is designed as a simple-to-inferface with tool that will allow you to pull ROM files from some remote (or
