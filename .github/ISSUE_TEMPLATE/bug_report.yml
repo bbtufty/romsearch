@@ -11,9 +11,9 @@ body:
       label: Installation
       description: Are you using pip or GitHub? Which GitHub tag?
       options:
+        - Windows executable
         - pip
-        - GitHub - main branch
-        - GitHub - dev branch
+        - GitHub
     validations:
       required: true
   - type: textarea

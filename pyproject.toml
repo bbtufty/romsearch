@@ -38,6 +38,7 @@ dependencies = [
     "numpy",
     "packaging",
     "pathvalidate",
+    "PySide6",
     "pyyaml",
     "xmltodict",
 ]

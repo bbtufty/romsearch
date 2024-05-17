@@ -24,8 +24,11 @@ number of switches that may be useful in different use cases.
 **ROMSearch works in such a way that by default it will grab what it thinks is the best ROM file. You can disable
 many of the ways it decides this if you want to grab multiple files**
 
-As a minimal example, if we wanted to grab the entire US Catalog of PlayStation games and post what you've added to a
-Discord channel, the config file would look something like this: ::
+We generally recommend setting this up through the GUI. For details on how to do that, see the
+:doc:`GUI pages <gui/intro>`.
+
+If you want to manually edit these files, here is an example. If we wanted to grab the entire US Catalog of PlayStation
+games and post what you've added to a Discord channel, the config file would look something like this: ::
 
     dirs:
       raw_dir: 'F:\Emulation\raw'
