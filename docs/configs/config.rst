@@ -4,6 +4,9 @@ config
 
 The ``config.yml`` file defines how ROMSearch will do the run. As such, it has quite a number of options.
 
+As a note on includes, this will match something from the start of the string. So "Game Title VII" would include
+"Game Title VII", "Game Title VIII", but not "Game Title Anthology - Game Title VII", for example.
+
 Syntax: ::
 
     dirs:
@@ -31,6 +34,8 @@ Syntax: ::
         - [game]
 
     romsearch:                          # ROMSearch specific options
+      method: 'filter_then_download'    # OPTIONAL. Method to use, option are 'filter_then_download', or
+                                        #           'download_then_filter'. Defaults to 'filter_then_download'
       run_romdownloader: true           # OPTIONAL. Whether to run ROMDownloader. Defaults to true
       run_datparser: true               # OPTIONAL. Whether to run DATParser. Defaults to true
       run_dupeparser: true              # OPTIONAL. Whether to run DupeParsed. Defaults to true
@@ -58,15 +63,15 @@ Syntax: ::
     romchooser:                         # ROMChooser specific options
       dry_run: false                    # OPTIONAL. Set to true to not make any changes to filesystem. Defaults to false
       use_best_version: true            # OPTIONAL. Whether to choose only what ROMChooser decides is the best version.
-                                                    Defaults to true
+                                        #           Defaults to true
       allow_multiple_regions: false     # OPTIONAL. If true, will allow files from multiple regions, else will choose the
-                                                    highest region in the list. Defaults to false
+                                        #           highest region in the list. Defaults to false
       filter_regions: true              # OPTIONAL. Whether to filter by region or not. Defaults to true
       filter_languages: true            # OPTIONAL. Whether to filter by language or not. Defaults to true
       bool_filters: "all_but_games"     # OPTIONAL. Can filter out non-games by various dat categories. If you want to
-                                                    include e.g. just games and applications, set to
-                                                    ['games', 'applications']. Defaults to 'all_but_games', which will
-                                                    remove everything except games
+                                        #           include e.g. just games and applications, set to
+                                        #           ['games', 'applications']. Defaults to 'all_but_games', which will
+                                        #           remove everything except games
 
     discord:                            # OPTIONAL. If defined, supply a webhook URL so that ROMSearch can post Discord
       webhook_url: [webhook_url]        #           notifications

@@ -27,6 +27,11 @@ ROMSearch offers the ability to:
 To get started, see the :doc:`installation <installation>` and :doc:`configuration <configuration>` pages. For the
 philosophy behind how ROMSearch chooses a ROM, see :doc:`1G1R <1g1r>`.
 
+ROMSearch offers two modes: the default is "filter, then download" which will use the .dat file to find the best ROMs
+and only download those. For data hoarders, we also offer a "download, then filter" option, which will download
+everything and then filter from the downloaded files. For more details, see the
+:doc:`ROMSearch module docs <modules/romsearch>`.
+
 Currently, ROMSearch is in early development, and so many features may be added over time. At the moment, ROMSearch
 has the capability for:
 

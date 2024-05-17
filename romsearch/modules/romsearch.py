@@ -1,5 +1,9 @@
+import copy
 import glob
 import os
+import re
+
+import numpy as np
 
 import romsearch
 from .datparser import DATParser
@@ -10,11 +14,18 @@ from .romdownloader import ROMDownloader
 from .rommover import ROMMover
 from .romparser import ROMParser
 from ..util import (load_yml,
+                    load_json,
                     setup_logger,
                     discord_push,
                     split,
                     get_short_name,
+                    get_file_time,
                     )
+
+ALLOWED_ROMSEARCH_METHODS = [
+    "filter_then_download",
+    "download_then_filter",
+]
 
 
 class ROMSearch:
@@ -80,6 +91,8 @@ class ROMSearch:
                 raise ValueError(f"Platforms should be any of {self.default_config['platforms']}, not {platform}")
         self.platforms = platforms
 
+        self.romsearch_method = self.config.get("romsearch", {}).get("method", "filter_then_download")
+
         # Which modules to run
         self.run_romdownloader = self.config.get("romsearch", {}).get("run_romdownloader", True)
         self.run_datparser = self.config.get("romsearch", {}).get("run_datparser", True)
@@ -96,8 +109,6 @@ class ROMSearch:
 
         self.logger.info(f"Looping over platforms: {', '.join(self.platforms)}")
 
-        all_roms_per_platform = {}
-
         for platform in self.platforms:
 
             self.logger.info(f"Running ROMSearch for {platform}")
@@ -107,37 +118,6 @@ class ROMSearch:
             platform_config = load_yml(platform_config_file)
 
             raw_dir = os.path.join(self.raw_dir, platform)
-
-            # Run the rclone sync
-            if self.run_romdownloader:
-                downloader = ROMDownloader(platform=platform,
-                                           config=self.config,
-                                           platform_config=platform_config,
-                                           logger=self.logger,
-                                           )
-                downloader.run()
-
-            # Get the original directory, so we can safely move back after
-            orig_dir = os.getcwd()
-            os.chdir(raw_dir)
-
-            all_files = glob.glob("*.zip")
-            all_files.sort()
-
-            # Parse this into a dictionary with some useful info for each file
-            all_file_dict = {}
-            for f in all_files:
-                short_name = get_short_name(f,
-                                            regex_config=self.regex_config,
-                                            default_config=self.default_config,
-                                            )
-
-                all_file_dict[f] = {
-                    "short_name": short_name,
-                    "matched": False,
-                }
-
-            os.chdir(orig_dir)
 
             # Parse DAT files here, if we're doing that
             if self.run_datparser:
@@ -158,6 +138,58 @@ class ROMSearch:
                                          )
                 dupe_parser.run()
 
+            if self.romsearch_method == "download_then_filter":
+                # Run the rclone sync
+                if self.run_romdownloader:
+                    downloader = ROMDownloader(platform=platform,
+                                               config=self.config,
+                                               platform_config=platform_config,
+                                               logger=self.logger,
+                                               )
+                    downloader.run()
+
+                # Get the original directory, so we can safely move back after
+                orig_dir = os.getcwd()
+                os.chdir(raw_dir)
+
+                all_files = glob.glob("*.zip")
+                all_files.sort()
+
+                os.chdir(orig_dir)
+
+            elif self.romsearch_method == "filter_then_download":
+
+                if not self.run_datparser:
+                    raise ValueError("If using filter, then download method, you must run DATParser")
+
+                parsed_dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
+                if parsed_dat_dir is None:
+                    raise ValueError("parsed_dat_dir needs to be defined in config")
+
+                parsed_dat_file = os.path.join(parsed_dat_dir, f"{platform} (dat parsed).json")
+                parsed_dat = load_json(parsed_dat_file)
+
+                all_files = [f"{f}.zip" for f in parsed_dat]
+                all_files = np.unique(all_files)
+                all_files.sort()
+
+            else:
+
+                raise ValueError(f"ROMSearch method should be one of {ALLOWED_ROMSEARCH_METHODS}")
+
+            # Parse this into a dictionary with some useful info for each file
+            all_file_dict = {}
+            for f in all_files:
+                short_name = get_short_name(f,
+                                            regex_config=self.regex_config,
+                                            default_config=self.default_config,
+                                            )
+
+                all_file_dict[f] = {
+                    "short_name": short_name,
+                    "matched": False,
+                }
+
             # Find files
             finder = GameFinder(platform=platform,
                                 config=self.config,
@@ -170,6 +202,7 @@ class ROMSearch:
             self.logger.info(f"Searching through {len(all_games)} game(s)")
 
             all_roms_moved = []
+            all_roms_dict = {}
 
             for i, game in enumerate(all_games):
 
@@ -222,13 +255,56 @@ class ROMSearch:
                 rom_files = [f for f in rom_dict]
                 self.logger.info(f"Found ROM file(s): {', '.join(rom_files)}")
 
-                if self.dry_run:
-                    self.logger.info("Dry run, will not move any files")
-                    continue
+                # Save to a big dictionary, since we'll move all at once
+                all_roms_dict[game] = rom_dict
 
-                if not self.run_rommover:
-                    self.logger.debug("ROMMover is not running, will not move anything")
-                    continue
+            for f in all_file_dict:
+                if not all_file_dict[f]["matched"]:
+                    self.logger.debug(f"{f} not matched to anything")
+
+            if self.dry_run:
+                self.logger.info("Dry run, will not move any files")
+                continue
+
+            if not self.run_rommover:
+                self.logger.debug("ROMMover is not running, will not move anything")
+                continue
+
+            # If we filter then download, this is where we download
+            if self.romsearch_method == "filter_then_download":
+                all_files = []
+                for game in all_roms_dict:
+
+                    # Make sure we're using the regex escaped version for all the strings
+                    fs = [re.escape(f) for f in all_roms_dict[game]]
+
+                    all_files.extend(fs)
+
+                if self.run_romdownloader:
+                    downloader = ROMDownloader(platform=platform,
+                                               config=self.config,
+                                               platform_config=platform_config,
+                                               logger=self.logger,
+                                               override_includes=all_files,
+                                               override_excludes=[],
+                                               include_filter_wildcard=False,
+                                               )
+                    downloader.run()
+
+                # Replace the file time with the correct one on disk
+                for game in all_roms_dict:
+
+                    for f in all_roms_dict[game]:
+                        full_filename = os.path.join(self.raw_dir, platform, f)
+
+                        file_mod_time = get_file_time(full_filename,
+                                                      datetime_format=self.default_config["datetime_format"],
+                                                      )
+                        all_roms_dict[game][f]["file_mod_time"] = file_mod_time
+
+            for game in all_roms_dict:
+
+                rom_dict = all_roms_dict[game]
 
                 mover = ROMMover(platform=platform,
                                  game=game,
@@ -238,9 +314,6 @@ class ROMSearch:
                                  )
                 roms_moved = mover.run(rom_dict)
                 all_roms_moved.extend(roms_moved)
-
-            if len(all_roms_moved) > 0:
-                all_roms_per_platform[platform] = all_roms_moved
 
             # Post these to Discord in chunks of 10
             if self.discord_url is not None and len(all_roms_moved) > 0:
@@ -259,9 +332,5 @@ class ROMSearch:
                                      name="ROMSearch",
                                      fields=fields,
                                      )
-
-            for f in all_file_dict:
-                if not all_file_dict[f]["matched"]:
-                    self.logger.warning(f"{f} not matched to anything")
 
         return True

@@ -133,24 +133,6 @@ class GameFinder:
                               regex_config=self.regex_config,
                               )
 
-        # Remove any excluded files
-        if self.exclude_games is not None:
-            games_to_remove = self.get_game_matches(games,
-                                                    self.exclude_games,
-                                                    )
-
-            if games_to_remove is not None:
-                for i in sorted(games_to_remove, reverse=True):
-                    games.pop(i)
-
-        # Include only included files
-        if self.include_games is not None:
-            games_to_include = self.get_game_matches(games,
-                                                     self.include_games,
-                                                     )
-            if games_to_include is not None:
-                games = np.asarray(games)[games_to_include]
-
         # We need to trim down dupes here. Otherwise, the
         #  dict is just the list we already have
         game_dict = None
@@ -166,10 +148,41 @@ class GameFinder:
                 game_dict[game] = {"priority": 1,
                                    }
 
+        # Remove any excluded files
+        if self.exclude_games is not None:
+            games_to_remove = self.get_game_matches(game_dict,
+                                                    self.exclude_games,
+                                                    )
+            if games_to_remove is not None:
+                for g in games_to_remove:
+                    del game_dict[g]
+
+        # Include only included files
+        if self.include_games is not None:
+
+            games_to_include = self.get_game_matches(game_dict,
+                                                     self.include_games,
+                                                     )
+            if games_to_include is not None:
+
+                filtered_game_dict = {}
+                for g in games_to_include:
+                    filtered_game_dict[g] = game_dict[g]
+
+                game_dict = copy.deepcopy(filtered_game_dict)
+
         return game_dict
 
-    def get_game_matches(self, files, games_to_match):
-        """Get files that match an input list (games_to_match)"""
+    def get_game_matches(self,
+                         game_dict,
+                         games_to_match,
+                         ):
+        """Get files that match an input dictionary (so as to properly handle dupes
+
+        Args:
+            - game_dict (dict): Dictionary of games to match against
+            - games_to_match (list): List of values to match against
+        """
         games_matched = []
 
         if isinstance(games_to_match, dict):
@@ -182,22 +195,41 @@ class GameFinder:
 
         games_matched.extend(games_to_match)
 
-        idx = []
-        for i, f in enumerate(files):
+        game_dict_keys = []
+        for g in game_dict:
             found_f = False
-            # Search within each item since the matches might not be exact
+
             for game_matched in games_matched:
 
                 if found_f:
                     continue
 
-                re_find = re.findall(f"{game_matched}*", f)
+                # Look in the group name
+                re_find = re.findall(f"^({re.escape(game_matched)}).*", g)
 
                 if len(re_find) > 0:
-                    idx.append(i)
+                    game_dict_keys.append(g)
                     found_f = True
 
-        return idx
+                # If not found, look in the dupe names
+                if not found_f:
+                    for g_d in game_dict[g]:
+
+                        if found_f:
+                            continue
+
+                        re_find = re.findall(f"^({re.escape(game_matched)}).*", g_d)
+
+                        if len(re_find) > 0:
+                            game_dict_keys.append(g)
+                            found_f = True
+
+        game_dict_keys = np.unique(game_dict_keys)
+
+        if len(game_dict_keys) == 0:
+            game_dict_keys = None
+
+        return game_dict_keys
 
     def get_filter_dupes(self, games):
         """Parse down a list of files based on an input dupe list"""

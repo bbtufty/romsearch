@@ -13,8 +13,8 @@ from ..util import (setup_logger,
 
 
 def add_rclone_filter(pattern=None,
-                      # bracketed_pattern=None,
                       filter_type="include",
+                      include_wildcard=True,
                       ):
     if filter_type == "include":
         filter_str = "+"
@@ -26,14 +26,11 @@ def add_rclone_filter(pattern=None,
     # rclone wants double curly braces which we need to escape in python strings (yum)
     filter_pattern = ""
 
-    # # Add in non-bracketed stuff (i.e. game names) at the start
-    # if non_bracketed_pattern is not None:
-    #     filter_pattern += f"{{{{{non_bracketed_pattern}}}}}"
-    #
-    # filter_pattern += "*"
-
     if pattern is not None:
-        filter_pattern += f"{{{{{pattern}}}}}*"
+        filter_pattern += f"{{{{{pattern}}}}}"
+
+    if include_wildcard:
+        filter_pattern += "*"
 
     cmd = f' --filter "{filter_str} {filter_pattern}"'
 
@@ -63,6 +60,9 @@ class ROMDownloader:
                  config=None,
                  platform_config=None,
                  logger=None,
+                 override_includes=None,
+                 override_excludes=None,
+                 include_filter_wildcard=True,
                  ):
         """Downloader tool via rclone
 
@@ -74,6 +74,12 @@ class ROMDownloader:
             config (dict, optional): Configuration dictionary. Defaults to None
             platform_config (dict, optional): Platform configuration dictionary. Defaults to None
             logger (logging.Logger, optional): Logger instance. Defaults to None
+            override_includes (list, optional): If set, will override the config includes with custom
+                ones. Defaults to None.
+            override_excludes (list, optional): If set, will override the config excludes with custom
+                ones. Defaults to None.
+            include_filter_wildcard (bool, optional): If set, will include wildcards in rclone filters. Defaults to
+                True.
         """
 
         if platform is None:
@@ -107,6 +113,10 @@ class ROMDownloader:
             include_games = include_games.get(platform, None)
         else:
             include_games = copy.deepcopy(include_games)
+
+        if override_includes is not None:
+            include_games = copy.deepcopy(override_includes)
+
         self.include_games = include_games
 
         exclude_games = self.config.get("exclude_games", None)
@@ -114,6 +124,10 @@ class ROMDownloader:
             exclude_games = exclude_games.get(platform, None)
         else:
             exclude_games = copy.deepcopy(exclude_games)
+
+        if override_excludes is not None:
+            exclude_games = copy.deepcopy(override_excludes)
+
         self.exclude_games = exclude_games
 
         remote_name = self.config.get("romdownloader", {}).get("remote_name", None)
@@ -122,7 +136,14 @@ class ROMDownloader:
         self.remote_name = remote_name
 
         sync_all = self.config.get("romdownloader", {}).get("sync_all", True)
+
+        # If we have includes or excludes, force sync all False
+        if self.include_games is not None or self.exclude_games is not None:
+            sync_all = False
+
         self.sync_all = sync_all
+
+        self.include_filter_wildcard = include_filter_wildcard
 
         # Read in the specific platform configuration
         mod_dir = os.path.dirname(romsearch.__file__)
@@ -213,6 +234,7 @@ class ROMDownloader:
             if pattern:
                 cmd += add_rclone_filter(pattern=pattern,
                                          filter_type="exclude",
+                                         include_wildcard=self.include_wildcard,
                                          )
 
             # Now onto positive filters
@@ -230,6 +252,7 @@ class ROMDownloader:
             if pattern:
                 cmd += add_rclone_filter(pattern=pattern,
                                          filter_type="include",
+                                         include_wildcard=self.include_filter_wildcard,
                                          )
 
                 cmd += ' --filter "- *"'
@@ -238,7 +261,10 @@ class ROMDownloader:
             self.logger.info(f"Dry run, would rclone_sync with:")
             self.logger.info(cmd)
         else:
-            # os.system(cmd)
+
+            if not os.path.exists(self.out_dir):
+                os.makedirs(self.out_dir)
+
             # Execute the command and capture the output
             with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
                 for line in process.stdout:
@@ -267,6 +293,8 @@ class ROMDownloader:
 
         if len(items_added) > 0:
 
+            items_added.sort()
+
             for items_split in split(items_added, chunk_size=max_per_message):
 
                 fields = []
@@ -283,6 +311,8 @@ class ROMDownloader:
                                  )
 
         if len(items_deleted) > 0:
+
+            items_deleted.sort()
 
             for items_split in split(items_deleted, chunk_size=max_per_message):
 

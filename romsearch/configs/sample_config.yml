@@ -21,6 +21,7 @@ include_games:
     - "Chrono Trigger"
 
 romsearch:
+  method: "filter_then_download"
   run_romdownloader: true
   run_datparser: true
   run_dupeparser: true
