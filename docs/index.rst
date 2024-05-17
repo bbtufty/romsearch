@@ -11,6 +11,7 @@
    :caption: Documentation
 
    installation
+   gui/intro
    configuration
    1g1r
    modules

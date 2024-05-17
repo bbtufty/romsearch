@@ -25,7 +25,8 @@ ROMSearch offers the ability to:
 * Discord integration so users can see the results of runs in a simple, clean way
 
 To get started, see the :doc:`installation <installation>` and :doc:`configuration <configuration>` pages. For the
-philosophy behind how ROMSearch chooses a ROM, see :doc:`1G1R <1g1r>`.
+philosophy behind how ROMSearch chooses a ROM, see :doc:`1G1R <1g1r>`. Romsearch has a UI option which we recommend
+for most users. For this, see :doc:`the GUI pages <gui/intro>`.
 
 ROMSearch offers two modes: the default is "filter, then download" which will use the .dat file to find the best ROMs
 and only download those. For data hoarders, we also offer a "download, then filter" option, which will download

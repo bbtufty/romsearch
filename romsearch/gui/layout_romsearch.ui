@@ -1,0 +1,2182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RomSearch</class>
+ <widget class="QMainWindow" name="RomSearch">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>950</width>
+    <height>785</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>950</width>
+    <height>785</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>ROMSearch</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidgetModules">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tabConfig">
+       <attribute name="title">
+        <string>Config</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTabWidget" name="tabWidgetConfig">
+          <property name="tabShape">
+           <enum>QTabWidget::TabShape::Rounded</enum>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="tabsClosable">
+           <bool>false</bool>
+          </property>
+          <property name="tabBarAutoHide">
+           <bool>false</bool>
+          </property>
+          <widget class="QWidget" name="tabConfigMain">
+           <attribute name="title">
+            <string>Main</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigMain">
+              <item row="0" column="1">
+               <widget class="Line" name="lineSepConfigDirsModules">
+                <property name="frameShadow">
+                 <enum>QFrame::Shadow::Plain</enum>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayoutConfigRomsearchDirs">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigRomsearchDirs">
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomsearchDirsTitle">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>ROMSearch Directory Locations</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomsearchDirs">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomsearchDirsDescription">
+                    <property name="text">
+                     <string>Locations for the config files and various directories. Raw file and ROM directory must be set, the others will default to the current working directory</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchDirsUpper">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigConfigFile">
+                    <property name="statusTip">
+                     <string>Name of the config file</string>
+                    </property>
+                    <property name="text">
+                     <string>Config File</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="lineEditConfigConfigFile">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Name of the config file</string>
+                    </property>
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRawDir">
+                    <property name="statusTip">
+                     <string>Location for the raw, downloaded files</string>
+                    </property>
+                    <property name="text">
+                     <string>Raw File Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigRawDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigRawDir">
+                      <property name="statusTip">
+                       <string>Location for the raw, downloaded files</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="placeholderText">
+                       <string>raw</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigRawDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomDir">
+                    <property name="statusTip">
+                     <string>Location for the final, sorted ROM files</string>
+                    </property>
+                    <property name="text">
+                     <string>ROM Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigRomDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigRomDir">
+                      <property name="statusTip">
+                       <string>Location for the final, sorted ROM files</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="placeholderText">
+                       <string>roms</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigRomDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigDatDir">
+                    <property name="statusTip">
+                     <string>Location for raw .dat files</string>
+                    </property>
+                    <property name="text">
+                     <string>DAT Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigDatDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigDatDir">
+                      <property name="statusTip">
+                       <string>Location for raw .dat files</string>
+                      </property>
+                      <property name="text">
+                       <string>dats</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigDatDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigParsedDatDir">
+                    <property name="statusTip">
+                     <string>Location for parsed .dat files and clonelists</string>
+                    </property>
+                    <property name="text">
+                     <string>Parsed DAT/Clonelist Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigParsedDatDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigParsedDatDir">
+                      <property name="statusTip">
+                       <string>Location for parsed .dat files and clonelists</string>
+                      </property>
+                      <property name="text">
+                       <string>parsed_dats</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigParsedDatDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigDupeDir">
+                    <property name="statusTip">
+                     <string>Location for dupe files</string>
+                    </property>
+                    <property name="text">
+                     <string>Dupe Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigDupeDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigDupeDir">
+                      <property name="statusTip">
+                       <string>Location for dupe files</string>
+                      </property>
+                      <property name="text">
+                       <string>dupes</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigDupeDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigCacheDir">
+                    <property name="statusTip">
+                     <string>Location for the moved files cache</string>
+                    </property>
+                    <property name="text">
+                     <string>Cache Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigCacheDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigCacheDir">
+                      <property name="statusTip">
+                       <string>Location for the moved files cache</string>
+                      </property>
+                      <property name="text">
+                       <string>cache</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigCacheDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigLogDir">
+                    <property name="statusTip">
+                     <string>Location for log files</string>
+                    </property>
+                    <property name="text">
+                     <string>Log Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigLogDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigLogDir">
+                      <property name="statusTip">
+                       <string>Location for log files</string>
+                      </property>
+                      <property name="text">
+                       <string>logs</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigLogDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchDirsLower">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="2">
+               <layout class="QHBoxLayout" name="horizontalLayoutConfigRomsearchModules">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigRomsearchModules">
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomsearchModulesTitle">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Which ROMSearch modules would you like to run?</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomsearchModules">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomsearchModulesDescription">
+                    <property name="text">
+                     <string>Check to include the various ROMSearch modules. By default, all are selected</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchModulesUpper">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunRomDownloader">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Run the ROMDownloader?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run ROMDownloader</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunDatParser">
+                    <property name="statusTip">
+                     <string>Run the DATParser?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run DATParser</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunDupeParser">
+                    <property name="statusTip">
+                     <string>Run the DupeParser?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run DupeParser</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunRomChooser">
+                    <property name="statusTip">
+                     <string>Run the ROMChooser?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run ROMChooser</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunRomMover">
+                    <property name="statusTip">
+                     <string>Run the ROMMover?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run ROMMover</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchModulesMiddle">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigDryRun">
+                    <property name="statusTip">
+                     <string>If checked, will not make any changes to filesystem. Default unchecked</string>
+                    </property>
+                    <property name="text">
+                     <string>Dry Run</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchModulesLower">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomsearchMethodTitle">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>What ROMSearch method would you like to use?</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomsearchMethod">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomsearchMethodDescription">
+                    <property name="text">
+                     <string>You can either filter all files from the dat file (default), or download first then filter (completionist)</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchMethodUpper">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButtonConfigRomsearchMethodFilterDownload">
+                    <property name="statusTip">
+                     <string>Filter files from dat first, then download (default)</string>
+                    </property>
+                    <property name="text">
+                     <string>Filter, then download</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                    <attribute name="buttonGroup">
+                     <string notr="true">radioButtonConfigRomsearchMethod</string>
+                    </attribute>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButtonConfigRomsearchMethodDownloadFilter">
+                    <property name="statusTip">
+                     <string>Download files first, then filter from the file list (completionist mode)</string>
+                    </property>
+                    <property name="text">
+                     <string>Download, then filter</string>
+                    </property>
+                    <attribute name="buttonGroup">
+                     <string notr="true">radioButtonConfigRomsearchMethod</string>
+                    </attribute>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomsearchMethodLower">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigPlatforms">
+           <attribute name="title">
+            <string>Platforms</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigPlatforms">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayoutConfigPlatforms">
+                <item>
+                 <widget class="QListWidget" name="listWidgetConfigPlatforms">
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::WinPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="dragDropMode">
+                   <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigPlatforms">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigPlatformsDescription">
+                  <item>
+                   <widget class="QLabel" name="labelConfigPlatformsDescriptionTitle">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Which platforms would you like to download ROMs for?</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigPlatformsDescription">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigPlatformsDescriptionBody">
+                    <property name="text">
+                     <string>The order here simply determines the order that ROMSearch will loop over. Check the box to include that platform, uncheck it to exclude</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigPlatformsDescription">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigRegionsLanguages">
+           <attribute name="title">
+            <string>Regions/Languages</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigRegionsLanguages">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayoutConfigRegionsLanguages">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigRegionsLanguagesRegions">
+                  <item>
+                   <widget class="QLabel" name="labelConfigRegionsLanguagesRegionsTitle">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Which regions would you like to download ROMs for?</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="ConfigRegionsLanguagesRegionsTitleDivider">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRegionsLanguagesRegionsDescription">
+                    <property name="text">
+                     <string>Order is important here! Higher in the list means more preferred. Drag boxes to rearrange. Check the box to include that platform, uncheck it to exclude</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRegionsLanguagesRegionsDescriptionDivider">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QListWidget" name="listWidgetConfigRegionsLanguagesRegions">
+                    <property name="frameShape">
+                     <enum>QFrame::Shape::WinPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="dragDropMode">
+                     <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRegionsLanguagesDivider">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigRegionsLanguagesLanguages">
+                  <item>
+                   <widget class="QLabel" name="labelConfigRegionsLanguagesLanguagesTitle">
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Which languages would you like to consider?</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignmentFlag::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRegionsLanguagesLanguagesTitleDivider">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRegionsLanguagesLanguagesDescription">
+                    <property name="text">
+                     <string>Order is important here! Higher in the list means more preferred. Drag boxes to rearrange. Check the box to include that language, uncheck it to exclude</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRegionsLanguagesLanguagesDescriptionDivider">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QListWidget" name="listWidgetConfigRegionsLanguagesLanguages">
+                    <property name="frameShape">
+                     <enum>QFrame::Shape::WinPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="dragDropMode">
+                     <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigIncludeExclude">
+           <attribute name="title">
+            <string>Includes/Excludes</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QLabel" name="labelConfigIncludeExcludeDescription">
+              <property name="text">
+               <string>Includes/excludes for each platform. Platforms will only appear here if they have been checked in the Platforms tab. Begin each separate entry with a new line</string>
+              </property>
+              <property name="wordWrap">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="lineConfigIncludeExcludeDescription">
+              <property name="frameShadow">
+               <enum>QFrame::Shadow::Plain</enum>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTabWidget" name="tabWidgetConfigIncludeExclude"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigRomDownloader">
+           <attribute name="title">
+            <string>ROMDownloader</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigRomDownloader">
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigRomDownloaderRight">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <spacer name="gridLayoutConfigRomDownloaderLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigRomDownloaderMiddle">
+                <item>
+                 <spacer name="verticalSpacerConfigRomDownloaderTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomDownloaderRemoteNameDividerTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigRomDownloaderRemoteNameTitle">
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Remote Name</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigRomDownloaderRemoteNameDescription">
+                  <property name="text">
+                   <string>Remote name that Rclone uses. Must be set to use ROMDownloader</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEditConfigRomDownloaderRemoteName">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>remote</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomDownloaderRemoteNameDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomDownloaderSyncAll">
+                  <property name="statusTip">
+                   <string>Whether to sync everything when running ROMDownloader or whether to filter files based on includes/excludes. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Sync All</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomDownloaderDryRunTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomDownloaderDryRun">
+                  <property name="statusTip">
+                   <string>If checked, will not make any changes to filesystem. Default unchecked</string>
+                  </property>
+                  <property name="text">
+                   <string>Dry Run</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomDownloaderDruRunBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRomDownloaderBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigDupeParser">
+           <attribute name="title">
+            <string>DupeParser</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigDupeParser">
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigDupeParserRight">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <spacer name="gridLayoutConfigDupeParserLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigDupeParserMiddle">
+                <item>
+                 <spacer name="verticalSpacerConfigDupeParserTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigDupeParserUseDatTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigDupeParserUseDat">
+                  <property name="statusTip">
+                   <string>Whether to use the dat file to figure out dupes. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use .dat</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigDupeParserUseRetoolTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigDupeParserUseRetool">
+                  <property name="statusTip">
+                   <string>Whether to use the retool clonelist to figure out dupes. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use retool</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigDupeParserUseRetoolBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigDupeParserBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigGameFinder">
+           <attribute name="title">
+            <string>GameFinder</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigGameFinder">
+              <item row="0" column="1">
+               <spacer name="gridLayoutConfigGameFinderLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigGameFinderMiddle">
+                <item>
+                 <spacer name="verticalSpacerConfigGameFinderTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigGameFinderFilterDupesDividerTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigGameFinderFilterDupes">
+                  <property name="statusTip">
+                   <string>Whether to filter dupes based on the DupeParser catalog. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Filter dupes</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigGameFinderFilterDupesDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigGameFinderBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigGameFinderRight">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigRomParser">
+           <attribute name="title">
+            <string>ROMParser</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigRomParser">
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigRomParserRight">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <spacer name="gridLayouConfigRomParserLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigRomParserMiddle">
+                <item>
+                 <spacer name="verticalSpacerConfigRomParserTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomParserUseDatTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomParserUseDat">
+                  <property name="statusTip">
+                   <string>Whether to use the dat file to parse ROM information. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use .dat</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomParserUseFilenamelTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomParserUseFilename">
+                  <property name="statusTip">
+                   <string>Whether to use the filename to parse ROM information. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use filename</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomParserUseFilenameBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRomParserBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigRomChooser">
+           <attribute name="title">
+            <string>ROMChooser</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_11">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigRomChooser">
+              <item row="0" column="1">
+               <widget class="Line" name="lineConfigRomChooserDivider">
+                <property name="frameShadow">
+                 <enum>QFrame::Shadow::Plain</enum>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Orientation::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigRomChooserSettings">
+                <item>
+                 <spacer name="verticalSpacerConfigRomChooserSettingsTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserUseBestVersionDividerTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomChooserUseBestVersion">
+                  <property name="statusTip">
+                   <string>Whether to only use the best ROM version per-region. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use best version?</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserUseBestVersionDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomChooserAllowMultipleRegions">
+                  <property name="statusTip">
+                   <string>Whether to allow multiple regions, or to just use the most preferred region. Default unchecked</string>
+                  </property>
+                  <property name="text">
+                   <string>Allow multiple regions?</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserFilterRegionsDividerTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomChooserFilterRegions">
+                  <property name="statusTip">
+                   <string>Whether to remove ROMs that don't fall into the selected region choices. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Filter regions?</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserFilterRegionsDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomChooserFilterLanguages">
+                  <property name="statusTip">
+                   <string>Whether to remove ROMs that don't fall into the selected language choices. Default checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Filter languages?</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserFilterLanguagesDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRomChooserSettingsMiddle">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomChooserDryRun">
+                  <property name="statusTip">
+                   <string>If checked, will not make any changes to filesystem. Default unchecked</string>
+                  </property>
+                  <property name="text">
+                   <string>Dry Run</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRomChooserSettingsBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigRomChooserDatFilters">
+                <item>
+                 <widget class="QLabel" name="labelConfigRomChooserDatFiltersTitle">
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Filter .dat categories</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserDatFiltersDivider">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigRomChooserDatFiltersDescription">
+                  <property name="text">
+                   <string>If the box is checked, ROM categories with that tag will be removed. By default, we remove anything that is not flagged as a game</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRomChooserDatFiltersTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayoutConfigRomChooserDatFiltersAll">
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayoutConfigRomChooserDatFiltersLeft">
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersGames">
+                      <property name="text">
+                       <string>Games</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersAddons">
+                      <property name="text">
+                       <string>Add-Ons</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersApplications">
+                      <property name="text">
+                       <string>Applications</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersAudio">
+                      <property name="text">
+                       <string>Audio</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersBadDumps">
+                      <property name="text">
+                       <string>Bad Dumps</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersConsole">
+                      <property name="text">
+                       <string>Console</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersBonusDiscs">
+                      <property name="text">
+                       <string>Bonus Discs</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersCoverdiscs">
+                      <property name="text">
+                       <string>Coverdiscs</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayoutConfigRomChooserDatFiltersRight">
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersDemos">
+                      <property name="text">
+                       <string>Demos</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersEducational">
+                      <property name="text">
+                       <string>Educational</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersManuals">
+                      <property name="text">
+                       <string>Manuals</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersMultimedia">
+                      <property name="text">
+                       <string>Multimedia</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersPirate">
+                      <property name="text">
+                       <string>Pirate</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersPreproduction">
+                      <property name="text">
+                       <string>Preproduction</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersPromotional">
+                      <property name="text">
+                       <string>Promotional</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersUnlicensed">
+                      <property name="text">
+                       <string>Unlicensed</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBoxConfigRomChooserDatFiltersVideo">
+                      <property name="text">
+                       <string>Video</string>
+                      </property>
+                      <property name="checked">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRomChooserDatFiltersBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigDiscord">
+           <attribute name="title">
+            <string>Discord</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigDiscord">
+              <item row="0" column="1">
+               <spacer name="gridLayoutConfigDiscordLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigDiscordMiddle">
+                <item>
+                 <spacer name="verticalSpacerConfigDiscordTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigDiscordWebhookUrlDividerTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigDiscordWebhookUrlTitle">
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Webhook URL</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigDiscordWebhookUrlDescription">
+                  <property name="text">
+                   <string>URL for Discord webhooks. Must be set for notifications to be sent</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEditConfigDiscordWebhookUrl">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>800</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigDiscordWebhookUrlDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigDiscordBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigDiscordRight">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayoutBottomButtons">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutBottomButtons">
+        <item>
+         <widget class="QPushButton" name="pushButtonExit">
+          <property name="minimumSize">
+           <size>
+            <width>130</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>Exit ROMSearch</string>
+          </property>
+          <property name="text">
+           <string>Exit</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacerBottomButtons">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonRunRomsearch">
+          <property name="minimumSize">
+           <size>
+            <width>130</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="statusTip">
+           <string>Run ROMSearch! Will automatically save the config file</string>
+          </property>
+          <property name="text">
+           <string>Run ROMSearch</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>950</width>
+     <height>33</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNewConfigFile"/>
+    <addaction name="actionLoadConfigFile"/>
+    <addaction name="actionSaveConfigFile"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionDocumentation"/>
+    <addaction name="actionIssues"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLoadConfigFile">
+   <property name="text">
+    <string>Load config file</string>
+   </property>
+   <property name="statusTip">
+    <string>Load config,yml file from disk</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="statusTip">
+    <string>Exit ROMSearch</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+   <property name="statusTip">
+    <string>View online documentation</string>
+   </property>
+  </action>
+  <action name="actionIssues">
+   <property name="text">
+    <string>Issues</string>
+   </property>
+   <property name="statusTip">
+    <string>Open a GitHub issue</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="statusTip">
+    <string>See About page</string>
+   </property>
+  </action>
+  <action name="actionNewConfigFile">
+   <property name="text">
+    <string>New config file</string>
+   </property>
+   <property name="statusTip">
+    <string>Create new config,yml file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionSaveConfigFile">
+   <property name="text">
+    <string>Save config file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="radioButtonConfigRomsearchMethod"/>
+ </buttongroups>
+</ui>

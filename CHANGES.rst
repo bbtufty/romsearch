@@ -4,6 +4,8 @@
 Features
 --------
 
+- ROMSearch now has a GUI! This currently is just used for a more friendly way to set the config file, but will
+  be built out in the future
 - ROMSearch now has two modes: the first is `filter_then_download` (default), which will use the dat file to filter,
   then only download relevant files. The second is `download_then_filter`, which will download everything and then
   filter. For data hoarders!
@@ -25,6 +27,8 @@ ROMDownloader
 General
 ~~~~~~~
 
+- Updates to .github workflows and templates
+- `bool_filters` in the config file is now `dat_filters` for clarity
 - Overhauled directory handling in the config file
 - ROMSearch now has more clearly defined options
 - Exposed log directory and cache directory

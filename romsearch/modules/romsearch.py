@@ -333,4 +333,6 @@ class ROMSearch:
                                      fields=fields,
                                      )
 
+        self.logger.info("Complete!")
+
         return True

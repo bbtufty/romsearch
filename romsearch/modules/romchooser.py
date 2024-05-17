@@ -11,7 +11,7 @@ from ..util import (setup_logger,
                     load_yml,
                     )
 
-BOOL_FILTERS = [
+DAT_FILTERS = [
     "add-ons",
     "applications",
     "audio",
@@ -373,19 +373,17 @@ class ROMChooser:
         self.language_preferences = language_preferences
 
         # Various filters. First are the boolean ones
-        bool_filters = self.config.get("romchooser", {}).get("bool_filters", "all_but_games")
-        if "all" in bool_filters:
-            all_bool_filters = copy.deepcopy(BOOL_FILTERS)
-            if "all_but" in bool_filters:
-                filter_to_remove = bool_filters.split("all_but_")[-1]
-                all_bool_filters.remove(filter_to_remove)
-            bool_filters = copy.deepcopy(all_bool_filters)
+        dat_filters = self.config.get("romchooser", {}).get("dat_filters", "all_but_games")
+        if "all" in dat_filters:
+            all_dat_filters = copy.deepcopy(DAT_FILTERS)
+            if "all_but" in dat_filters:
+                filter_to_remove = dat_filters.split("all_but_")[-1]
+                all_dat_filters.remove(filter_to_remove)
+            dat_filters = copy.deepcopy(all_dat_filters)
 
-        if isinstance(bool_filters, str):
-            all_bool_filters = [bool_filters]
-        else:
-            all_bool_filters = bool_filters
-        self.bool_filters = all_bool_filters
+        if isinstance(dat_filters, str):
+            dat_filters = [dat_filters]
+        self.dat_filters = dat_filters
 
         self.filter_regions = self.config.get("romchooser", {}).get("filter_regions", True)
         self.filter_languages = self.config.get("romchooser", {}).get("filter_languages", True)
@@ -420,9 +418,9 @@ class ROMChooser:
         - Finally, if we only allow one region, parse down to a single region (first in the list)
         """
 
-        for f in self.bool_filters:
+        for f in self.dat_filters:
             self.logger.debug(f"Filtering {f}")
-            if f in BOOL_FILTERS:
+            if f in DAT_FILTERS:
                 rom_dict = remove_rom_dict_entries(rom_dict,
                                                    f,
                                                    remove_type="bool",
