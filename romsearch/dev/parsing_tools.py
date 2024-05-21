@@ -55,9 +55,15 @@ def parse_games_from_dat(config_file,
 
     config = load_yml(config_file)
 
-    parsed_dat_dir = config.get("parsed_dat_dir", None)
+    parsed_dat_dir = config.get("dirs", {}).get("parsed_dat_dir", None)
+
+    if parsed_dat_dir is None:
+        raise ValueError("No parsed_dat_dir found in config file")
 
     dat_filename = os.path.join(parsed_dat_dir, f"{platform} (dat parsed).json")
+
+    if not os.path.exists(dat_filename):
+        raise ValueError("No parsed dat file found")
 
     all_file_dict = check_regex_parsing(dat_filename)
 
