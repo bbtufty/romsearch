@@ -93,9 +93,6 @@ class ROMParser:
             default_config (dict, optional): default configuration dictionary. Defaults to None.
             regex_config (dict, optional): regex configuration dictionary. Defaults to None.
             logger (logging.Logger, optional): logger instance. Defaults to None.
-
-        TODO:
-            - Default implied languages from regions
         """
 
         if platform is None:
@@ -279,6 +276,17 @@ class ROMParser:
     def finalise_file_dict(self,
                            file_dict,
                            ):
+        """Do any last minute finalisation to the file dict"""
+
+        file_dict = self.set_game_category(file_dict)
+        file_dict = self.set_implicit_languages(file_dict)
+
+        return file_dict
+
+    def set_game_category(self,
+                          file_dict,
+                          ):
+        """If a dat category hasn't been set, set it to game"""
 
         dat_categories = self.default_config.get("dat_categories", [])
 
@@ -290,6 +298,21 @@ class ROMParser:
 
         if all([file_dict[d.lower().replace(" ", "_")] is False for d in dat_categories]):
             file_dict["games"] = True
+
+        return file_dict
+
+    def set_implicit_languages(self,
+                               file_dict,
+                               ):
+        """Set implicit language from region, if we don't already have languages"""
+
+        implied_languages = self.default_config.get("implied_languages", {})
+
+        # Only set if languages is an empty list
+        if not file_dict["languages"]:
+            for r in file_dict["regions"]:
+                if r in implied_languages:
+                    file_dict["languages"].append(implied_languages[r])
 
         return file_dict
 
