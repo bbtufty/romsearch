@@ -128,32 +128,6 @@ def get_best_version(rom_dict,
     return rom_dict
 
 
-def get_best_rom_per_region(rom_dict,
-                            region_preferences,
-                            ):
-    """For each individual region, get an overall best ROM"""
-    for reg_pref in region_preferences:
-
-        roms = []
-
-        for key in rom_dict:
-            if reg_pref in rom_dict[key]["regions"]:
-                roms.append(key)
-
-        if len(roms) > 1:
-            roms = get_best_roms(roms, rom_dict)
-
-            keys_to_pop = []
-            for f in rom_dict:
-                if f not in roms and reg_pref in rom_dict[f]["regions"]:
-                    keys_to_pop.append(f)
-
-            for key in keys_to_pop:
-                rom_dict.pop(key)
-
-    return rom_dict
-
-
 def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
     """Remove unwanted ROMs from the dict
 
@@ -174,10 +148,10 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
 
         # Only filter things down if we've got multiples here
         if len(region_game_keys) > 1:
-            found_demoted = [rom_dict[key][key_to_check] for key in region_game_keys]
+            found = [rom_dict[key][key_to_check] for key in region_game_keys]
 
             # Remove these, but only if we have some but not all
-            if 0 < sum(found_demoted) < len(found_demoted):
+            if 0 < sum(found) < len(found):
                 for key in region_game_keys:
                     if check_type == "include":
                         if not rom_dict[key][key_to_check]:
@@ -192,45 +166,6 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
         rom_dict.pop(key)
 
     return rom_dict
-
-
-def get_best_roms(files, rom_dict):
-    """Get the best ROM(s) from a list, using a scoring system"""
-
-    # Positive scores
-    improved_version_score = 1
-    version_score = 10
-    revision_score = 100
-    budget_edition_score = 1000
-
-    # Negative scores
-    demoted_version_score = -1
-    alternate_version_score = -1
-    modern_version_score = -10
-    priority_score = -100
-
-    file_scores = np.zeros(len(files))
-
-    # Improved or demoted versions
-    file_scores += improved_version_score * np.array([int(rom_dict[f]["improved_version"]) for f in files])
-    file_scores += demoted_version_score * np.array([int(rom_dict[f]["demoted_version"]) for f in files])
-    file_scores += budget_edition_score * np.array([int(rom_dict[f]["budget_edition"]) for f in files])
-    file_scores += alternate_version_score * np.array([int(rom_dict[f]["alternate"]) for f in files])
-
-    # Version numbering, which needs to be parsed
-    file_scores += version_score * add_versioned_score(files, rom_dict, "version")
-    file_scores += revision_score * add_versioned_score(files, rom_dict, "revision")
-
-    # Downweight modern versions
-    file_scores += modern_version_score * np.array([int(rom_dict[f]["modern_version"]) for f in files])
-
-    # Priority scoring, where we subtract 1 so that the highest priority has no changed
-    file_scores += priority_score * (np.array([int(rom_dict[f]["priority"]) for f in files]) - 1)
-
-    files_idx = np.where(file_scores == np.nanmax(file_scores))[0]
-    files = np.asarray(files)[files_idx]
-
-    return files
 
 
 def add_versioned_score(files, rom_dict, key):
@@ -256,40 +191,22 @@ def add_versioned_score(files, rom_dict, key):
     return file_scores_version
 
 
-def filter_by_list(rom_dict,
-                   key,
-                   key_prefs,
-                   ):
-    """Find file with highest value in given list. If there are multiple matches, find the most updated one"""
+def add_language_score(files, rom_dict, language_priorities):
+    """Add language scores, include the priority of the order"""
 
-    roms = []
+    language_score_dict = {}
 
-    found_key = False
-    for key_pref in key_prefs:
+    # Go backwards so the first entry is highest priority
+    for i, lang in enumerate(language_priorities[::-1]):
+        language_score_dict[lang] = i + 1
 
-        if found_key:
-            continue
+    language_scores = np.zeros_like(files, dtype=int)
+    for i, f in enumerate(files):
+        for lang in rom_dict[f]["languages"]:
+            if lang in language_score_dict:
+                language_scores[i] += language_score_dict[lang]
 
-        for val in rom_dict:
-            if key_pref in rom_dict[val][key]:
-                roms.append(val)
-                found_key = True
-
-    # If we have multiple matches here, define a best match using scoring system
-    if len(roms) > 1:
-        roms = get_best_roms(roms,
-                             rom_dict,
-                             )
-
-    keys_to_pop = []
-    for f in rom_dict:
-        if f not in roms:
-            keys_to_pop.append(f)
-
-    for key in keys_to_pop:
-        rom_dict.pop(key)
-
-    return rom_dict
+    return language_scores
 
 
 class ROMChooser:
@@ -456,15 +373,139 @@ class ROMChooser:
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="demoted_versions", check_type="exclude")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="modern_versions", check_type="exclude")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="alternate", check_type="exclude")
-            rom_dict = get_best_rom_per_region(rom_dict,
-                                               self.region_preferences,
-                                               )
+            rom_dict = self.get_best_rom_per_region(rom_dict,
+                                                    self.region_preferences,
+                                                    )
 
         if not self.allow_multiple_regions:
             self.logger.debug("Trimming down to a single region")
-            rom_dict = filter_by_list(rom_dict,
-                                      "regions",
-                                      self.region_preferences,
+            rom_dict = self.filter_by_list(rom_dict,
+                                           "regions",
+                                           self.region_preferences,
+                                           )
+
+        return rom_dict
+
+    def get_best_roms(self,
+                      files,
+                      rom_dict,
+                      ):
+        """Get the best ROM(s) from a list, using a scoring system"""
+
+        # Positive scores
+        improved_version_score = 1
+        version_score = 1e2
+        revision_score = 1e4
+        budget_edition_score = 1e6
+        language_score = 1e8
+
+        # Negative scores
+        demoted_version_score = -1
+        alternate_version_score = -1
+        modern_version_score = -1e2
+        priority_score = -1e4
+
+        file_scores = np.zeros(len(files))
+
+        # Just stepping through the scores in order.
+
+        # Positive scores
+
+        # Improved version
+        file_scores += improved_version_score * np.array([int(rom_dict[f]["improved_version"]) for f in files])
+
+        # Version numbering, which needs to be parsed. We edit these to only add a little each time
+        version_score_to_add = add_versioned_score(files, rom_dict, "version")
+        file_scores += version_score * (1 + (version_score_to_add - 1) / 100)
+
+        # Revision numbering, again parsed
+        revision_score_to_add = add_versioned_score(files, rom_dict, "revision")
+        file_scores += revision_score * (1 + (revision_score_to_add - 1) / 100)
+
+        # Budget edition
+        file_scores += budget_edition_score * np.array([int(rom_dict[f]["budget_edition"]) for f in files])
+
+        # Language priorities
+        language_score_to_add = add_language_score(files, rom_dict, language_priorities=self.language_preferences)
+        file_scores += language_score * (1 + (language_score_to_add - 1) / 100)
+
+        # Negative scores
+
+        # Demoted version
+        file_scores += demoted_version_score * np.array([int(rom_dict[f]["demoted_version"]) for f in files])
+
+        # Alternate version
+        file_scores += alternate_version_score * np.array([int(rom_dict[f]["alternate"]) for f in files])
+
+        # Modern version
+        file_scores += modern_version_score * np.array([int(rom_dict[f]["modern_version"]) for f in files])
+
+        # Priority scoring. We subtract 1 so that the highest priority has no changed
+        file_scores += priority_score * (np.array([int(rom_dict[f]["priority"]) for f in files]) - 1)
+
+        files_idx = np.where(file_scores == np.nanmax(file_scores))[0]
+        files = np.asarray(files)[files_idx]
+
+        return files
+
+    def get_best_rom_per_region(self,
+                                rom_dict,
+                                region_preferences,
+                                ):
+        """For each individual region, get an overall best ROM"""
+        for reg_pref in region_preferences:
+
+            roms = []
+
+            for key in rom_dict:
+                if reg_pref in rom_dict[key]["regions"]:
+                    roms.append(key)
+
+            if len(roms) > 1:
+                roms = self.get_best_roms(roms, rom_dict)
+
+                keys_to_pop = []
+                for f in rom_dict:
+                    if f not in roms and reg_pref in rom_dict[f]["regions"]:
+                        keys_to_pop.append(f)
+
+                for key in keys_to_pop:
+                    rom_dict.pop(key)
+
+        return rom_dict
+
+    def filter_by_list(self,
+                       rom_dict,
+                       key,
+                       key_prefs,
+                       ):
+        """Find file with highest value in given list. If there are multiple matches, find the most updated one"""
+
+        roms = []
+
+        found_key = False
+        for key_pref in key_prefs:
+
+            if found_key:
+                continue
+
+            for val in rom_dict:
+                if key_pref in rom_dict[val][key]:
+                    roms.append(val)
+                    found_key = True
+
+        # If we have multiple matches here, define a best match using scoring system
+        if len(roms) > 1:
+            roms = self.get_best_roms(roms,
+                                      rom_dict,
                                       )
+
+        keys_to_pop = []
+        for f in rom_dict:
+            if f not in roms:
+                keys_to_pop.append(f)
+
+        for key in keys_to_pop:
+            rom_dict.pop(key)
 
         return rom_dict

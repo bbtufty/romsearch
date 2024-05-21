@@ -1,3 +1,21 @@
+0.0.6 (Unreleased)
+==================
+
+Fixes
+-----
+
+ROMChooser
+~~~~~~~~~~
+
+- Language priorities are now baked into the ROM selection. ROMs with more (and higher priority) languages
+  will now be preferred
+
+ROMParser
+~~~~~~~~~
+
+- If no language is given in the ROM data, will attempt to pull this out from the region
+
+
 0.0.5 (2024-05-17)
 ==================
 
