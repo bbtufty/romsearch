@@ -643,6 +643,19 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomDownloaderMiddle.addWidget(self.checkBoxConfigRomDownloaderSyncAll)
 
+        self.lineConfigRomDownloaderSyncAllDividerBottom = QFrame(self.tabConfigRomDownloader)
+        self.lineConfigRomDownloaderSyncAllDividerBottom.setObjectName(u"lineConfigRomDownloaderSyncAllDividerBottom")
+        self.lineConfigRomDownloaderSyncAllDividerBottom.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigRomDownloaderSyncAllDividerBottom.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRomDownloaderMiddle.addWidget(self.lineConfigRomDownloaderSyncAllDividerBottom)
+
+        self.checkBoxConfigRomDownloaderUseAbsoluteUrl = QCheckBox(self.tabConfigRomDownloader)
+        self.checkBoxConfigRomDownloaderUseAbsoluteUrl.setObjectName(u"checkBoxConfigRomDownloaderUseAbsoluteUrl")
+        self.checkBoxConfigRomDownloaderUseAbsoluteUrl.setChecked(True)
+
+        self.verticalLayoutConfigRomDownloaderMiddle.addWidget(self.checkBoxConfigRomDownloaderUseAbsoluteUrl)
+
         self.lineConfigRomDownloaderDryRunTop = QFrame(self.tabConfigRomDownloader)
         self.lineConfigRomDownloaderDryRunTop.setObjectName(u"lineConfigRomDownloaderDryRunTop")
         self.lineConfigRomDownloaderDryRunTop.setFrameShadow(QFrame.Shadow.Plain)
@@ -1411,6 +1424,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomDownloaderSyncAll.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to sync everything when running ROMDownloader or whether to filter files based on includes/excludes. Default checked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRomDownloaderSyncAll.setText(QCoreApplication.translate("RomSearch", u"Sync All", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRomDownloaderUseAbsoluteUrl.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to treat the remote URL as absolute or relative. Should be unchecked for HTTP remotes", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRomDownloaderUseAbsoluteUrl.setText(QCoreApplication.translate("RomSearch", u"Use absolute URL", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRomDownloaderDryRun.setStatusTip(QCoreApplication.translate("RomSearch", u"If checked, will not make any changes to filesystem. Default unchecked", None))
 #endif // QT_CONFIG(statustip)

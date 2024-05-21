@@ -7,10 +7,10 @@ ROMSearch can work for a number of platforms, and the config for each is stored 
 Syntax: ::
 
     group: ["Redump", "No-Intro"]   # The group for these files. Currently either "Redump" or "No-Intro
-    ftp_dir: [ftp_dir]              # The FTP dir for rclone. This is usually something like [group]/[platform]
+    dir: [dir]                      # The remote dir for rclone. This is usually something like [group]/[platform]
     unzip: true                     # OPTIONAL. Whether to unzip files when moving. Defaults to false
-    additional_dirs:                # OPTIONAL. Occasionally, files may need to be pulled from other ftp directories.
-      [additional_dir]: [ftp_dir]   #           These can be specified here
+    additional_dirs:                # OPTIONAL. Occasionally, files may need to be pulled from other remote directories.
+      [additional_dir]: [dir]       #           These can be specified here
 
 Nintendo - GameCube
 ===================

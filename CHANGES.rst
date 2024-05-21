@@ -10,6 +10,14 @@ ROMChooser
 - Language priorities are now baked into the ROM selection. ROMs with more (and higher priority) languages
   will now be preferred
 
+ROMDownloader
+~~~~~~~~~~~~~
+
+- Added a `use_absolute_url` option, which if False will strip the leading slash from the directories. This is
+  potentially useful if using an HTTP remote
+- If there are errors in the rclone sync, ROMDownloader will now retry a few times
+- Improved how rclone runs, to be less verbose and hopefully more reliable
+
 ROMParser
 ~~~~~~~~~
 
@@ -19,6 +27,8 @@ General
 ~~~~~~~
 
 - Updated dev tools for the new config directory structure
+- Renamed `ftp_dir` to `dir` ion platform config files for clarity
+- Fixed error message in GUI in includes/excludes existed for an unchecked platform
 
 
 0.0.5 (2024-05-17)

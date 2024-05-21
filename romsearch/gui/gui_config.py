@@ -173,6 +173,7 @@ class ConfigWindow(QMainWindow):
 
         self.all_romdownloader_options = {
             "sync_all": self.ui.checkBoxConfigRomDownloaderSyncAll,
+            "use_absolute_url": self.ui.checkBoxConfigRomDownloaderUseAbsoluteUrl,
             "dry_run": self.ui.checkBoxConfigRomDownloaderDryRun,
         }
 
@@ -538,7 +539,8 @@ class ConfigWindow(QMainWindow):
                 for p in platforms:
                     includes = "\n".join(self.config[m][p])
 
-                    self.include_exclude_dict[p][mappings[m]].setPlainText(includes)
+                    if p in self.include_exclude_dict:
+                        self.include_exclude_dict[p][mappings[m]].setPlainText(includes)
 
         return True
 
