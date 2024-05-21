@@ -32,7 +32,7 @@ def add_rclone_filter(pattern=None,
     if include_wildcard:
         filter_pattern += "*"
 
-    cmd = f' --filter "{filter_str} {filter_pattern}"'
+    cmd = f'--filter "{filter_str} {filter_pattern}" '
 
     return cmd
 
@@ -153,10 +153,17 @@ class ROMDownloader:
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
 
-        ftp_dir = self.platform_config.get("ftp_dir", None)
-        if ftp_dir is None:
-            raise ValueError(f"ftp_dir should be defined in the platform config file!")
-        self.ftp_dir = ftp_dir
+        remote_dir = self.platform_config.get("dir", None)
+        if remote_dir is None:
+            raise ValueError(f"dir should be defined in the platform config file!")
+
+        # If we're not using absolute URLs, then remove that here
+        self.use_absolute_url = self.config.get("romdownloader", {}).get("use_absolute_url", True)
+        if not self.use_absolute_url:
+            if remote_dir[0] == "/":
+                remote_dir = remote_dir[1:]
+
+        self.remote_dir = remote_dir
 
         self.discord_url = self.config.get("discord", {}).get("webhook_url", None)
         self.dry_run = self.config.get("romdownloader", {}).get("dry_run", False)
@@ -167,7 +174,7 @@ class ROMDownloader:
 
         start_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
-        self.rclone_sync(ftp_dir=self.ftp_dir,
+        self.rclone_sync(remote_dir=self.remote_dir,
                          out_dir=self.out_dir,
                          )
 
@@ -184,13 +191,18 @@ class ROMDownloader:
         if "additional_dirs" in self.platform_config:
 
             for add_dir in self.platform_config["additional_dirs"]:
-                add_ftp_dir = self.platform_config["additional_dirs"][add_dir]
+                add_remote_dir = self.platform_config["additional_dirs"][add_dir]
+
+                # If using relative URL, strip the leading slash
+                if not self.use_absolute_url:
+                    if add_remote_dir[0] == "/":
+                        add_remote_dir = add_remote_dir[1:]
 
                 add_out_dir = f"{self.out_dir} {add_dir}"
 
                 start_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
 
-                self.rclone_sync(ftp_dir=add_ftp_dir,
+                self.rclone_sync(remote_dir=add_remote_dir,
                                  out_dir=add_out_dir,
                                  )
 
@@ -204,9 +216,10 @@ class ROMDownloader:
                                          )
 
     def rclone_sync(self,
-                    ftp_dir,
+                    remote_dir,
                     out_dir=None,
                     transfers=5,
+                    max_retries=5,
                     ):
 
         if out_dir is None:
@@ -215,7 +228,16 @@ class ROMDownloader:
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
-        cmd = f'rclone sync -P --transfers {transfers} "{self.remote_name}:{ftp_dir}" "{out_dir}"'
+        cmd = (
+            f'rclone sync '
+            f"--fast-list "
+            f"--check-first "
+            f"--delete-after "
+            f'--transfers {transfers} '
+            f'"{self.remote_name}:{remote_dir}" '
+            f'"{out_dir}" '
+            f'-v '
+        )
 
         # We mostly do full syncs here, but we can specify specific game names
         if not self.sync_all:
@@ -234,7 +256,7 @@ class ROMDownloader:
             if pattern:
                 cmd += add_rclone_filter(pattern=pattern,
                                          filter_type="exclude",
-                                         include_wildcard=self.include_wildcard,
+                                         include_wildcard=self.include_filter_wildcard,
                                          )
 
             # Now onto positive filters
@@ -255,21 +277,40 @@ class ROMDownloader:
                                          include_wildcard=self.include_filter_wildcard,
                                          )
 
-                cmd += ' --filter "- *"'
+                cmd += '--filter "- *" '
 
         if self.dry_run:
-            self.logger.info(f"Dry run, would rclone_sync with:")
+            self.logger.info(f"Dry run, would rclone sync with:")
             self.logger.info(cmd)
         else:
 
             if not os.path.exists(self.out_dir):
                 os.makedirs(self.out_dir)
 
-            # Execute the command and capture the output
-            with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
-                for line in process.stdout:
-                    # Log each line of the output using the provided logger
-                    self.logger.info(line[:-1])  # Exclude the newline character
+            retry = 0
+            retcode = 1
+
+            self.logger.info("Running rclone sync")
+
+            while retcode != 0 and retry < max_retries:
+
+                # Execute the command and capture the output
+                with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+                    for line in process.stdout:
+
+                        # Skip the warning about directory filters using regex
+                        if "Can't figure out directory filters" in line:
+                            continue
+
+                        # Log each line of the output using the provided logger
+                        self.logger.info(line[:-1])  # Exclude the newline character
+
+                retcode = process.poll()
+                retry += 1
+
+            # If we've hit the maximum retries and still we have errors, raise an error with the args
+            if retcode != 0:
+                raise subprocess.CalledProcessError(retcode, process.args)
 
         return True
 
