@@ -15,6 +15,11 @@ ROMParser
 
 - If no language is given in the ROM data, will attempt to pull this out from the region
 
+General
+~~~~~~~
+
+- Updated dev tools for the new config directory structure
+
 
 0.0.5 (2024-05-17)
 ==================
