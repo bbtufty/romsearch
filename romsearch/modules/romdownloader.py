@@ -1,6 +1,7 @@
 import copy
 import glob
 import os
+import re
 import subprocess
 
 import romsearch
@@ -63,6 +64,7 @@ class ROMDownloader:
                  override_includes=None,
                  override_excludes=None,
                  include_filter_wildcard=True,
+                 check_all_files=False,
                  ):
         """Downloader tool via rclone
 
@@ -80,6 +82,9 @@ class ROMDownloader:
                 ones. Defaults to None.
             include_filter_wildcard (bool, optional): If set, will include wildcards in rclone filters. Defaults to
                 True.
+            check_all_files (bool, optional): If set, will check if all files are downloaded via the includes. If they
+                aren't, will retry the sync. DO NOT SET THIS TO TRUE if you have any wildcards in your includes,
+                or any excludes!
         """
 
         if platform is None:
@@ -144,6 +149,8 @@ class ROMDownloader:
         self.sync_all = sync_all
 
         self.include_filter_wildcard = include_filter_wildcard
+
+        self.check_all_files = check_all_files
 
         # Read in the specific platform configuration
         mod_dir = os.path.dirname(romsearch.__file__)
@@ -232,7 +239,6 @@ class ROMDownloader:
             f'rclone sync '
             f"--fast-list "
             f"--check-first "
-            f"--delete-after "
             f'--transfers {transfers} '
             f'"{self.remote_name}:{remote_dir}" '
             f'"{out_dir}" '
@@ -289,10 +295,11 @@ class ROMDownloader:
 
             retry = 0
             retcode = 1
+            all_files_downloaded = False
 
             self.logger.info("Running rclone sync")
 
-            while retcode != 0 and retry < max_retries:
+            while retcode != 0 and not all_files_downloaded and retry < max_retries:
 
                 # Execute the command and capture the output
                 with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
@@ -308,9 +315,42 @@ class ROMDownloader:
                 retcode = process.poll()
                 retry += 1
 
+                if not self.check_all_files:
+                    all_files_downloaded = True
+                else:
+                    all_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
+
+                    n_matched = 0
+                    for f in all_files:
+                        for i in self.include_games:
+                            if re.match(i, f) is not None:
+                                n_matched += 1
+
+                    if n_matched == len(self.include_games):
+                        all_files_downloaded = True
+                    else:
+                        self.logger.info("Not all files have been downloaded. Retrying")
+
             # If we've hit the maximum retries and still we have errors, raise an error with the args
             if retcode != 0:
                 raise subprocess.CalledProcessError(retcode, process.args)
+
+            if self.check_all_files:
+                # If we're checking files, then do a pass where if we don't find the file in the includes then
+                # we delete it
+                all_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
+
+                for f in all_files:
+
+                    found_match = False
+
+                    for i in self.include_games:
+                        if re.match(i, f) is not None:
+                            found_match = True
+
+                    if not found_match:
+                        self.logger.info(f"Removing {f}")
+                        os.remove(os.path.join(str(self.out_dir), f))
 
         return True
 
