@@ -288,6 +288,7 @@ class ROMSearch:
                                                override_includes=all_files,
                                                override_excludes=[],
                                                include_filter_wildcard=False,
+                                               check_all_files=True,
                                                )
                     downloader.run()
 

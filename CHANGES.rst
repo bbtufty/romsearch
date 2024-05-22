@@ -17,6 +17,7 @@ ROMDownloader
   potentially useful if using an HTTP remote
 - If there are errors in the rclone sync, ROMDownloader will now retry a few times
 - Improved how rclone runs, to be less verbose and hopefully more reliable
+- Fixed a potential issue where rclone may not download files but not error out
 
 ROMParser
 ~~~~~~~~~
