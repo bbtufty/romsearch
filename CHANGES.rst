@@ -1,3 +1,14 @@
+0.0.7 (Unreleased)
+==================
+
+Fixes
+-----
+
+ROMParser
+~~~~~~~~~
+
+- ROMParser will now correctly parse multiple regions/languages
+
 0.0.6 (2024-05-23)
 ==================
 
