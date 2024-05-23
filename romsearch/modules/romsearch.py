@@ -274,9 +274,7 @@ class ROMSearch:
             if self.romsearch_method == "filter_then_download":
                 all_files = []
                 for game in all_roms_dict:
-
-                    # Make sure we're using the regex escaped version for all the strings
-                    fs = [re.escape(f) for f in all_roms_dict[game]]
+                    fs = [f for f in all_roms_dict[game]]
 
                     all_files.extend(fs)
 
@@ -285,10 +283,8 @@ class ROMSearch:
                                                config=self.config,
                                                platform_config=platform_config,
                                                logger=self.logger,
-                                               override_includes=all_files,
-                                               override_excludes=[],
-                                               include_filter_wildcard=False,
-                                               check_all_files=True,
+                                               rclone_method='copy',
+                                               copy_files=all_files,
                                                )
                     downloader.run()
 

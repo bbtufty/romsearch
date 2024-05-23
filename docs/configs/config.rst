@@ -46,6 +46,8 @@ Syntax: ::
     romdownloader:                      # ROMDownloader specific options
       dry_run: false                    # OPTIONAL. Set to true to not make any changes to filesystem. Defaults to false
       remote_name: 'rclone_remote'      # Rclone remote name
+      use_absolute_url: false           # OPTIONAL. If true, will assume the path is an absolute URL for the rclone
+                                        #           remote. Set to false if using an HTTP remote!
       sync_all: false                   # OPTIONAL. If true, will download everything that rclone finds. Set to false to
                                         #           use the include_games above
 
