@@ -12,6 +12,11 @@ from ..util import (setup_logger,
                     split,
                     )
 
+RCLONE_METHODS = [
+    "sync",
+    "copy",
+]
+
 
 def add_rclone_filter(pattern=None,
                       filter_type="include",
@@ -60,31 +65,29 @@ class ROMDownloader:
                  config_file=None,
                  config=None,
                  platform_config=None,
+                 rclone_method="sync",
+                 copy_files=None,
                  logger=None,
-                 override_includes=None,
-                 override_excludes=None,
                  include_filter_wildcard=True,
-                 check_all_files=False,
                  ):
         """Downloader tool via rclone
 
-        This works per-platform, so must be specified here
+        This works per-platform, so must be specified here.
+
+        For this, we can either sync an entire directory (rclone_method='sync'), or copy individual files
+        (rclone_method='copy'). If the method is copy, then copy_files must be set as a list
 
         Args:
             platform (str, optional): Platform name. Defaults to None, which will throw a ValueError
-            config (str, optional): Configuration file. Defaults to None
+            config_file (str, optional): Configuration file. Defaults to None
             config (dict, optional): Configuration dictionary. Defaults to None
             platform_config (dict, optional): Platform configuration dictionary. Defaults to None
+            rclone_method (str, optional): Should be one of 'sync' or 'copy'. Defaults to 'sync'
+            copy_files (list, optional): Must be set if rclone_method is 'copy'. Determines the filenames to copy over.
+                Defaults to None
             logger (logging.Logger, optional): Logger instance. Defaults to None
-            override_includes (list, optional): If set, will override the config includes with custom
-                ones. Defaults to None.
-            override_excludes (list, optional): If set, will override the config excludes with custom
-                ones. Defaults to None.
             include_filter_wildcard (bool, optional): If set, will include wildcards in rclone filters. Defaults to
                 True.
-            check_all_files (bool, optional): If set, will check if all files are downloaded via the includes. If they
-                aren't, will retry the sync. DO NOT SET THIS TO TRUE if you have any wildcards in your includes,
-                or any excludes!
         """
 
         if platform is None:
@@ -107,6 +110,12 @@ class ROMDownloader:
                                   )
         self.logger = logger
 
+        if rclone_method not in RCLONE_METHODS:
+            raise ValueError(f"rclone_method must be one of {RCLONE_METHODS}")
+
+        self.rclone_method = rclone_method
+        self.copy_files = copy_files
+
         out_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if out_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
@@ -119,9 +128,6 @@ class ROMDownloader:
         else:
             include_games = copy.deepcopy(include_games)
 
-        if override_includes is not None:
-            include_games = copy.deepcopy(override_includes)
-
         self.include_games = include_games
 
         exclude_games = self.config.get("exclude_games", None)
@@ -129,9 +135,6 @@ class ROMDownloader:
             exclude_games = exclude_games.get(platform, None)
         else:
             exclude_games = copy.deepcopy(exclude_games)
-
-        if override_excludes is not None:
-            exclude_games = copy.deepcopy(override_excludes)
 
         self.exclude_games = exclude_games
 
@@ -149,8 +152,6 @@ class ROMDownloader:
         self.sync_all = sync_all
 
         self.include_filter_wildcard = include_filter_wildcard
-
-        self.check_all_files = check_all_files
 
         # Read in the specific platform configuration
         mod_dir = os.path.dirname(romsearch.__file__)
@@ -181,9 +182,9 @@ class ROMDownloader:
 
         start_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
-        self.rclone_sync(remote_dir=self.remote_dir,
-                         out_dir=self.out_dir,
-                         )
+        self.rclone_download(remote_dir=self.remote_dir,
+                             out_dir=self.out_dir,
+                             )
 
         end_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
@@ -209,9 +210,9 @@ class ROMDownloader:
 
                 start_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
 
-                self.rclone_sync(remote_dir=add_remote_dir,
-                                 out_dir=add_out_dir,
-                                 )
+                self.rclone_download(remote_dir=add_remote_dir,
+                                     out_dir=add_out_dir,
+                                     )
 
                 end_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
 
@@ -222,12 +223,18 @@ class ROMDownloader:
                                          name=name
                                          )
 
-    def rclone_sync(self,
-                    remote_dir,
-                    out_dir=None,
-                    transfers=5,
-                    max_retries=5,
-                    ):
+    def rclone_download(self,
+                        remote_dir,
+                        out_dir=None,
+                        max_retries=5,
+                        ):
+        """Download from rclone, either via sync or copy
+
+        Args:
+            remote_dir: rclone remote path
+            out_dir: directory to download to
+            max_retries: maximum number of retries
+        """
 
         if out_dir is None:
             out_dir = os.getcwd()
@@ -235,17 +242,51 @@ class ROMDownloader:
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
+        if self.rclone_method == "sync":
+            self.rclone_sync(remote_dir=remote_dir,
+                             out_dir=out_dir,
+                             max_retries=max_retries,
+                             )
+        elif self.rclone_method == "copy":
+            self.rclone_copy(remote_dir=remote_dir,
+                             out_dir=out_dir,
+                             max_retries=max_retries,
+                             )
+        else:
+            raise ValueError(f"rclone_method should be one of {RCLONE_METHODS}")
+
+    def rclone_sync(self,
+                    remote_dir,
+                    out_dir=None,
+                    transfers=5,
+                    max_retries=5,
+                    ):
+        """Use rclone to sync an entire directory
+
+        Args:
+            remote_dir: rclone remote path
+            out_dir: directory to download to
+            transfers: number of simultaneous transfers
+            max_retries: maximum number of retries
+        """
+
+        # Build the sync command. We take the following steps to avoid errors
+        # - Disable HTTP2 to avoid GOAWAY errors
+        # - Disable multi-thread transfers
+
         cmd = (
             f'rclone sync '
             f"--fast-list "
-            f"--check-first "
-            f'--transfers {transfers} '
+            f"--delete-after "
+            f"--disable-http2 "
+            f"--multi-thread-streams=0 "
+            f'--transfers={transfers} '
             f'"{self.remote_name}:{remote_dir}" '
             f'"{out_dir}" '
             f'-v '
         )
 
-        # We mostly do full syncs here, but we can specify specific game names
+        # Include any filters if necessary (which is probably the case)
         if not self.sync_all:
 
             # Start with any negative filters
@@ -290,16 +331,12 @@ class ROMDownloader:
             self.logger.info(cmd)
         else:
 
-            if not os.path.exists(self.out_dir):
-                os.makedirs(self.out_dir)
-
             retry = 0
             retcode = 1
-            all_files_downloaded = False
 
             self.logger.info("Running rclone sync")
 
-            while retcode != 0 and not all_files_downloaded and retry < max_retries:
+            while retcode != 0 and retry < max_retries:
 
                 # Execute the command and capture the output
                 with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
@@ -315,42 +352,97 @@ class ROMDownloader:
                 retcode = process.poll()
                 retry += 1
 
-                if not self.check_all_files:
-                    all_files_downloaded = True
-                else:
-                    all_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
-
-                    n_matched = 0
-                    for f in all_files:
-                        for i in self.include_games:
-                            if re.match(i, f) is not None:
-                                n_matched += 1
-
-                    if n_matched == len(self.include_games):
-                        all_files_downloaded = True
-                    else:
-                        self.logger.info("Not all files have been downloaded. Retrying")
-
             # If we've hit the maximum retries and still we have errors, raise an error with the args
             if retcode != 0:
                 raise subprocess.CalledProcessError(retcode, process.args)
 
-            if self.check_all_files:
-                # If we're checking files, then do a pass where if we don't find the file in the includes then
-                # we delete it
-                all_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
+        return True
 
-                for f in all_files:
+    def rclone_copy(self,
+                    remote_dir,
+                    out_dir=None,
+                    max_retries=5,
+                    ):
+        """Use rclone to sync files one-by-one
 
-                    found_match = False
+        Args:
+            remote_dir: rclone remote path
+            out_dir: directory to download to
+            max_retries: maximum number of retries
+        """
 
-                    for i in self.include_games:
-                        if re.match(i, f) is not None:
-                            found_match = True
+        if self.copy_files is None:
+            raise ValueError("copy_files needs to be defined for rclone copy")
 
-                    if not found_match:
-                        self.logger.info(f"Removing {f}")
-                        os.remove(os.path.join(str(self.out_dir), f))
+        for f in self.copy_files:
+
+            cmd = (
+                f'rclone copy '
+                f"--no-traverse "
+                f"--disable-http2 "
+                f"--multi-thread-streams=0 "
+                f'"{self.remote_name}:{remote_dir}{f}" "{out_dir}" '
+                f'-v '
+            )
+
+            short_out_dir = os.path.split(out_dir)[-1]
+
+            if self.dry_run:
+                self.logger.info(f"Dry run, would rclone copy {short_out_dir}, {f} with:")
+                self.logger.info(cmd)
+            else:
+
+                retry = 0
+                retcode = 1
+
+                self.logger.info(f"Running rclone copy for {short_out_dir}, {f}")
+
+                # The retcode is set to 9999 if the file doesn't exist
+                while retcode not in [0, 9999] and retry < max_retries:
+
+                    # Execute the command and capture the output
+                    with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+                        for line in process.stdout:
+
+                            # Skip weird time notifications
+                            if "Time may be set wrong" in line:
+                                continue
+
+                            # If the file doesn't exist, set a high number and immediately terminate the process
+                            if "directory not found" in line:
+                                retcode = 9999
+                                process.kill()
+                                continue
+
+                            # Log each line of the output using the provided logger
+                            self.logger.info(line[:-1])  # Exclude the newline character
+
+                    if retcode != 9999:
+                        retcode = process.poll()
+                    retry += 1
+
+                # If we've hit the maximum retries and still we have errors, raise an error with the args
+                if retcode not in [0, 9999]:
+                    raise subprocess.CalledProcessError(retcode, process.args)
+                if retcode == 9999:
+                    self.logger.warning(f"Could not find {self.remote_name}:{remote_dir}{f}. This may not be an issue")
+
+        # Do a pass through where we delete all extraneous files at the end
+        # If we're checking files, then do a pass where if we don't find the file in the includes then
+        # we delete it
+        all_files = get_tidy_files(os.path.join(str(out_dir), "*"))
+
+        for f in all_files:
+
+            found_match = False
+
+            for c in self.copy_files:
+                if f == c:
+                    found_match = True
+
+            if not found_match:
+                self.logger.info(f"Removing {f}")
+                os.remove(os.path.join(str(out_dir), f))
 
         return True
 

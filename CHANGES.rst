@@ -13,11 +13,12 @@ ROMChooser
 ROMDownloader
 ~~~~~~~~~~~~~
 
-- Added a `use_absolute_url` option, which if False will strip the leading slash from the directories. This is
+- Added a ``use_absolute_url`` option, which if False will strip the leading slash from the directories. This is
   potentially useful if using an HTTP remote
-- If there are errors in the rclone sync, ROMDownloader will now retry a few times
+- rclone can now either sync or copy. It'll use sync if completionist mode is on, else it'll use copy which is
+  a little cleaner
+- If there are errors in the rclone command, ROMDownloader will now retry a few times
 - Improved how rclone runs, to be less verbose and hopefully more reliable
-- Fixed a potential issue where rclone may not download files but not error out
 
 ROMParser
 ~~~~~~~~~
