@@ -52,7 +52,7 @@ def get_pattern_val(regex,
                 parsed_pattern_string = []
                 # Match to pattern mappings
                 for p in pattern_mappings:
-                    if re.match(pattern_mappings[p], pattern_string):
+                    if re.search(pattern_mappings[p], pattern_string):
                         parsed_pattern_string.append(p)
             else:
                 # Split, and remove and trailing whitespace
