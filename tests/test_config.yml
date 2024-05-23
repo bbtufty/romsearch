@@ -1,0 +1,58 @@
+dirs:
+  raw_dir: '.'
+  rom_dir: '.'
+  dat_dir: '.'
+  parsed_dat_dir: '.'
+  dupe_dir: '.'
+  log_dir: '.'
+  cache_dir: '.'
+
+platforms:
+  - Nintendo - Super Nintendo Entertainment System
+
+region_preferences:
+  - USA
+
+language_preferences:
+  - English
+
+include_games:
+  SNES:
+    - "Chrono Trigger"
+
+romsearch:
+  method: "filter_then_download"
+  run_romdownloader: true
+  run_datparser: true
+  run_dupeparser: true
+  run_romchooser: true
+  run_rommover: false
+  dry_run: false
+
+romdownloader:
+  dry_run: false
+  remote_name: 'rclone_remote'
+  sync_all: false
+
+dupeparser:
+  use_dat: true
+  use_retool: true
+
+gamefinder:
+  filter_dupes: true
+
+romparser:
+  use_dat: false
+  use_retool: false
+  use_filename: true
+
+romchooser:
+  dry_run: false
+  use_best_version: true
+  allow_multiple_regions: false
+  filter_regions: true
+  filter_languages: true
+  bool_filters: "all_but_games"
+
+discord:
+  webhook_url: "https://discord.com/api/webhooks/discord_url"

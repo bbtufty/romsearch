@@ -1,6 +1,14 @@
 0.0.7 (Unreleased)
 ==================
 
+Features
+--------
+
+Tests
+~~~~~
+
+- Added in initial unit tests for ROMParser and ROMChooser
+
 Fixes
 -----
 
@@ -8,6 +16,11 @@ ROMParser
 ~~~~~~~~~
 
 - ROMParser will now correctly parse multiple regions/languages
+
+General
+~~~~~~~
+
+- Due to changes to the re module, ROMSearch requires python>=3.11
 
 0.0.6 (2024-05-23)
 ==================
