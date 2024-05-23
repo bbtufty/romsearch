@@ -1,6 +1,6 @@
 name: Publish
 
-on: [release]
+on: [push, pull_request]
 
 jobs:
   build_sdist_and_wheel:
