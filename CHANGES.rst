@@ -17,6 +17,16 @@ ROMParser
 
 - ROMParser will now correctly parse multiple regions/languages
 
+ROMChooser
+~~~~~~~~~~
+
+- Logging significantly improved to make it clear which ROMs have been excluded and why
+- Fixed crash when a revision is just labelled "rev"
+- Fixed bug where a version like "v.0.1" would cause a crash
+- Fixed bug where letter at end of version could cause a crash
+- Fixed bug where lettered version could cause a crash
+- Fixed bugs with flagging and removing various editions
+
 General
 ~~~~~~~
 
