@@ -206,8 +206,6 @@ class ROMSearch:
 
             for i, game in enumerate(all_games):
 
-                self.logger.info(f"{i + 1}/{len(all_games)}: {game} (aliases {', '.join(all_games[game])})")
-
                 # Parse by the short name, include the priority in there as well
                 rom_files = {}
 
@@ -248,12 +246,7 @@ class ROMSearch:
                     rom_dict = chooser.run(rom_dict)
 
                 if len(rom_dict) == 0:
-                    self.logger.info(f"All files filtered. Skipping")
                     continue
-
-                # Print out all the ROMs we've now matched
-                rom_files = [f for f in rom_dict]
-                self.logger.info(f"Found ROM file(s): {', '.join(rom_files)}")
 
                 # Save to a big dictionary, since we'll move all at once
                 all_roms_dict[game] = rom_dict

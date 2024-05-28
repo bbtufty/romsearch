@@ -8,6 +8,8 @@ from packaging import version
 
 import romsearch
 from ..util import (setup_logger,
+                    centred_string,
+                    left_aligned_string,
                     load_yml,
                     )
 
@@ -32,6 +34,36 @@ DAT_FILTERS = [
 ]
 
 
+def get_sanitized_version(ver):
+    """Get a sanitized version for potentially weird versioning
+
+    Args:
+        ver: version to sanitize
+    """
+
+    # If we don't have a version, assume v0
+    if ver.lower() in [""]:
+        ver = "v0"
+
+    # If we just have "rev", assume a v1
+    if ver.lower() in ["rev"]:
+        ver = "v1"
+
+    # If we have lettered versions, convert these to numbers
+    if ver[1:].isalpha():
+        ver = f"v{ord(ver[1:])}"
+
+    # If we have a v.something, replace that here so versions can be parsed
+    if ver[:2] == "v.":
+        ver = f"v{ver[2:]}"
+
+    # If we have a letter at the end, replace with an ordinal
+    if ver[-1].isalpha():
+        ver = f"{ver[:-1]}.{ord(ver[-1])}"
+
+    return ver
+
+
 def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
 
@@ -42,9 +74,9 @@ def remove_rom_dict_entries(rom_dict,
                             bool_remove=True,
                             list_preferences=None,
                             ):
-    """Remove entries from the game dict based on various rules"""
+    """Exclude entries from the game dict based on various rules"""
 
-    f_to_delete = []
+    f_to_exclude = []
     for f in rom_dict:
 
         # Bool type, we can filter either on Trues or Falses
@@ -56,10 +88,10 @@ def remove_rom_dict_entries(rom_dict,
 
             if bool_remove:
                 if key_val:
-                    f_to_delete.append(f)
+                    f_to_exclude.append(f)
             else:
                 if not key_val:
-                    f_to_delete.append(f)
+                    f_to_exclude.append(f)
 
         elif remove_type == "list":
 
@@ -75,14 +107,15 @@ def remove_rom_dict_entries(rom_dict,
                 if val in list_preferences:
                     found = True
             if not found:
-                f_to_delete.append(f)
+                f_to_exclude.append(f)
 
         else:
             raise ValueError("remove_type should be one of bool, list")
 
-    f_to_delete = np.unique(f_to_delete)
-    for f in f_to_delete:
-        rom_dict.pop(f)
+    f_to_exclude = np.unique(f_to_exclude)
+    for f in f_to_exclude:
+        rom_dict[f]["excluded"] = True
+        rom_dict[f]["excluded_reason"].append(key)
 
     return rom_dict
 
@@ -101,14 +134,7 @@ def get_best_version(rom_dict,
         # Pull out all the versions we have
         all_vers = [region_rom_dict[key] for key in region_rom_dict]
         # If we have anything here that doesn't have a version, set it to v0
-        all_vers = [vers if vers != "" else "v0" for vers in all_vers]
-
-        # If we have lettered versions, convert these to numbers
-        for i, vers in enumerate(all_vers):
-            try:
-                version.parse(vers)
-            except packaging.version.InvalidVersion:
-                all_vers[i] = f"v{ord(vers[1:])}"
+        all_vers = [get_sanitized_version(vers) for vers in all_vers]
 
         all_keys = [key for key in region_rom_dict]
 
@@ -117,13 +143,14 @@ def get_best_version(rom_dict,
 
         max_ver_key = np.asarray(all_keys)[max_ver_idx]
 
-        keys_to_pop = []
+        keys_to_exclude = []
         for key in all_keys:
             if key not in max_ver_key:
-                keys_to_pop.append(key)
+                keys_to_exclude.append(key)
 
-        for key in keys_to_pop:
-            rom_dict.pop(key)
+        for key in keys_to_exclude:
+            rom_dict[key]["excluded"] = True
+            rom_dict[key]["excluded_reason"].append(version_key)
 
     return rom_dict
 
@@ -135,16 +162,14 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
     out here. Do this per region combo
     """
 
-    all_regions = []
-    for key in rom_dict:
-        all_regions.extend(",".join(rom_dict[key]["regions"]))
-    all_regions = np.unique(all_regions)
+    all_regions = np.unique([",".join(rom_dict[key]["regions"]) for key in rom_dict])
 
-    keys_to_pop = []
+    keys_to_exclude = []
 
     for region in all_regions:
 
-        region_game_keys = [key for key in rom_dict if region in rom_dict[key]["regions"]]
+        # Pull out the unique regions
+        region_game_keys = {key for key in rom_dict if ",".join(rom_dict[key]["regions"]) == region}
 
         # Only filter things down if we've got multiples here
         if len(region_game_keys) > 1:
@@ -155,15 +180,24 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
                 for key in region_game_keys:
                     if check_type == "include":
                         if not rom_dict[key][key_to_check]:
-                            keys_to_pop.append(key)
+                            keys_to_exclude.append(key)
                     elif check_type == "exclude":
                         if rom_dict[key][key_to_check]:
-                            keys_to_pop.append(key)
+                            keys_to_exclude.append(key)
                     else:
                         raise ValueError(f"check_type should be one of include or exclude")
 
-    for key in keys_to_pop:
-        rom_dict.pop(key)
+    for key in keys_to_exclude:
+        rom_dict[key]["excluded"] = True
+
+        # If we're doing includes, then this is actually a "not" statement
+        if check_type == "include":
+            exclude_reason = "not_"
+        else:
+            exclude_reason = ""
+        exclude_reason += key_to_check
+
+        rom_dict[key]["excluded_reason"].append(exclude_reason)
 
     return rom_dict
 
@@ -174,8 +208,7 @@ def add_versioned_score(files, rom_dict, key):
     # Ensure we have a version here. If blank, set to v0
     rom_dict = copy.deepcopy(rom_dict)
     for f in rom_dict:
-        if rom_dict[f][key] == "":
-            rom_dict[f][key] = "v0"
+        rom_dict[f][key] = get_sanitized_version(rom_dict[f][key])
 
     versions = np.array([version.parse(rom_dict[f][key]) for f in files])
     versions_clean = [key for key, value in Counter(versions).most_common()]
@@ -209,6 +242,40 @@ def add_language_score(files, rom_dict, language_priorities):
     return language_scores
 
 
+def filter_by_list(rom_dict,
+                   key,
+                   key_prefs,
+                   ):
+    """Find file with highest value in given list. If there are multiple matches, find the most updated one"""
+
+    roms = []
+
+    found_key = False
+    for key_pref in key_prefs:
+
+        if found_key:
+            continue
+
+        for val in rom_dict:
+            if key_pref in rom_dict[val][key]:
+                roms.append(val)
+                found_key = True
+
+    keys_to_exclude = []
+    for f in rom_dict:
+        if f not in roms:
+            keys_to_exclude.append(f)
+
+    for e in keys_to_exclude:
+
+        # Only exclude by preference if we haven't already excluded absolutely
+        if key not in rom_dict[e]["excluded_reason"]:
+            rom_dict[e]["excluded"] = True
+            rom_dict[e]["excluded_reason"].append(f"{key}_preference")
+
+    return rom_dict
+
+
 class ROMChooser:
 
     def __init__(self,
@@ -237,6 +304,10 @@ class ROMChooser:
         if platform is None:
             raise ValueError("platform must be specified")
         self.platform = platform
+
+        if game is None:
+            raise ValueError("game must be specified")
+        self.game = game
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -315,6 +386,11 @@ class ROMChooser:
 
         rom_dict = self.run_chooser(rom_dict)
 
+        self.print_summary(rom_dict)
+
+        # Filter out excluded ROMs before we return
+        rom_dict = {key: rom_dict[key] for key in rom_dict if not rom_dict[key]["excluded"]}
+
         return rom_dict
 
     def run_chooser(self,
@@ -334,6 +410,11 @@ class ROMChooser:
             - Some kind of special name to indicate an improved version
         - Finally, if we only allow one region, parse down to a single region (first in the list)
         """
+
+        # Add in whether these are excluded or not, and why
+        for r in rom_dict:
+            rom_dict[r]["excluded"] = False
+            rom_dict[r]["excluded_reason"] = []
 
         for f in self.dat_filters:
             self.logger.debug(f"Filtering {f}")
@@ -368,10 +449,10 @@ class ROMChooser:
         if self.use_best_version:
             self.logger.debug("Getting best version")
             rom_dict = get_best_version(rom_dict)
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="improved_versions", check_type="include")
+            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="improved_version", check_type="include")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="budget_edition", check_type="include")
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="demoted_versions", check_type="exclude")
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="modern_versions", check_type="exclude")
+            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="demoted_version", check_type="exclude")
+            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="modern_version", check_type="exclude")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="alternate", check_type="exclude")
             rom_dict = self.get_best_rom_per_region(rom_dict,
                                                     self.region_preferences,
@@ -379,12 +460,72 @@ class ROMChooser:
 
         if not self.allow_multiple_regions:
             self.logger.debug("Trimming down to a single region")
-            rom_dict = self.filter_by_list(rom_dict,
-                                           "regions",
-                                           self.region_preferences,
-                                           )
+            rom_dict = filter_by_list(rom_dict,
+                                      "regions",
+                                      self.region_preferences,
+                                      )
 
         return rom_dict
+
+    def print_summary(self,
+                      rom_dict,
+                      total_length=100,
+                      line_sep="=",
+                      ):
+        """Log out a nice summary of what ROM has been chosen here
+
+        Args:
+            rom_dict (dict): the ROM dictionary to summarize
+            total_length (int): Total length for the logger line
+            line_sep (str): Line separator. Defaults to "="
+        """
+
+        self.logger.info(f"{line_sep * total_length}")
+
+        # Game name
+        self.logger.info(centred_string(self.game, total_length=total_length))
+
+        self.logger.info(f"{line_sep * total_length}")
+
+        if len(rom_dict) == 0:
+            # Just say nothing found
+            self.logger.info(centred_string("No ROMs found", total_length=total_length))
+        else:
+
+            # Start with found ROMs, then excluded ROMs and reasons
+            if np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0:
+                self.logger.info(centred_string("Included ROMs:", total_length=total_length))
+
+            for r in rom_dict:
+
+                # Don't include the excluded ones here
+                if rom_dict[r]["excluded"]:
+                    continue
+
+                self.logger.info(left_aligned_string(f"-> {r}", total_length=total_length))
+
+            if np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0:
+                self.logger.info(centred_string("Excluded ROMs:", total_length=total_length))
+
+            for r in rom_dict:
+
+                # Don't include the excluded ones here
+                if not rom_dict[r]["excluded"]:
+                    continue
+
+                # Make the exclusion reason more human-readable
+                exclusion_reason = rom_dict[r]["excluded_reason"]
+                exclusion_reason = [e.capitalize().replace("_", " ") for e in exclusion_reason]
+
+                self.logger.info(left_aligned_string(f"-> {r}", total_length=total_length))
+                self.logger.info(left_aligned_string(f"---> Reason(s): {', '.join(exclusion_reason)}",
+                                                     total_length=total_length)
+                                 )
+
+        self.logger.info(f"{line_sep * total_length}")
+        self.logger.info(f"")
+
+        return True
 
     def get_best_roms(self,
                       files,
@@ -464,48 +605,16 @@ class ROMChooser:
             if len(roms) > 1:
                 roms = self.get_best_roms(roms, rom_dict)
 
-                keys_to_pop = []
+                keys_to_exclude = []
                 for f in rom_dict:
                     if f not in roms and reg_pref in rom_dict[f]["regions"]:
-                        keys_to_pop.append(f)
+                        keys_to_exclude.append(f)
 
-                for key in keys_to_pop:
-                    rom_dict.pop(key)
+                for key in keys_to_exclude:
 
-        return rom_dict
-
-    def filter_by_list(self,
-                       rom_dict,
-                       key,
-                       key_prefs,
-                       ):
-        """Find file with highest value in given list. If there are multiple matches, find the most updated one"""
-
-        roms = []
-
-        found_key = False
-        for key_pref in key_prefs:
-
-            if found_key:
-                continue
-
-            for val in rom_dict:
-                if key_pref in rom_dict[val][key]:
-                    roms.append(val)
-                    found_key = True
-
-        # If we have multiple matches here, define a best match using scoring system
-        if len(roms) > 1:
-            roms = self.get_best_roms(roms,
-                                      rom_dict,
-                                      )
-
-        keys_to_pop = []
-        for f in rom_dict:
-            if f not in roms:
-                keys_to_pop.append(f)
-
-        for key in keys_to_pop:
-            rom_dict.pop(key)
+                    # Only exclude here if there isn't already another reason
+                    if len(rom_dict[key]["excluded_reason"]) == 0:
+                        rom_dict[key]["excluded"] = True
+                        rom_dict[key]["excluded_reason"].append(f"not_best_version")
 
         return rom_dict

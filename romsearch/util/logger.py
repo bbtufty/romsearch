@@ -1,4 +1,5 @@
 import logging
+import math
 import os
 import sys
 from logging.handlers import RotatingFileHandler
@@ -102,3 +103,37 @@ def setup_logger(log_level,
     logging.getLogger(script_name).addHandler(console_handler)
 
     return logger
+
+
+def centred_string(str_to_centre,
+                   total_length=80,
+                   ):
+    """Centre string for a logger
+
+    Args:
+        str_to_centre: String to centre
+        total_length: Total length of the string. Defaults to 60.
+    """
+
+    remaining_length = total_length - len(str_to_centre) - 4
+    left_side_length = math.floor(remaining_length / 2)
+    right_side_length = remaining_length - left_side_length
+
+    return f"|{' ' * left_side_length} {str_to_centre} {' ' * right_side_length}|"
+
+
+def left_aligned_string(str_to_align,
+                        total_length=80,
+                        ):
+    """Left-align string for a logger
+
+    Args:
+        str_to_align: String to align
+        total_length: Total length of the string
+    """
+
+    remaining_length = total_length - len(str_to_align) - 4
+    left_side_length = 1
+    right_side_length = remaining_length - left_side_length
+
+    return f"|{' ' * left_side_length} {str_to_align} {' ' * right_side_length}|"
