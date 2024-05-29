@@ -13,7 +13,8 @@ from .romchooser import ROMChooser
 from .romdownloader import ROMDownloader
 from .rommover import ROMMover
 from .romparser import ROMParser
-from ..util import (load_yml,
+from ..util import (centred_string,
+                    load_yml,
                     load_json,
                     setup_logger,
                     discord_push,
@@ -64,7 +65,10 @@ class ROMSearch:
 
         if logger is None:
             log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
-            logger = setup_logger("info", script_name="ROMSearch", log_dir=log_dir)
+            logger = setup_logger(log_level="info",
+                                  script_name="ROMSearch",
+                                  log_dir=log_dir,
+                                  )
         self.logger = logger
 
         # Read in the various pre-set configs we've got
@@ -104,14 +108,30 @@ class ROMSearch:
         # Finally, the discord URL if we're sending messages
         self.discord_url = self.config.get("discord", {}).get("webhook_url", None)
 
-    def run(self):
-        """Run ROMSearch"""
+    def run(self,
+            log_line_sep="=",
+            log_line_length=100,
+            ):
+        """Run ROMSearch
 
-        self.logger.info(f"Looping over platforms: {', '.join(self.platforms)}")
+        Args:
+            log_line_sep (str, optional): log line separator. Defaults to "=".
+            log_line_length (int, optional): log line length. Defaults to 100.
+        """
+
+        # Log some useful info
+        self.logger.info(f"{log_line_sep * log_line_length}")
+        self.logger.info(centred_string("Running ROMSearch for:", total_length=log_line_length))
+        self.logger.info(f"{'-' * log_line_length}")
+        for platform in self.platforms:
+            self.logger.info(centred_string(platform, total_length=log_line_length))
+        self.logger.info(f"{log_line_sep * log_line_length}")
 
         for platform in self.platforms:
 
-            self.logger.info(f"Running ROMSearch for {platform}")
+            self.logger.info(f"{log_line_sep * log_line_length}")
+            self.logger.info(centred_string(platform, total_length=log_line_length))
+            self.logger.info(f"{log_line_sep * log_line_length}")
 
             # Pull in platform-specific config
             platform_config_file = os.path.join(self.mod_dir, "configs", "platforms", f"{platform}.yml")
@@ -199,7 +219,12 @@ class ROMSearch:
                                 )
 
             all_games = finder.run(files=all_file_dict)
-            self.logger.info(f"Searching through {len(all_games)} game(s)")
+
+            self.logger.info(f"{log_line_sep * log_line_length}")
+            self.logger.info(centred_string(f"Searching through {len(all_games)} game(s)",
+                                            total_length=log_line_length)
+                             )
+            self.logger.info(f"{log_line_sep * log_line_length}")
 
             all_roms_moved = []
             all_roms_dict = {}
@@ -251,16 +276,30 @@ class ROMSearch:
                 # Save to a big dictionary, since we'll move all at once
                 all_roms_dict[game] = rom_dict
 
+            self.logger.debug(f"{log_line_sep * log_line_length}")
+            self.logger.debug(centred_string("Unmatched files:",
+                                             total_length=log_line_length)
+                              )
+            self.logger.debug(f"{'-' * log_line_length}")
             for f in all_file_dict:
                 if not all_file_dict[f]["matched"]:
-                    self.logger.debug(f"{f} not matched to anything")
+                    self.logger.debug(centred_string(f"{f}", total_length=log_line_length))
+            self.logger.debug(f"{log_line_sep * log_line_length}")
 
             if self.dry_run:
-                self.logger.info("Dry run, will not move any files")
+                self.logger.info(f"{log_line_sep * log_line_length}")
+                self.logger.info(centred_string("Dry run, will not move any files",
+                                                total_length=log_line_length)
+                                 )
+                self.logger.info(f"{log_line_sep * log_line_length}")
                 continue
 
             if not self.run_rommover:
-                self.logger.debug("ROMMover is not running, will not move anything")
+                self.logger.info(f"{log_line_sep * log_line_length}")
+                self.logger.info(centred_string("ROMMover is not running, will not move anything",
+                                                total_length=log_line_length)
+                                 )
+                self.logger.info(f"{log_line_sep * log_line_length}")
                 continue
 
             # If we filter then download, this is where we download
@@ -293,7 +332,6 @@ class ROMSearch:
                         all_roms_dict[game][f]["file_mod_time"] = file_mod_time
 
             for game in all_roms_dict:
-
                 rom_dict = all_roms_dict[game]
 
                 mover = ROMMover(platform=platform,
@@ -323,6 +361,12 @@ class ROMSearch:
                                      fields=fields,
                                      )
 
-        self.logger.info("Complete!")
+            self.logger.info(f"{log_line_sep * log_line_length}")
+            self.logger.info(centred_string(f"Completed {platform}", total_length=log_line_length))
+            self.logger.info(f"{log_line_sep * log_line_length}")
+
+        self.logger.info(f"{log_line_sep * log_line_length}")
+        self.logger.info(centred_string("ROMSearch complete", total_length=log_line_length))
+        self.logger.info(f"{log_line_sep * log_line_length}")
 
         return True

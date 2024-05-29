@@ -504,6 +504,10 @@ class ROMChooser:
 
                 self.logger.info(left_aligned_string(f"-> {r}", total_length=total_length))
 
+            if (np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0
+                    and np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0):
+                self.logger.info(f"{'-' * total_length}")
+
             if np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0:
                 self.logger.info(centred_string("Excluded ROMs:", total_length=total_length))
 
