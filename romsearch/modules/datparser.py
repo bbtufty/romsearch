@@ -5,7 +5,7 @@ from urllib.request import urlopen
 import xmltodict
 
 import romsearch
-from ..util import load_yml, setup_logger, unzip_file, save_json
+from ..util import centred_string, load_yml, setup_logger, unzip_file, save_json
 
 ALLOWED_GROUPS = [
     "No-Intro",
@@ -43,6 +43,8 @@ class DATParser:
                  config=None,
                  platform_config=None,
                  logger=None,
+                 log_line_sep="=",
+                 log_line_length=100,
                  ):
         """Parser for dat files from Redump or No-Intro
 
@@ -56,6 +58,7 @@ class DATParser:
             config (dict, optional): Configuration dictionary. Defaults to None
             platform_config (dict, optional): Platform configuration dictionary. Defaults to None
             logger (logging.Logger, optional): Logger instance. Defaults to None
+            log_line_length (int, optional): Line length of log. Defaults to 100
         """
 
         if platform is None:
@@ -108,18 +111,33 @@ class DATParser:
         # Set up the name for the file
         self.out_file = os.path.join(self.parsed_dat_dir, f"{self.platform} (dat parsed).json")
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
     def run(self):
 
         run_datparser = True
 
         if self.dat_dir is None:
-            self.logger.warning("No dat_dir defined in config file")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string("No dat_dir defined in config file",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             run_datparser = False
         if self.parsed_dat_dir is None:
-            self.logger.warning("No parsed_dat_dir defined in config file")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string("No parsed_dat_dir defined in config file",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             run_datparser = False
         if self.dat_config is None:
-            self.logger.warning("No platform-specific dat config in the dat configuration file")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string("No platform-specific dat config in the dat configuration file",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             run_datparser = False
 
         if run_datparser:
@@ -129,6 +147,12 @@ class DATParser:
 
     def run_datparser(self):
         """The main meat of running the dat parser"""
+
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
+        self.logger.info(centred_string("Running DATParser",
+                                        total_length=self.log_line_length)
+                         )
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         zip_file = self.get_zip_file()
         if zip_file is None:
@@ -144,11 +168,22 @@ class DATParser:
         if dat is None:
             return False
 
-        self.logger.info(f"Using dat file {os.path.split(dat_file_name)[-1]}")
+        self.logger.info(f"{'-' * self.log_line_length}")
+
+        self.logger.info(centred_string("Using dat file:",
+                                        total_length=self.log_line_length)
+                         )
+        self.logger.info(centred_string(f"{os.path.split(dat_file_name)[-1]}",
+                                        total_length=self.log_line_length)
+                         )
 
         rom_dict = format_dat(dat)
 
         self.save_rom_dict(rom_dict)
+
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
+
+        return True
 
     def get_zip_file(self):
         """Get zip file from the dat directory
@@ -168,7 +203,12 @@ class DATParser:
         zip_files.sort()
 
         if len(zip_files) > 1:
-            self.logger.info(f"Found {len(zip_files)} zip files. Will remove all but the latest (and associated dats)")
+
+            self.logger.info(centred_string(f"Found {len(zip_files)} zip files.",
+                                            total_length=self.log_line_length))
+            self.logger.info(centred_string(f"Will remove all but the latest (and associated dats)",
+                                            total_length=self.log_line_length))
+
             for z in zip_files[:-1]:
                 os.remove(z)
                 d = z.replace(".zip", ".dat")
@@ -179,8 +219,13 @@ class DATParser:
             zip_files.sort()
 
         if len(zip_files) == 0:
-            self.logger.warning(f"No zip files found. "
-                                f"You need to manually download {self.group} dat files for {self.platform}")
+            self.logger.warning(centred_string(f"No zip files found. ",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(centred_string(f"You need to manually download {self.group} dat "
+                                               f"files for {self.platform}",
+                                               total_length=self.log_line_length)
+                                )
             return None
 
         return zip_files[-1]
@@ -197,10 +242,14 @@ class DATParser:
 
         out_file = os.path.join(self.dat_dir, f)
         if os.path.exists(out_file):
-            self.logger.info(f"{f} already downloaded, will skip")
+            self.logger.info(centred_string(f"{f} already downloaded",
+                                            total_length=self.log_line_length)
+                             )
             return True
 
-        self.logger.info(f"Downloading {f}")
+        self.logger.info(centred_string(f"Downloading {f}",
+                                        total_length=self.log_line_length)
+                         )
         if not os.path.exists(self.dat_dir):
             os.makedirs(self.dat_dir)
 

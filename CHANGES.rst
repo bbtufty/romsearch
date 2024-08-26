@@ -12,6 +12,11 @@ Tests
 Fixes
 -----
 
+DATParser
+~~~~~~~~~
+
+- Logging tidied up to make more readable
+
 ROMSearch
 ~~~~~~~~~
 
