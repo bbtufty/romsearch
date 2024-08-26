@@ -527,7 +527,6 @@ class ROMChooser:
                                  )
 
         self.logger.info(f"{line_sep * total_length}")
-        self.logger.info(f"")
 
         return True
 

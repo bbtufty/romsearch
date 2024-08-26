@@ -145,6 +145,7 @@ class ROMSearch:
                                        config=self.config,
                                        platform_config=platform_config,
                                        logger=self.logger,
+                                       log_line_length=log_line_length,
                                        )
                 dat_parser.run()
 
