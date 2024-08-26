@@ -112,7 +112,7 @@ def centred_string(str_to_centre,
 
     Args:
         str_to_centre: String to centre
-        total_length: Total length of the string. Defaults to 60.
+        total_length: Total length of the string. Defaults to 80.
     """
 
     remaining_length = total_length - len(str_to_centre) - 4

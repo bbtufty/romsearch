@@ -166,6 +166,7 @@ class ROMSearch:
                                                config=self.config,
                                                platform_config=platform_config,
                                                logger=self.logger,
+                                               log_line_length=log_line_length,
                                                )
                     downloader.run()
 
@@ -318,6 +319,7 @@ class ROMSearch:
                                                logger=self.logger,
                                                rclone_method='copy',
                                                copy_files=all_files,
+                                               log_line_length=log_line_length,
                                                )
                     downloader.run()
 
