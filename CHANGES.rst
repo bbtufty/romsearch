@@ -17,6 +17,11 @@ DATParser
 
 - Logging tidied up to make more readable
 
+ROMDownloader
+~~~~~~~~~
+
+- Logging tidied up to make more readable
+
 ROMSearch
 ~~~~~~~~~
 
