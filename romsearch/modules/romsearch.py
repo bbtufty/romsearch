@@ -62,7 +62,8 @@ class ROMSearch:
 
         if logger is None:
             log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
-            logger = setup_logger(log_level="info",
+            log_level = self.config.get("logger", {}).get("level", "info")
+            logger = setup_logger(log_level=log_level,
                                   script_name="ROMSearch",
                                   log_dir=log_dir,
                                   )
@@ -220,6 +221,7 @@ class ROMSearch:
                                 default_config=self.default_config,
                                 regex_config=self.regex_config,
                                 logger=self.logger,
+                                log_line_length=log_line_length,
                                 )
 
             all_games = finder.run(files=all_file_dict)

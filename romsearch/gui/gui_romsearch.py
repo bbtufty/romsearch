@@ -24,11 +24,12 @@ class MainWindow(QMainWindow):
 
         super().__init__()
 
-        self.logger = get_gui_logger()
-        self.logger.warning("Do not close this window!")
-
         self.ui = Ui_RomSearch()
         self.ui.setupUi(self)
+
+        log_level = self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+        self.logger = get_gui_logger(log_level=log_level)
+        self.logger.warning("Do not close this window!")
 
         # Set up the worker threads for later
         self.romsearch_thread = None

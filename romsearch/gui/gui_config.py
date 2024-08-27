@@ -1,6 +1,4 @@
 import os
-from functools import partial
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (QMainWindow,
@@ -13,6 +11,7 @@ from PySide6.QtWidgets import (QMainWindow,
                                QFrame,
                                QPlainTextEdit,
                                )
+from functools import partial
 
 import romsearch
 from romsearch.util import load_yml, save_yml, load_json, save_json
@@ -94,11 +93,12 @@ class ConfigWindow(QMainWindow):
 
         super().__init__()
 
-        if logger is None:
-            logger = get_gui_logger()
-        self.logger = logger
-
         self.ui = main_ui
+
+        if logger is None:
+            log_level = self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+            logger = get_gui_logger(log_level=log_level)
+        self.logger = logger
 
         # Read in the various pre-set configs we've got
         self.mod_dir = os.path.dirname(romsearch.__file__)
@@ -354,6 +354,7 @@ class ConfigWindow(QMainWindow):
             self.set_checkboxes()
             self.set_text_fields()
             self.set_romsearch_method()
+            self.set_logger_level()
             self.set_includes_excludes()
 
     def set_directory_name(self,
@@ -524,6 +525,29 @@ class ConfigWindow(QMainWindow):
 
         return True
 
+    def set_logger_level(self):
+        """Set the logger level from the config file"""
+
+        if "logger" not in self.config:
+            return False
+
+        if "level" in self.config["logger"]:
+
+            level = self.config["logger"]["level"]
+
+            if level == "debug":
+                button = self.ui.radioButtonConfigLoggerLevelDebug
+            elif level == "info":
+                button = self.ui.radioButtonConfigLoggerLevelInfo
+            elif level == "critical":
+                button = self.ui.radioButtonConfigLoggerLevelCritical
+            else:
+                raise ValueError(f"Do not understand logger level {level}")
+
+            button.setChecked(True)
+
+        return True
+
     def set_includes_excludes(self):
         """Set any includes/excludes config file"""
 
@@ -605,6 +629,9 @@ class ConfigWindow(QMainWindow):
 
         # Dat filters we do a bit differently
         self.get_dat_filters()
+
+        # Finally, the logger level
+        self.get_logger_level()
 
         # Save out the config file
         save_yml(filename, self.config)
@@ -785,5 +812,17 @@ class ConfigWindow(QMainWindow):
                 dat_filters.append(d)
         if len(dat_filters) > 0:
             self.config["romchooser"]["dat_filters"] = dat_filters
+
+        return True
+
+    def get_logger_level(self):
+        """Get the logger level from the button config"""
+
+        if "logger" not in self.config:
+            self.config["logger"] = {}
+
+        # Get the method from the radio button group
+        logger_level = self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+        self.config["logger"]["level"] = logger_level
 
         return True

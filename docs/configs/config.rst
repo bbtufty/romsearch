@@ -78,6 +78,10 @@ Syntax: ::
     discord:                            # OPTIONAL. If defined, supply a webhook URL so that ROMSearch can post Discord
       webhook_url: [webhook_url]        #           notifications
 
+    logger:
+      level: info                       # OPTIONAL. If defined, can set the log level to be printed to terminal and
+                                        #           logs
+
 Sample
 ======
 

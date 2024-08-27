@@ -22,6 +22,11 @@ DupeParser
 
 - Logging tidied up to make more readable
 
+GameFinder
+~~~~~~~~~~
+
+- Logging tidied up to make more readable
+
 ROMChooser
 ~~~~~~~~~~
 
@@ -56,6 +61,7 @@ General
 ~~~~~~~
 
 - Due to changes to the re module, ROMSearch requires python>=3.11
+- Allowed specifying log level in the config file
 
 0.0.6 (2024-05-23)
 ==================
