@@ -17,6 +17,11 @@ DATParser
 
 - Logging tidied up to make more readable
 
+DupeParser
+~~~~~~~~~
+
+- Logging tidied up to make more readable
+
 ROMChooser
 ~~~~~~~~~~
 

@@ -483,7 +483,9 @@ class ROMChooser:
         self.logger.info(f"{line_sep * total_length}")
 
         # Game name
-        self.logger.info(centred_string(self.game, total_length=total_length))
+        self.logger.info(centred_string(f"Running ROMChooser for {self.game}",
+                                        total_length=total_length)
+                         )
 
         self.logger.info(f"{line_sep * total_length}")
 
