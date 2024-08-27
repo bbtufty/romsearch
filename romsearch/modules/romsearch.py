@@ -1,9 +1,6 @@
-import copy
 import glob
-import os
-import re
-
 import numpy as np
+import os
 
 import romsearch
 from .datparser import DATParser
@@ -121,7 +118,9 @@ class ROMSearch:
 
         # Log some useful info
         self.logger.info(f"{log_line_sep * log_line_length}")
-        self.logger.info(centred_string("Running ROMSearch for:", total_length=log_line_length))
+        self.logger.info(centred_string("Running ROMSearch for:",
+                                        total_length=log_line_length)
+                         )
         self.logger.info(f"{'-' * log_line_length}")
         for platform in self.platforms:
             self.logger.info(centred_string(platform, total_length=log_line_length))
@@ -130,7 +129,9 @@ class ROMSearch:
         for platform in self.platforms:
 
             self.logger.info(f"{log_line_sep * log_line_length}")
-            self.logger.info(centred_string(platform, total_length=log_line_length))
+            self.logger.info(centred_string(f"Beginning {platform}",
+                                            total_length=log_line_length)
+                             )
             self.logger.info(f"{log_line_sep * log_line_length}")
 
             # Pull in platform-specific config
@@ -156,6 +157,7 @@ class ROMSearch:
                                          default_config=self.default_config,
                                          regex_config=self.regex_config,
                                          logger=self.logger,
+                                         log_line_length=log_line_length,
                                          )
                 dupe_parser.run()
 
@@ -223,9 +225,14 @@ class ROMSearch:
             all_games = finder.run(files=all_file_dict)
 
             self.logger.info(f"{log_line_sep * log_line_length}")
-            self.logger.info(centred_string(f"Searching through {len(all_games)} game(s)",
+            self.logger.info(centred_string(f"Searching through {len(all_games)} game(s):",
                                             total_length=log_line_length)
                              )
+            self.logger.info(f"{'-' * log_line_length}")
+            for g in all_games:
+                self.logger.info(centred_string(g,
+                                                total_length=log_line_length)
+                                 )
             self.logger.info(f"{log_line_sep * log_line_length}")
 
             all_roms_moved = []

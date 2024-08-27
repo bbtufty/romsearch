@@ -4,7 +4,8 @@ import numpy as np
 import requests
 
 import romsearch
-from ..util import (setup_logger,
+from ..util import (centred_string,
+                    setup_logger,
                     load_yml,
                     get_parent_name,
                     get_short_name,
@@ -27,6 +28,8 @@ class DupeParser:
                  default_config=None,
                  regex_config=None,
                  logger=None,
+                 log_line_sep="=",
+                 log_line_length=100,
                  ):
         """Tool for figuring out a list of dupes
 
@@ -37,6 +40,7 @@ class DupeParser:
             default_config (dict, optional): Default configuration dictionary. Defaults to None
             regex_config (dict, optional): Configuration dictionary for regex search. Defaults to None
             logger (logging.Logger, optional): Logger instance. Defaults to None
+            log_line_length (int, optional): Line length of log. Defaults to 100
 
         TODO:
             - At some point, we might want to consider adding in the retool supersets
@@ -91,18 +95,34 @@ class DupeParser:
             regex_config = load_yml(regex_file)
         self.regex_config = regex_config
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
     def run(self):
         """Run the dupe parser"""
 
         if (self.retool_platform_file is None or self.retool_url is None) and self.use_retool:
-            self.logger.warning("retool config for the platform needs to be present if using retool")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string("retool config for the platform needs to be present "
+                                               "if using retool",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return False
+
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
+        self.logger.info(centred_string("Running DupeParser",
+                                        total_length=self.log_line_length)
+                         )
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         dupe_dict = self.get_dupe_dict()
 
         # Save out the dupe dict
         out_file = os.path.join(self.dupe_dir, f"{self.platform} (dupes).json")
         save_json(dupe_dict, out_file)
+
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         return True
 
@@ -129,10 +149,16 @@ class DupeParser:
 
         json_dat = os.path.join(self.parsed_dat_dir, f"{self.platform} (dat parsed).json")
         if not os.path.exists(json_dat):
-            self.logger.warning(f"No dat file found for {self.platform}")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string(f"No dat file found for {self.platform}",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return None
 
-        self.logger.info(f"Using parsed dat file {json_dat}")
+        self.logger.info(centred_string(f"Using parsed dat file {json_dat}",
+                                        total_length=self.log_line_length)
+                         )
 
         dat_dict = load_json(json_dat)
 
@@ -255,7 +281,9 @@ class DupeParser:
             if not os.path.exists(self.parsed_dat_dir):
                 os.makedirs(self.parsed_dat_dir)
 
-            self.logger.info("No retool dupe file found. Downloading")
+            self.logger.info(centred_string("No retool dupe file found. Downloading",
+                                            total_length=self.log_line_length)
+                             )
             self.download_retool_dupe(retool_dupe_file)
 
         retool_dupes = load_json(retool_dupe_file)
@@ -265,10 +293,14 @@ class DupeParser:
         remote_file_time = self.download_retool_dupe(just_date=True)
 
         if not local_file_time == remote_file_time:
-            self.logger.info("More up-to-date dupe file found. Will download")
+            self.logger.info(centred_string("More up-to-date dupe file found. Will download",
+                                            total_length=self.log_line_length)
+                             )
             self.download_retool_dupe(retool_dupe_file)
 
-        self.logger.info(f"Using retool clonelist {retool_dupe_file}")
+        self.logger.info(centred_string(f"Using retool clonelist {retool_dupe_file}",
+                                        total_length=self.log_line_length)
+                         )
 
         retool_dupes = load_json(retool_dupe_file)
         retool_dupes = retool_dupes["variants"]
