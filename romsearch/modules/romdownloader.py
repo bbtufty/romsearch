@@ -1,6 +1,7 @@
 import copy
 import glob
 import os
+import re
 import subprocess
 
 import romsearch
@@ -365,12 +366,19 @@ class ROMDownloader:
                 with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
                     for line in process.stdout:
 
+                        # Replace any potential tabs in the line, strip whitespace and skip newline at the end
+                        line = re.sub('\s+', ' ', line[:-1])
+                        line = line.lstrip().rstrip()
+
+                        if len(line) == 0:
+                            continue
+
                         # Skip the warning about directory filters using regex
                         if "Can't figure out directory filters" in line:
                             continue
 
                         # Log each line of the output using the provided logger
-                        self.logger.info(centred_string(line[:-1], # Exclude the newline character
+                        self.logger.info(centred_string(line,
                                                         total_length=self.log_line_length)
                                          )
 
@@ -436,6 +444,13 @@ class ROMDownloader:
                     with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
                         for line in process.stdout:
 
+                            # Replace any potential tabs in the line, strip whitespace and skip newline at the end
+                            line = re.sub('\s+', ' ', line[:-1])
+                            line = line.lstrip().rstrip()
+
+                            if len(line) == 0:
+                                continue
+
                             # Skip weird time notifications
                             if "Time may be set wrong" in line:
                                 continue
@@ -447,7 +462,7 @@ class ROMDownloader:
                                 continue
 
                             # Log each line of the output using the provided logger
-                            self.logger.info(centred_string(line[:-1], # Exclude the newline character
+                            self.logger.info(centred_string(line, # Exclude the newline character
                                                             total_length=self.log_line_length)
                                              )
 

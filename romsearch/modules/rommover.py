@@ -3,7 +3,8 @@ import os
 import shutil
 
 import romsearch
-from ..util import (load_yml,
+from ..util import (centred_string,
+                    load_yml,
                     setup_logger,
                     unzip_file,
                     load_json,
@@ -20,6 +21,8 @@ class ROMMover:
                  config=None,
                  platform_config=None,
                  logger=None,
+                 log_line_sep="=",
+                 log_line_length=100,
                  ):
         """ROM Moving and cache updating tool
 
@@ -32,6 +35,7 @@ class ROMMover:
             config (dict, optional): configuration dictionary. Defaults to None.
             platform_config (dict, optional): platform configuration dictionary. Defaults to None.
             logger (logging.Logger, optional): logger. Defaults to None.
+            log_line_length (int, optional): Line length of log. Defaults to 100
         """
 
         if config_file is None and config is None:
@@ -85,6 +89,9 @@ class ROMMover:
 
         self.unzip = self.platform_config.get("unzip", False)
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
     def run(self,
             rom_dict,
             ):
@@ -108,7 +115,9 @@ class ROMMover:
                               )
 
             if rom_dict[rom]["file_mod_time"] == cache_mod_time:
-                self.logger.info(f"No updates for {rom}, skipping")
+                self.logger.info(centred_string(f"No updates for {rom}, skipping",
+                                                total_length=self.log_line_length)
+                                 )
                 continue
 
             if rom_no == 0:
@@ -120,7 +129,9 @@ class ROMMover:
             full_dir = os.path.join(self.raw_dir, self.platform)
             full_rom = os.path.join(str(full_dir), rom)
             self.move_file(full_rom, unzip=self.unzip, delete_folder=delete_folder)
-            self.logger.info(f"Moved {rom}")
+            self.logger.info(centred_string(f"Moved {rom}",
+                                            total_length=self.log_line_length)
+                             )
 
             # If there are additional file to move/unzip, do that now
             if "additional_dirs" in self.platform_config:
@@ -130,7 +141,9 @@ class ROMMover:
                     add_file = os.path.join(add_full_dir, rom)
                     if os.path.exists(add_file):
                         self.move_file(add_file, unzip=self.unzip)
-                        self.logger.info(f"Moved {rom} {add_dir}")
+                        self.logger.info(centred_string(f"Moved {rom} {add_dir}",
+                                                        total_length=self.log_line_length)
+                                         )
 
             # Update the cache
             self.cache_update(file=rom, rom_dict=rom_dict)

@@ -17,21 +17,6 @@ DATParser
 
 - Logging tidied up to make more readable
 
-ROMDownloader
-~~~~~~~~~
-
-- Logging tidied up to make more readable
-
-ROMSearch
-~~~~~~~~~
-
-- Logging tidied up to make more readable
-
-ROMParser
-~~~~~~~~~
-
-- ROMParser will now correctly parse multiple regions/languages
-
 ROMChooser
 ~~~~~~~~~~
 
@@ -41,6 +26,26 @@ ROMChooser
 - Fixed bug where letter at end of version could cause a crash
 - Fixed bug where lettered version could cause a crash
 - Fixed bugs with flagging and removing various editions
+
+ROMDownloader
+~~~~~~~~~
+
+- Logging tidied up to make more readable
+
+ROMMover
+~~~~~~~~~
+
+- Logging tidied up to make more readable
+
+ROMParser
+~~~~~~~~~
+
+- ROMParser will now correctly parse multiple regions/languages
+
+ROMSearch
+~~~~~~~~~
+
+- Logging tidied up to make more readable
 
 General
 ~~~~~~~
