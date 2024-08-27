@@ -27,7 +27,7 @@ class Ui_RomSearch(object):
     def setupUi(self, RomSearch):
         if not RomSearch.objectName():
             RomSearch.setObjectName(u"RomSearch")
-        RomSearch.resize(950, 785)
+        RomSearch.resize(1036, 798)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1182,6 +1182,79 @@ class Ui_RomSearch(object):
         self.horizontalLayout_8.addLayout(self.gridLayoutConfigDiscord)
 
         self.tabWidgetConfig.addTab(self.tabConfigDiscord, "")
+        self.tabConfigLogger = QWidget()
+        self.tabConfigLogger.setObjectName(u"tabConfigLogger")
+        self.gridLayout_2 = QGridLayout(self.tabConfigLogger)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayoutConfigLogger = QGridLayout()
+        self.gridLayoutConfigLogger.setObjectName(u"gridLayoutConfigLogger")
+        self.gridLayoutConfigLoggerLeft = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayoutConfigLogger.addItem(self.gridLayoutConfigLoggerLeft, 0, 1, 1, 1)
+
+        self.gridLayoutConfigLoggerMiddle = QGridLayout()
+        self.gridLayoutConfigLoggerMiddle.setObjectName(u"gridLayoutConfigLoggerMiddle")
+        self.labelConfigLoggerLevelTitle = QLabel(self.tabConfigLogger)
+        self.labelConfigLoggerLevelTitle.setObjectName(u"labelConfigLoggerLevelTitle")
+        self.labelConfigLoggerLevelTitle.setFont(font)
+        self.labelConfigLoggerLevelTitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.gridLayoutConfigLoggerMiddle.addWidget(self.labelConfigLoggerLevelTitle, 2, 0, 1, 1)
+
+        self.lineConfigLoggerLevelDividerTop = QFrame(self.tabConfigLogger)
+        self.lineConfigLoggerLevelDividerTop.setObjectName(u"lineConfigLoggerLevelDividerTop")
+        self.lineConfigLoggerLevelDividerTop.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigLoggerLevelDividerTop.setFrameShape(QFrame.Shape.HLine)
+
+        self.gridLayoutConfigLoggerMiddle.addWidget(self.lineConfigLoggerLevelDividerTop, 1, 0, 1, 1)
+
+        self.lineConfigLoggerLevelDividerBottom = QFrame(self.tabConfigLogger)
+        self.lineConfigLoggerLevelDividerBottom.setObjectName(u"lineConfigLoggerLevelDividerBottom")
+        self.lineConfigLoggerLevelDividerBottom.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigLoggerLevelDividerBottom.setFrameShape(QFrame.Shape.HLine)
+
+        self.gridLayoutConfigLoggerMiddle.addWidget(self.lineConfigLoggerLevelDividerBottom, 6, 0, 1, 1)
+
+        self.radioButtonConfigLoggerLevelInfo = QRadioButton(self.tabConfigLogger)
+        self.radioButtonConfigLoggerLevel = QButtonGroup(RomSearch)
+        self.radioButtonConfigLoggerLevel.setObjectName(u"radioButtonConfigLoggerLevel")
+        self.radioButtonConfigLoggerLevel.addButton(self.radioButtonConfigLoggerLevelInfo)
+        self.radioButtonConfigLoggerLevelInfo.setObjectName(u"radioButtonConfigLoggerLevelInfo")
+        self.radioButtonConfigLoggerLevelInfo.setChecked(True)
+
+        self.gridLayoutConfigLoggerMiddle.addWidget(self.radioButtonConfigLoggerLevelInfo, 4, 0, 1, 1)
+
+        self.verticalSpacerConfigLoggerBottom = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayoutConfigLoggerMiddle.addItem(self.verticalSpacerConfigLoggerBottom, 7, 0, 1, 1)
+
+        self.verticalSpacerConfigLoggerTop = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayoutConfigLoggerMiddle.addItem(self.verticalSpacerConfigLoggerTop, 0, 0, 1, 1)
+
+        self.radioButtonConfigLoggerLevelDebug = QRadioButton(self.tabConfigLogger)
+        self.radioButtonConfigLoggerLevel.addButton(self.radioButtonConfigLoggerLevelDebug)
+        self.radioButtonConfigLoggerLevelDebug.setObjectName(u"radioButtonConfigLoggerLevelDebug")
+
+        self.gridLayoutConfigLoggerMiddle.addWidget(self.radioButtonConfigLoggerLevelDebug, 3, 0, 1, 1)
+
+        self.radioButtonConfigLoggerLevelCritical = QRadioButton(self.tabConfigLogger)
+        self.radioButtonConfigLoggerLevel.addButton(self.radioButtonConfigLoggerLevelCritical)
+        self.radioButtonConfigLoggerLevelCritical.setObjectName(u"radioButtonConfigLoggerLevelCritical")
+
+        self.gridLayoutConfigLoggerMiddle.addWidget(self.radioButtonConfigLoggerLevelCritical, 5, 0, 1, 1)
+
+
+        self.gridLayoutConfigLogger.addLayout(self.gridLayoutConfigLoggerMiddle, 0, 2, 1, 1)
+
+        self.gridLayoutConfigLoggerRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayoutConfigLogger.addItem(self.gridLayoutConfigLoggerRight, 0, 3, 1, 1)
+
+
+        self.gridLayout_2.addLayout(self.gridLayoutConfigLogger, 0, 0, 1, 1)
+
+        self.tabWidgetConfig.addTab(self.tabConfigLogger, "")
 
         self.verticalLayout_2.addWidget(self.tabWidgetConfig)
 
@@ -1218,7 +1291,7 @@ class Ui_RomSearch(object):
         RomSearch.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RomSearch)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 950, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1036, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1501,6 +1574,11 @@ class Ui_RomSearch(object):
         self.lineEditConfigDiscordWebhookUrl.setText("")
         self.lineEditConfigDiscordWebhookUrl.setPlaceholderText(QCoreApplication.translate("RomSearch", u"https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigDiscord), QCoreApplication.translate("RomSearch", u"Discord", None))
+        self.labelConfigLoggerLevelTitle.setText(QCoreApplication.translate("RomSearch", u"Log level", None))
+        self.radioButtonConfigLoggerLevelInfo.setText(QCoreApplication.translate("RomSearch", u"Info", None))
+        self.radioButtonConfigLoggerLevelDebug.setText(QCoreApplication.translate("RomSearch", u"Debug", None))
+        self.radioButtonConfigLoggerLevelCritical.setText(QCoreApplication.translate("RomSearch", u"Critical", None))
+        self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigLogger), QCoreApplication.translate("RomSearch", u"Logger", None))
         self.tabWidgetModules.setTabText(self.tabWidgetModules.indexOf(self.tabConfig), QCoreApplication.translate("RomSearch", u"Config", None))
 #if QT_CONFIG(statustip)
         self.pushButtonExit.setStatusTip(QCoreApplication.translate("RomSearch", u"Exit ROMSearch", None))

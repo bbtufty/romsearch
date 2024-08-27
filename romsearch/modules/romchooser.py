@@ -319,7 +319,8 @@ class ROMChooser:
         if logger is None:
             log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
             logger_add_dir = str(os.path.join(platform, game))
-            logger = setup_logger(log_level="info",
+            log_level = self.config.get("logger", {}).get("level", "info")
+            logger = setup_logger(log_level=log_level,
                                   script_name=f"ROMChooser",
                                   log_dir=log_dir,
                                   additional_dir=logger_add_dir,

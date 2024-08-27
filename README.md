@@ -25,12 +25,14 @@ To get started, see the [documentation](https://romsearch.readthedocs.io/en/late
 Currently, ROMSearch is in early development, and so many features may be added over time. At the moment, ROMSearch
 works for the following consoles:
 
-* Nintendo - GameCube
-* Nintendo - Nintendo Entertainment System
-* Nintendo - Super Nintendo Entertainment System
-* Sony - PlayStation
-* Sony - PlayStation 2
-* Sony - PlayStation Portable
+* Nintendo
+   * Nintendo Entertainment System
+   * Super Nintendo Entertainment System
+   * GameCube
+* Sony
+   * PlayStation
+   * PlayStation 2
+   * PlayStation Portable
 
 but be aware there may be quirks that will only become apparent over time. We encourage users to open
 [issues](https://github.com/bbtufty/romsearch/issues) as and where they find them.

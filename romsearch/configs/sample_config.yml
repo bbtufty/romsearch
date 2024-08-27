@@ -55,3 +55,6 @@ romchooser:
 
 discord:
   webhook_url: "https://discord.com/api/webhooks/discord_url"
+
+logger:
+  level: debug

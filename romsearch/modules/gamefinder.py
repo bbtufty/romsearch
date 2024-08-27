@@ -5,7 +5,9 @@ import re
 import numpy as np
 
 import romsearch
-from ..util import (setup_logger,
+from ..util import (centred_string,
+                    left_aligned_string,
+                    setup_logger,
                     load_yml,
                     get_parent_name,
                     get_short_name,
@@ -55,6 +57,8 @@ class GameFinder:
                  default_config=None,
                  regex_config=None,
                  logger=None,
+                 log_line_sep="=",
+                 log_line_length=100,
                  ):
         """Tool to find games within a list of files
 
@@ -68,6 +72,7 @@ class GameFinder:
             default_config (dict, optional): Default configuration dictionary. Defaults to None.
             regex_config (dict, optional): Dictionary of regex config. Defaults to None.
             logger (logging.Logger, optional): Logger instance. Defaults to None.
+            log_line_length (int, optional): Line length of log. Defaults to 100
         """
 
         if platform is None:
@@ -83,7 +88,8 @@ class GameFinder:
 
         if logger is None:
             log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
-            logger = setup_logger(log_level="info",
+            log_level = self.config.get("logger", {}).get("level", "info")
+            logger = setup_logger(log_level=log_level,
                                   script_name=f"GameFinder",
                                   log_dir=log_dir,
                                   additional_dir=platform,
@@ -111,16 +117,40 @@ class GameFinder:
         self.dupe_dir = config.get("dirs", {}).get("dupe_dir", None)
         self.filter_dupes = config.get("gamefinder", {}).get("filter_dupes", True)
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
     def run(self,
             files,
             ):
 
+        self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
+        self.logger.debug(centred_string("Running GameFinder",
+                                        total_length=self.log_line_length)
+                         )
+        self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
+
         games_dict = self.get_game_dict(files)
         games_dict = dict(sorted(games_dict.items()))
 
-        self.logger.debug(f"Found {len(games_dict)} games:")
-        for g in games_dict:
-            self.logger.debug(f"{g}: {games_dict[g]}")
+        self.logger.debug(centred_string(f"Found {len(games_dict)} games",
+                                         total_length=self.log_line_length)
+                          )
+        self.logger.debug(f"{'-' * self.log_line_length}")
+        for gi, g in enumerate(games_dict):
+            self.logger.debug(left_aligned_string(f"{g}:",
+                                                  total_length=self.log_line_length)
+                              )
+
+            for ga in games_dict[g]:
+                self.logger.debug(left_aligned_string(f"-> Priority {games_dict[g][ga]['priority']}. {ga}",
+                                                      total_length=self.log_line_length)
+                                  )
+
+            if gi != len(games_dict) - 1:
+                self.logger.debug(f"{'-' * self.log_line_length}")
+
+        self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
 
         return games_dict
 
@@ -239,7 +269,11 @@ class GameFinder:
 
         dupe_file = os.path.join(self.dupe_dir, f"{self.platform} (dupes).json")
         if not os.path.exists(dupe_file):
-            self.logger.warning("No dupe files found")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string("No dupe files found",
+                                               total_length=self.log_line_length)
+                                )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return None
 
         game_dict = {}
