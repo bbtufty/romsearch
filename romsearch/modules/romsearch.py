@@ -334,6 +334,12 @@ class ROMSearch:
                                                       )
                         all_roms_dict[game][f]["file_mod_time"] = file_mod_time
 
+            self.logger.info(f"{log_line_sep * log_line_length}")
+            self.logger.info(centred_string("Running ROMMover",
+                                            total_length=log_line_length)
+                             )
+            self.logger.info(f"{log_line_sep * log_line_length}")
+
             for game in all_roms_dict:
                 rom_dict = all_roms_dict[game]
 
@@ -342,9 +348,12 @@ class ROMSearch:
                                  config=self.config,
                                  platform_config=platform_config,
                                  logger=self.logger,
+                                 log_line_length=log_line_length,
                                  )
                 roms_moved = mover.run(rom_dict)
                 all_roms_moved.extend(roms_moved)
+
+            self.logger.info(f"{log_line_sep * log_line_length}")
 
             # Post these to Discord in chunks of 10
             if self.discord_url is not None and len(all_roms_moved) > 0:
