@@ -18,7 +18,7 @@ DATParser
 - Logging tidied up to make more readable
 
 DupeParser
-~~~~~~~~~
+~~~~~~~~~~
 
 - Logging tidied up to make more readable
 
@@ -33,12 +33,12 @@ ROMChooser
 - Fixed bugs with flagging and removing various editions
 
 ROMDownloader
-~~~~~~~~~
+~~~~~~~~~~~~~
 
 - Logging tidied up to make more readable
 
 ROMMover
-~~~~~~~~~
+~~~~~~~~
 
 - Logging tidied up to make more readable
 
