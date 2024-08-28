@@ -51,6 +51,7 @@ ROMParser
 ~~~~~~~~~
 
 - ROMParser will now correctly parse multiple regions/languages
+- Logging tidied up to make more readable
 
 ROMSearch
 ~~~~~~~~~

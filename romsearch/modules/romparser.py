@@ -3,7 +3,9 @@ import os
 import re
 
 import romsearch
-from ..util import (setup_logger,
+from ..util import (centred_string,
+                    left_aligned_string,
+                    setup_logger,
                     get_file_time,
                     load_yml,
                     load_json,
@@ -79,6 +81,8 @@ class ROMParser:
                  default_config=None,
                  regex_config=None,
                  logger=None,
+                 log_line_sep="=",
+                 log_line_length=100,
                  ):
         """ROM parser tool
 
@@ -93,6 +97,7 @@ class ROMParser:
             default_config (dict, optional): default configuration dictionary. Defaults to None.
             regex_config (dict, optional): regex configuration dictionary. Defaults to None.
             logger (logging.Logger, optional): logger instance. Defaults to None.
+            log_line_length (int, optional): Line length of log. Defaults to 100
         """
 
         if platform is None:
@@ -105,6 +110,8 @@ class ROMParser:
         if config is None:
             config = load_yml(config_file)
         self.config = config
+
+        self.game = game
 
         if logger is None:
             log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
@@ -163,12 +170,21 @@ class ROMParser:
             if os.path.exists(retool_file):
                 self.retool = load_json(retool_file)
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
     def run(self,
             files,
             ):
         """Run the ROM parser"""
 
         game_dict = {}
+
+        self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
+        self.logger.debug(centred_string(f"Running ROMParser for {self.game}",
+                                         total_length=self.log_line_length)
+                         )
+        self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
 
         for f in files:
             game_dict[f] = self.parse_file(f)
@@ -202,7 +218,71 @@ class ROMParser:
                                   )
         file_dict["file_mod_time"] = file_time
 
-        self.logger.debug(f"{f}: {file_dict}")
+        # Log out these tags in a nice readable way
+        self.logger.debug(centred_string(f"{f}:",
+                                         total_length=self.log_line_length)
+                          )
+
+        # Track the various tags we can have
+        true_tags = []
+        false_tags = []
+        str_tags = {}
+        list_tags = {}
+
+        for key in file_dict:
+            if isinstance(file_dict[key], bool):
+                if file_dict[key]:
+                    true_tags.append(key)
+                else:
+                    false_tags.append(key)
+            elif isinstance(file_dict[key], str):
+                str_tags[key] = file_dict[key]
+            elif isinstance(file_dict[key], list):
+                list_tags[key] = file_dict[key]
+            else:
+                raise ValueError(f"{file_dict[key]} is not something I know how to parse")
+
+        # Log the string tags
+        self.logger.debug(left_aligned_string(f"String tags:",
+                                              total_length=self.log_line_length)
+                          )
+        for tag in str_tags:
+            if str_tags[tag] == "":
+                continue
+            self.logger.debug(left_aligned_string(f"-> {tag}: {str_tags[tag]}",
+                                                  total_length=self.log_line_length)
+                              )
+
+        # Log the list tags
+        self.logger.debug(left_aligned_string(f"List tags:",
+                                              total_length=self.log_line_length)
+                          )
+        for tag in list_tags:
+            if not list_tags[tag]:
+                continue
+            self.logger.debug(left_aligned_string(f"-> {tag}: {', '.join(str(i) for i in list_tags[tag])}",
+                                                  total_length=self.log_line_length)
+                              )
+
+        # Log the True bool tags
+        self.logger.debug(left_aligned_string(f"Tagged:",
+                                              total_length=self.log_line_length)
+                          )
+        for tag in true_tags:
+            self.logger.debug(left_aligned_string(f"-> {tag}",
+                                                  total_length=self.log_line_length)
+                              )
+
+        # Log the False bool tags
+        self.logger.debug(left_aligned_string(f"Not tagged:",
+                                              total_length=self.log_line_length)
+                          )
+        for tag in false_tags:
+            self.logger.debug(left_aligned_string(f"-> {tag}",
+                                                  total_length=self.log_line_length)
+                              )
+
+        self.logger.debug(f"{'-' * self.log_line_length}")
 
         return file_dict
 
@@ -213,7 +293,11 @@ class ROMParser:
             file_dict = {}
 
         if self.retool is None:
-            self.logger.warning(f"No retool file found for {self.platform}. Skipping")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string(f"No retool file found for {self.platform}. Skipping",
+                                             total_length=self.log_line_length)
+                              )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
         # Pull out the game name
@@ -251,13 +335,21 @@ class ROMParser:
             file_dict = {}
 
         if self.dat is None:
-            self.logger.warning(f"No dat file found for {self.platform}. Skipping")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string(f"No dat file found for {self.platform}. Skipping",
+                                             total_length=self.log_line_length)
+                              )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
         # Remember there aren't zips in the dat entries
         dat_entry = self.dat.get(f.strip(".zip"), None)
         if not dat_entry:
-            self.logger.warning(f"No dat entry found for {f}. Skipping")
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+            self.logger.warning(centred_string(f"No dat entry found for {f}. Skipping",
+                                             total_length=self.log_line_length)
+                              )
+            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
         dat_categories = self.default_config.get("dat_categories", [])
