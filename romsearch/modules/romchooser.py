@@ -286,6 +286,8 @@ class ROMChooser:
                  default_config=None,
                  regex_config=None,
                  logger=None,
+                 log_line_sep="=",
+                 log_line_length=100,
                  ):
         """ROM choose tool
 
@@ -299,6 +301,7 @@ class ROMChooser:
             default_config (dict, optional): Default configuration dictionary. Defaults to None.
             regex_config (dict, optional): Configuration dictionary. Defaults to None.
             logger (logging.Logger, optional): Logger instance. Defaults to None.
+            log_line_length (int, optional): Line length of log. Defaults to 100
         """
 
         if platform is None:
@@ -381,9 +384,18 @@ class ROMChooser:
 
         self.dry_run = self.config.get("romchooser", {}).get("dry_run", False)
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
     def run(self,
             rom_dict):
         """Run the ROM chooser"""
+
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
+        self.logger.info(centred_string(f"Running ROMChooser for {self.game}",
+                                        total_length=self.log_line_length)
+                         )
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         rom_dict = self.run_chooser(rom_dict)
 
@@ -391,6 +403,8 @@ class ROMChooser:
 
         # Filter out excluded ROMs before we return
         rom_dict = {key: rom_dict[key] for key in rom_dict if not rom_dict[key]["excluded"]}
+
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         return rom_dict
 
@@ -418,7 +432,9 @@ class ROMChooser:
             rom_dict[r]["excluded_reason"] = []
 
         for f in self.dat_filters:
-            self.logger.debug(f"Filtering {f}")
+            self.logger.debug(left_aligned_string(f"Filtering {f}",
+                                                  total_length=self.log_line_length)
+                              )
             if f in DAT_FILTERS:
                 rom_dict = remove_rom_dict_entries(rom_dict,
                                                    f,
@@ -430,7 +446,9 @@ class ROMChooser:
 
         # Language
         if self.filter_languages:
-            self.logger.debug("Filtering languages")
+            self.logger.debug(left_aligned_string(f"Filtering languages",
+                                                  total_length=self.log_line_length)
+                              )
             rom_dict = remove_rom_dict_entries(rom_dict,
                                                "languages",
                                                remove_type="list",
@@ -439,7 +457,9 @@ class ROMChooser:
 
         # Regions
         if self.filter_regions:
-            self.logger.debug("Filtering regions")
+            self.logger.debug(left_aligned_string(f"Filtering regions",
+                                                  total_length=self.log_line_length)
+                              )
             rom_dict = remove_rom_dict_entries(rom_dict,
                                                "regions",
                                                remove_type="list",
@@ -448,7 +468,9 @@ class ROMChooser:
 
         # Remove versions we potentially don't want around
         if self.use_best_version:
-            self.logger.debug("Getting best version")
+            self.logger.debug(left_aligned_string(f"Getting best version",
+                                                  total_length=self.log_line_length)
+                              )
             rom_dict = get_best_version(rom_dict)
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="improved_version", check_type="include")
             rom_dict = remove_unwanted_roms(rom_dict, key_to_check="budget_edition", check_type="include")
@@ -460,7 +482,9 @@ class ROMChooser:
                                                     )
 
         if not self.allow_multiple_regions:
-            self.logger.debug("Trimming down to a single region")
+            self.logger.debug(left_aligned_string(f"Trimming down to a single region",
+                                                  total_length=self.log_line_length)
+                              )
             rom_dict = filter_by_list(rom_dict,
                                       "regions",
                                       self.region_preferences,
@@ -470,34 +494,25 @@ class ROMChooser:
 
     def print_summary(self,
                       rom_dict,
-                      total_length=100,
-                      line_sep="=",
                       ):
         """Log out a nice summary of what ROM has been chosen here
 
         Args:
             rom_dict (dict): the ROM dictionary to summarize
-            total_length (int): Total length for the logger line
-            line_sep (str): Line separator. Defaults to "="
         """
-
-        self.logger.info(f"{line_sep * total_length}")
-
-        # Game name
-        self.logger.info(centred_string(f"Running ROMChooser for {self.game}",
-                                        total_length=total_length)
-                         )
-
-        self.logger.info(f"{line_sep * total_length}")
 
         if len(rom_dict) == 0:
             # Just say nothing found
-            self.logger.info(centred_string("No ROMs found", total_length=total_length))
+            self.logger.info(centred_string("No ROMs found",
+                                            total_length=self.log_line_length)
+                             )
         else:
 
             # Start with found ROMs, then excluded ROMs and reasons
             if np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0:
-                self.logger.info(centred_string("Included ROMs:", total_length=total_length))
+                self.logger.info(centred_string("Included ROMs:",
+                                                total_length=self.log_line_length)
+                                 )
 
             for r in rom_dict:
 
@@ -505,14 +520,18 @@ class ROMChooser:
                 if rom_dict[r]["excluded"]:
                     continue
 
-                self.logger.info(left_aligned_string(f"-> {r}", total_length=total_length))
+                self.logger.info(left_aligned_string(f"-> {r}",
+                                                     total_length=self.log_line_length)
+                                 )
 
             if (np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0
                     and np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0):
-                self.logger.info(f"{'-' * total_length}")
+                self.logger.info(f"{'-' * self.log_line_length}")
 
             if np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0:
-                self.logger.info(centred_string("Excluded ROMs:", total_length=total_length))
+                self.logger.info(centred_string("Excluded ROMs:",
+                                                total_length=self.log_line_length)
+                                 )
 
             for r in rom_dict:
 
@@ -524,12 +543,12 @@ class ROMChooser:
                 exclusion_reason = rom_dict[r]["excluded_reason"]
                 exclusion_reason = [e.capitalize().replace("_", " ") for e in exclusion_reason]
 
-                self.logger.info(left_aligned_string(f"-> {r}", total_length=total_length))
-                self.logger.info(left_aligned_string(f"---> Reason(s): {', '.join(exclusion_reason)}",
-                                                     total_length=total_length)
+                self.logger.info(left_aligned_string(f"-> {r}",
+                                                     total_length=self.log_line_length)
                                  )
-
-        self.logger.info(f"{line_sep * total_length}")
+                self.logger.info(left_aligned_string(f"--> Reason(s): {', '.join(exclusion_reason)}",
+                                                     total_length=self.log_line_length)
+                                 )
 
         return True
 

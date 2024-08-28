@@ -279,6 +279,7 @@ class ROMSearch:
                                          regex_config=self.regex_config,
                                          default_config=self.default_config,
                                          logger=self.logger,
+                                         log_line_length=log_line_length,
                                          )
                     rom_dict = chooser.run(rom_dict)
 
