@@ -1,4 +1,4 @@
-0.0.7 (Unreleased)
+0.0.7 (2024-08-28)
 ==================
 
 Features
@@ -61,6 +61,7 @@ ROMSearch
 General
 ~~~~~~~
 
+- Bump to 0.0.7
 - Due to changes to the re module, ROMSearch requires python>=3.11
 - Allowed specifying log level in the config file
 
