@@ -26,6 +26,7 @@ Currently, ROMSearch is in early development, and so many features may be added 
 works for the following consoles:
 
 * Nintendo
+   * Game Boy
    * Nintendo Entertainment System
    * Super Nintendo Entertainment System
    * GameCube

@@ -12,6 +12,11 @@ Syntax: ::
     additional_dirs:                # OPTIONAL. Occasionally, files may need to be pulled from other remote directories.
       [additional_dir]: [dir]       #           These can be specified here
 
+Nintendo - Game Boy
+===================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Game Boy.yml
+
 Nintendo - GameCube
 ===================
 
