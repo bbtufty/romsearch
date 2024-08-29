@@ -38,6 +38,7 @@ has the capability for:
 
 * Nintendo
 
+  * Game Boy
   * GameCube
   * Nintendo - Nintendo Entertainment System
   * Nintendo - Super Nintendo Entertainment System

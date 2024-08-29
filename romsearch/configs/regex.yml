@@ -180,6 +180,10 @@ cart_present:
   pattern: "\\(Cart Present\\)"
   group: "improved_version"
 
+cgb_sgb_enhanced:
+  pattern: "\\(CGB\\+SGB Enhanced\\)"
+  group: "improved_version"
+
 controller_set:
   pattern: "\\(Controller Set\\)"
   group: "improved_version"
@@ -212,6 +216,14 @@ gps_receiver_doukonban:
 
 ideatek:
   pattern: "\\(Idea-Tek\\)"
+  group: "improved_version"
+
+ie_institute:
+  pattern: "\\(IE Institute\\)"
+  group: "improved_version"
+
+imagineer:
+  pattern: "\\(Imagineer\\)"
   group: "improved_version"
 
 infinity_plus:
@@ -256,6 +268,10 @@ renkaban:
 
 sachen:
   pattern: "\\(Sachen\\)"
+  group: "improved_version"
+
+sgb_enhanced:
+  pattern: "\\(SGB Enhanced\\)"
   group: "improved_version"
 
 subor_keyboard:
