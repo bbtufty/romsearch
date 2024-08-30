@@ -27,7 +27,7 @@ class Ui_RomSearch(object):
     def setupUi(self, RomSearch):
         if not RomSearch.objectName():
             RomSearch.setObjectName(u"RomSearch")
-        RomSearch.resize(1036, 798)
+        RomSearch.resize(1094, 785)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -161,6 +161,27 @@ class Ui_RomSearch(object):
 
 
         self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigRomDir)
+
+        self.labelConfigRAHashDir = QLabel(self.tabConfigMain)
+        self.labelConfigRAHashDir.setObjectName(u"labelConfigRAHashDir")
+
+        self.verticalLayoutConfigRomsearchDirs.addWidget(self.labelConfigRAHashDir)
+
+        self.horizontalLayoutConfigRAHashDir = QHBoxLayout()
+        self.horizontalLayoutConfigRAHashDir.setObjectName(u"horizontalLayoutConfigRAHashDir")
+        self.lineEditConfigRAHashDir = QLineEdit(self.tabConfigMain)
+        self.lineEditConfigRAHashDir.setObjectName(u"lineEditConfigRAHashDir")
+
+        self.horizontalLayoutConfigRAHashDir.addWidget(self.lineEditConfigRAHashDir)
+
+        self.pushButtonConfigRAHashDir = QPushButton(self.tabConfigMain)
+        self.pushButtonConfigRAHashDir.setObjectName(u"pushButtonConfigRAHashDir")
+        self.pushButtonConfigRAHashDir.setFlat(False)
+
+        self.horizontalLayoutConfigRAHashDir.addWidget(self.pushButtonConfigRAHashDir)
+
+
+        self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigRAHashDir)
 
         self.labelConfigDatDir = QLabel(self.tabConfigMain)
         self.labelConfigDatDir.setObjectName(u"labelConfigDatDir")
@@ -310,6 +331,12 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRunRomDownloader.setChecked(True)
 
         self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigRunRomDownloader)
+
+        self.checkBoxConfigRunRAHasher = QCheckBox(self.tabConfigMain)
+        self.checkBoxConfigRunRAHasher.setObjectName(u"checkBoxConfigRunRAHasher")
+        self.checkBoxConfigRunRAHasher.setChecked(False)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigRunRAHasher)
 
         self.checkBoxConfigRunDatParser = QCheckBox(self.tabConfigMain)
         self.checkBoxConfigRunDatParser.setObjectName(u"checkBoxConfigRunDatParser")
@@ -686,19 +713,88 @@ class Ui_RomSearch(object):
         self.horizontalLayout_7.addLayout(self.gridLayoutConfigRomDownloader)
 
         self.tabWidgetConfig.addTab(self.tabConfigRomDownloader, "")
+        self.tabConfigRAHasher = QWidget()
+        self.tabConfigRAHasher.setObjectName(u"tabConfigRAHasher")
+        self.gridLayout = QGridLayout(self.tabConfigRAHasher)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayoutConfigRAHasher = QGridLayout()
+        self.gridLayoutConfigRAHasher.setObjectName(u"gridLayoutConfigRAHasher")
+        self.verticalLayoutConfigRAHasherMiddle = QVBoxLayout()
+        self.verticalLayoutConfigRAHasherMiddle.setObjectName(u"verticalLayoutConfigRAHasherMiddle")
+        self.verticalSpacerConfigRAHasherTop = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRAHasherMiddle.addItem(self.verticalSpacerConfigRAHasherTop)
+
+        self.lineConfigRAHasherDividerTop = QFrame(self.tabConfigRAHasher)
+        self.lineConfigRAHasherDividerTop.setObjectName(u"lineConfigRAHasherDividerTop")
+        self.lineConfigRAHasherDividerTop.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigRAHasherDividerTop.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.lineConfigRAHasherDividerTop)
+
+        self.labelConfigRAHasherUsernameDescription = QLabel(self.tabConfigRAHasher)
+        self.labelConfigRAHasherUsernameDescription.setObjectName(u"labelConfigRAHasherUsernameDescription")
+        self.labelConfigRAHasherUsernameDescription.setWordWrap(True)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.labelConfigRAHasherUsernameDescription)
+
+        self.lineEditConfigRAHasherUsername = QLineEdit(self.tabConfigRAHasher)
+        self.lineEditConfigRAHasherUsername.setObjectName(u"lineEditConfigRAHasherUsername")
+        self.lineEditConfigRAHasherUsername.setFrame(True)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.lineEditConfigRAHasherUsername)
+
+        self.labelConfigRAHasherAPIKeyDescription = QLabel(self.tabConfigRAHasher)
+        self.labelConfigRAHasherAPIKeyDescription.setObjectName(u"labelConfigRAHasherAPIKeyDescription")
+        self.labelConfigRAHasherAPIKeyDescription.setWordWrap(True)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.labelConfigRAHasherAPIKeyDescription)
+
+        self.lineEditConfigRAHasherAPIKey = QLineEdit(self.tabConfigRAHasher)
+        self.lineEditConfigRAHasherAPIKey.setObjectName(u"lineEditConfigRAHasherAPIKey")
+        self.lineEditConfigRAHasherAPIKey.setFrame(True)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.lineEditConfigRAHasherAPIKey)
+
+        self.lineConfigRAHasherDividerBottom = QFrame(self.tabConfigRAHasher)
+        self.lineConfigRAHasherDividerBottom.setObjectName(u"lineConfigRAHasherDividerBottom")
+        self.lineConfigRAHasherDividerBottom.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigRAHasherDividerBottom.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.lineConfigRAHasherDividerBottom)
+
+        self.verticalSpacerConfigRAHasherBottom = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRAHasherMiddle.addItem(self.verticalSpacerConfigRAHasherBottom)
+
+
+        self.gridLayoutConfigRAHasher.addLayout(self.verticalLayoutConfigRAHasherMiddle, 0, 2, 1, 1)
+
+        self.gridLayoutConfigRAHasherRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayoutConfigRAHasher.addItem(self.gridLayoutConfigRAHasherRight, 0, 3, 1, 1)
+
+        self.gridLayoutConfigRAHasherLeft = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayoutConfigRAHasher.addItem(self.gridLayoutConfigRAHasherLeft, 0, 1, 1, 1)
+
+
+        self.gridLayout.addLayout(self.gridLayoutConfigRAHasher, 0, 0, 1, 1)
+
+        self.tabWidgetConfig.addTab(self.tabConfigRAHasher, "")
         self.tabConfigDupeParser = QWidget()
         self.tabConfigDupeParser.setObjectName(u"tabConfigDupeParser")
         self.horizontalLayout_4 = QHBoxLayout(self.tabConfigDupeParser)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.gridLayoutConfigDupeParser = QGridLayout()
         self.gridLayoutConfigDupeParser.setObjectName(u"gridLayoutConfigDupeParser")
-        self.gridLayoutConfigDupeParserRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayoutConfigDupeParser.addItem(self.gridLayoutConfigDupeParserRight, 0, 3, 1, 1)
-
         self.gridLayoutConfigDupeParserLeft = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayoutConfigDupeParser.addItem(self.gridLayoutConfigDupeParserLeft, 0, 1, 1, 1)
+
+        self.gridLayoutConfigDupeParserRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayoutConfigDupeParser.addItem(self.gridLayoutConfigDupeParserRight, 0, 3, 1, 1)
 
         self.verticalLayoutConfigDupeParserMiddle = QVBoxLayout()
         self.verticalLayoutConfigDupeParserMiddle.setObjectName(u"verticalLayoutConfigDupeParserMiddle")
@@ -718,13 +814,6 @@ class Ui_RomSearch(object):
         self.checkBoxConfigDupeParserUseDat.setChecked(True)
 
         self.verticalLayoutConfigDupeParserMiddle.addWidget(self.checkBoxConfigDupeParserUseDat)
-
-        self.lineConfigDupeParserUseRetoolTop = QFrame(self.tabConfigDupeParser)
-        self.lineConfigDupeParserUseRetoolTop.setObjectName(u"lineConfigDupeParserUseRetoolTop")
-        self.lineConfigDupeParserUseRetoolTop.setFrameShadow(QFrame.Shadow.Plain)
-        self.lineConfigDupeParserUseRetoolTop.setFrameShape(QFrame.Shape.HLine)
-
-        self.verticalLayoutConfigDupeParserMiddle.addWidget(self.lineConfigDupeParserUseRetoolTop)
 
         self.checkBoxConfigDupeParserUseRetool = QCheckBox(self.tabConfigDupeParser)
         self.checkBoxConfigDupeParserUseRetool.setObjectName(u"checkBoxConfigDupeParserUseRetool")
@@ -807,13 +896,13 @@ class Ui_RomSearch(object):
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.gridLayoutConfigRomParser = QGridLayout()
         self.gridLayoutConfigRomParser.setObjectName(u"gridLayoutConfigRomParser")
-        self.gridLayoutConfigRomParserRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayoutConfigRomParser.addItem(self.gridLayoutConfigRomParserRight, 0, 3, 1, 1)
-
         self.gridLayouConfigRomParserLeft = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayoutConfigRomParser.addItem(self.gridLayouConfigRomParserLeft, 0, 1, 1, 1)
+
+        self.gridLayoutConfigRomParserRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayoutConfigRomParser.addItem(self.gridLayoutConfigRomParserRight, 0, 3, 1, 1)
 
         self.verticalLayoutConfigRomParserMiddle = QVBoxLayout()
         self.verticalLayoutConfigRomParserMiddle.setObjectName(u"verticalLayoutConfigRomParserMiddle")
@@ -834,12 +923,17 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomParserMiddle.addWidget(self.checkBoxConfigRomParserUseDat)
 
-        self.lineConfigRomParserUseFilenamelTop = QFrame(self.tabConfigRomParser)
-        self.lineConfigRomParserUseFilenamelTop.setObjectName(u"lineConfigRomParserUseFilenamelTop")
-        self.lineConfigRomParserUseFilenamelTop.setFrameShadow(QFrame.Shadow.Plain)
-        self.lineConfigRomParserUseFilenamelTop.setFrameShape(QFrame.Shape.HLine)
+        self.checkBoxConfigRomParserUseRetool = QCheckBox(self.tabConfigRomParser)
+        self.checkBoxConfigRomParserUseRetool.setObjectName(u"checkBoxConfigRomParserUseRetool")
+        self.checkBoxConfigRomParserUseRetool.setChecked(True)
 
-        self.verticalLayoutConfigRomParserMiddle.addWidget(self.lineConfigRomParserUseFilenamelTop)
+        self.verticalLayoutConfigRomParserMiddle.addWidget(self.checkBoxConfigRomParserUseRetool)
+
+        self.checkBoxConfigRomParserUseRAHashes = QCheckBox(self.tabConfigRomParser)
+        self.checkBoxConfigRomParserUseRAHashes.setObjectName(u"checkBoxConfigRomParserUseRAHashes")
+        self.checkBoxConfigRomParserUseRAHashes.setChecked(False)
+
+        self.verticalLayoutConfigRomParserMiddle.addWidget(self.checkBoxConfigRomParserUseRAHashes)
 
         self.checkBoxConfigRomParserUseFilename = QCheckBox(self.tabConfigRomParser)
         self.checkBoxConfigRomParserUseFilename.setObjectName(u"checkBoxConfigRomParserUseFilename")
@@ -1291,7 +1385,7 @@ class Ui_RomSearch(object):
         RomSearch.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RomSearch)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1036, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1094, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1390,6 +1484,16 @@ class Ui_RomSearch(object):
         self.lineEditConfigRomDir.setPlaceholderText(QCoreApplication.translate("RomSearch", u"roms", None))
         self.pushButtonConfigRomDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
 #if QT_CONFIG(statustip)
+        self.labelConfigRAHashDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for the final, sorted ROM files", None))
+#endif // QT_CONFIG(statustip)
+        self.labelConfigRAHashDir.setText(QCoreApplication.translate("RomSearch", u"RA Hash Directory", None))
+#if QT_CONFIG(statustip)
+        self.lineEditConfigRAHashDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for the parsed RetroAchievement hashes", None))
+#endif // QT_CONFIG(statustip)
+        self.lineEditConfigRAHashDir.setText(QCoreApplication.translate("RomSearch", u"ra_hash", None))
+        self.lineEditConfigRAHashDir.setPlaceholderText(QCoreApplication.translate("RomSearch", u"ra_hash", None))
+        self.pushButtonConfigRAHashDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+#if QT_CONFIG(statustip)
         self.labelConfigDatDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for raw .dat files", None))
 #endif // QT_CONFIG(statustip)
         self.labelConfigDatDir.setText(QCoreApplication.translate("RomSearch", u"DAT Directory", None))
@@ -1440,7 +1544,7 @@ class Ui_RomSearch(object):
         self.lineEditConfigLogDir.setPlaceholderText("")
         self.pushButtonConfigLogDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
         self.labelConfigRomsearchModulesTitle.setText(QCoreApplication.translate("RomSearch", u"Which ROMSearch modules would you like to run?", None))
-        self.labelConfigRomsearchModulesDescription.setText(QCoreApplication.translate("RomSearch", u"Check to include the various ROMSearch modules. By default, all are selected", None))
+        self.labelConfigRomsearchModulesDescription.setText(QCoreApplication.translate("RomSearch", u"Check to include the various ROMSearch modules.", None))
 #if QT_CONFIG(tooltip)
         self.checkBoxConfigRunRomDownloader.setToolTip("")
 #endif // QT_CONFIG(tooltip)
@@ -1448,6 +1552,13 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRunRomDownloader.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the ROMDownloader?", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRunRomDownloader.setText(QCoreApplication.translate("RomSearch", u"Run ROMDownloader", None))
+#if QT_CONFIG(tooltip)
+        self.checkBoxConfigRunRAHasher.setToolTip("")
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRunRAHasher.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the RetroAchievements hash downloader?", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRunRAHasher.setText(QCoreApplication.translate("RomSearch", u"Run RAHasher", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRunDatParser.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the DATParser?", None))
 #endif // QT_CONFIG(statustip)
@@ -1506,6 +1617,13 @@ class Ui_RomSearch(object):
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRomDownloaderDryRun.setText(QCoreApplication.translate("RomSearch", u"Dry Run", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomDownloader), QCoreApplication.translate("RomSearch", u"ROMDownloader", None))
+        self.labelConfigRAHasherUsernameDescription.setText(QCoreApplication.translate("RomSearch", u"RetroAchievements Username", None))
+        self.lineEditConfigRAHasherUsername.setText("")
+        self.lineEditConfigRAHasherUsername.setPlaceholderText(QCoreApplication.translate("RomSearch", u"username", None))
+        self.labelConfigRAHasherAPIKeyDescription.setText(QCoreApplication.translate("RomSearch", u"RetroAchievements API Key", None))
+        self.lineEditConfigRAHasherAPIKey.setText("")
+        self.lineEditConfigRAHasherAPIKey.setPlaceholderText(QCoreApplication.translate("RomSearch", u"1234567890abcde", None))
+        self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRAHasher), QCoreApplication.translate("RomSearch", u"RAHasher", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigDupeParserUseDat.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the dat file to figure out dupes. Default checked", None))
 #endif // QT_CONFIG(statustip)
@@ -1524,6 +1642,14 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomParserUseDat.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the dat file to parse ROM information. Default checked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRomParserUseDat.setText(QCoreApplication.translate("RomSearch", u"Use .dat", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRomParserUseRetool.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the retool file to parse ROM information. Default checked", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRomParserUseRetool.setText(QCoreApplication.translate("RomSearch", u"Use retool", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRomParserUseRAHashes.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the RA hashes to find ROMs with achievements. Default unchecked", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRomParserUseRAHashes.setText(QCoreApplication.translate("RomSearch", u"Use RA hashes", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRomParserUseFilename.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the filename to parse ROM information. Default checked", None))
 #endif // QT_CONFIG(statustip)

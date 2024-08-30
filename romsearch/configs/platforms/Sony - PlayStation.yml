@@ -3,3 +3,6 @@ dir: "/Redump/Sony - PlayStation/"
 unzip: true
 additional_dirs:
   SBI: "/Redump/Sony - PlayStation - SBI Subchannels/"
+
+ra_id: 12
+ra_hash_method: "custom"

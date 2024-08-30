@@ -12,6 +12,7 @@ the available modules.
 
   modules/romsearch
   modules/romdownloader
+  modules/rahasher
   modules/datparser
   modules/dupeparser
   modules/gamefinder

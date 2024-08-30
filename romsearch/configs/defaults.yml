@@ -202,3 +202,8 @@ dat_categories:
   - "Preproduction"
   - "Promotional"
   - "Video"
+
+dat_checksums:
+  - "md5"
+  - "sha1"
+  - "sha256"

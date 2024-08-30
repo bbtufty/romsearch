@@ -1,18 +1,19 @@
 import glob
 import numpy as np
 import os
+import time
 
 import romsearch
 from .datparser import DATParser
 from .dupeparser import DupeParser
 from .gamefinder import GameFinder
+from .rahasher import RAHasher
 from .romchooser import ROMChooser
 from .romdownloader import ROMDownloader
 from .rommover import ROMMover
 from .romparser import ROMParser
 from ..util import (centred_string,
                     load_yml,
-                    load_json,
                     setup_logger,
                     discord_push,
                     split,
@@ -97,6 +98,7 @@ class ROMSearch:
 
         # Which modules to run
         self.run_romdownloader = self.config.get("romsearch", {}).get("run_romdownloader", True)
+        self.run_rahasher = self.config.get("romsearch", {}).get("run_rahasher", False)
         self.run_datparser = self.config.get("romsearch", {}).get("run_datparser", True)
         self.run_dupeparser = self.config.get("romsearch", {}).get("run_dupeparser", True)
         self.run_romchooser = self.config.get("romsearch", {}).get("run_romchooser", True)
@@ -116,6 +118,8 @@ class ROMSearch:
             log_line_sep (str, optional): log line separator. Defaults to "=".
             log_line_length (int, optional): log line length. Defaults to 100.
         """
+
+        start = time.time()
 
         # Log some useful info
         self.logger.info(f"{log_line_sep * log_line_length}")
@@ -141,7 +145,18 @@ class ROMSearch:
 
             raw_dir = os.path.join(self.raw_dir, platform)
 
+            # Parse the RA hashes here, if we're doing that
+            ra_hash_dict = None
+            if self.run_rahasher:
+                ra_hasher = RAHasher(platform=platform,
+                                       config=self.config,
+                                       logger=self.logger,
+                                       log_line_length=log_line_length,
+                                       )
+                ra_hash_dict = ra_hasher.run()
+
             # Parse DAT files here, if we're doing that
+            dat_dict = None
             if self.run_datparser:
                 dat_parser = DATParser(platform=platform,
                                        config=self.config,
@@ -149,9 +164,10 @@ class ROMSearch:
                                        logger=self.logger,
                                        log_line_length=log_line_length,
                                        )
-                dat_parser.run()
+                dat_dict = dat_parser.run()
 
             # Get dupes here, if we're doing that
+            retool_dict = None
             if self.run_dupeparser:
                 dupe_parser = DupeParser(platform=platform,
                                          config=self.config,
@@ -160,7 +176,7 @@ class ROMSearch:
                                          logger=self.logger,
                                          log_line_length=log_line_length,
                                          )
-                dupe_parser.run()
+                retool_dict = dupe_parser.run()
 
             if self.romsearch_method == "download_then_filter":
                 # Run the rclone sync
@@ -191,10 +207,7 @@ class ROMSearch:
                 if parsed_dat_dir is None:
                     raise ValueError("parsed_dat_dir needs to be defined in config")
 
-                parsed_dat_file = os.path.join(parsed_dat_dir, f"{platform} (dat parsed).json")
-                parsed_dat = load_json(parsed_dat_file)
-
-                all_files = [f"{f}.zip" for f in parsed_dat]
+                all_files = [f"{f}.zip" for f in dat_dict]
                 all_files = np.unique(all_files)
                 all_files.sort()
 
@@ -262,6 +275,9 @@ class ROMSearch:
 
                 parse = ROMParser(platform=platform,
                                   game=game,
+                                  dat=dat_dict,
+                                  retool=retool_dict,
+                                  ra_hashes=ra_hash_dict,
                                   config=self.config,
                                   platform_config=platform_config,
                                   regex_config=self.regex_config,
@@ -390,6 +406,7 @@ class ROMSearch:
 
         self.logger.info(f"{log_line_sep * log_line_length}")
         self.logger.info(centred_string("ROMSearch complete", total_length=log_line_length))
+        self.logger.info(centred_string(f"Took {time.time()-start:.1f}s", total_length=log_line_length))
         self.logger.info(f"{log_line_sep * log_line_length}")
 
         return True

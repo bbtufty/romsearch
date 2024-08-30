@@ -1,3 +1,6 @@
 group: "No-Intro"
 dir: "/No-Intro/Nintendo - Game Boy/"
 unzip: false
+
+ra_id: 4
+ra_hash_method: "md5"

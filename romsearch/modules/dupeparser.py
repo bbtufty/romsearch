@@ -125,7 +125,7 @@ class DupeParser:
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        return True
+        return dupe_dict
 
     def get_dupe_dict(self):
         """Loop through potentially both the dat files and the retool config file to get out dupes"""
