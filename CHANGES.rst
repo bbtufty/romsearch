@@ -6,6 +6,47 @@ Features
 
 - Added Nintendo - Game Boy
 
+RAHasher
+~~~~~~~~
+
+- Initial support for RetroAchievements, to choose ROMs that match RA hashes
+
+DATParser
+~~~~~~~~~
+
+- Return dat dict directly from ``run``
+
+DupeParser
+~~~~~~~~~~
+
+- Return dupe dict directly from ``run``
+
+ROMChooser
+~~~~~~~~~~
+
+- Added in scoring if ROM has associated RA achievements
+
+ROMDownloader
+~~~~~~~~~~~~~
+
+- Fixed crash if file does not exist on remote
+
+ROMParser
+~~~~~~~~~
+
+- Parse checksums out of dat files
+- Can take dat and dupe dicts directly, to avoid file I/O
+
+ROMSearch
+~~~~~~~~~
+
+- Return dat and dupe dicts to save file I/O
+
+General
+~~~~~~~
+
+- Build RTDs on PRs
+
 0.0.7 (2024-08-28)
 ==================
 

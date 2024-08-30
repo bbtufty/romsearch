@@ -10,6 +10,7 @@ from ..util import (centred_string,
                     load_yml,
                     load_json,
                     get_game_name,
+                    get_short_name,
                     )
 
 DICT_DEFAULT_VALS = {
@@ -75,6 +76,9 @@ class ROMParser:
     def __init__(self,
                  platform,
                  game,
+                 dat=None,
+                 retool=None,
+                 ra_hashes=None,
                  config_file=None,
                  config=None,
                  platform_config=None,
@@ -91,6 +95,9 @@ class ROMParser:
         Args:
             platform (str): Platform name
             game (str): Game name
+            dat (dict): Parsed dat dictionary. Defaults to None, which will try to load the dat file if it exists
+            retool (dict): Retool dictionary. Defaults to None, which will try to load the file if it exists
+            ra_hashes (dict): RA hash dictionary. Defaults to None, which will try to load the file if it exists
             config_file (str, optional): path to config file. Defaults to None.
             config (dict, optional): configuration dictionary. Defaults to None.
             platform_config (dict, optional): platform configuration dictionary. Defaults to None.
@@ -147,12 +154,13 @@ class ROMParser:
 
         self.use_dat = self.config.get("romparser", {}).get("use_dat", True)
         self.use_retool = self.config.get("romparser", {}).get("use_retool", True)
+        self.use_ra_hashes = self.config.get("romparser", {}).get("use_ra_hashes", False)
         self.use_filename = self.config.get("romparser", {}).get("use_filename", True)
         self.dry_run = self.config.get("romparser", {}).get("dry_run", False)
 
         # If we're using the dat file, pull it out here
-        self.dat = None
-        if self.use_dat:
+        self.dat = dat
+        if self.use_dat and self.dat is None:
             dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
             if dat_dir is None:
                 raise ValueError("parsed_dat_dir must be specified in config.yml")
@@ -161,14 +169,25 @@ class ROMParser:
                 self.dat = load_json(dat_file)
 
         # If we're using the retool file, pull it out here
-        self.retool = None
-        if self.use_retool:
+        self.retool = retool
+        if self.use_retool and self.retool is None:
             dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
             if dat_dir is None:
                 raise ValueError("parsed_dat_dir must be specified in config.yml")
             retool_file = os.path.join(dat_dir, f"{platform} (retool).json")
             if os.path.exists(retool_file):
-                self.retool = load_json(retool_file)
+                retool = load_json(retool_file)
+                self.retool = retool["variants"]
+
+        # If we're using the RA hashes, pull it out here
+        self.ra_hashes = ra_hashes
+        if self.use_ra_hashes and self.ra_hashes is None:
+            ra_hash_dir = self.config.get("dirs", {}).get("ra_hash_dir", None)
+            if ra_hash_dir is None:
+                raise ValueError("ra_hash_dir must be specified in config.yml")
+            ra_hash_file = os.path.join(ra_hash_dir, f"{platform}.json")
+            if os.path.exists(ra_hash_file):
+                self.ra_hashes = load_json(ra_hash_file)
 
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
@@ -203,10 +222,16 @@ class ROMParser:
 
         if self.use_filename:
             file_dict = self.parse_filename(f, file_dict)
+
         if self.use_retool:
             file_dict = self.parse_retool(f, file_dict)
+
         if self.use_dat:
             file_dict = self.parse_dat(f, file_dict)
+
+        file_dict["has_cheevos"] = False
+        if self.use_ra_hashes:
+            file_dict = self.parse_ra_hashes(f, file_dict)
 
         # Any last minute finalisations
         self.finalise_file_dict(file_dict)
@@ -305,7 +330,7 @@ class ROMParser:
 
         # Loop over the variants, see if we get a match
         found_cat = False
-        for retool_dict in self.retool["variants"]:
+        for retool_dict in self.retool:
 
             if found_cat:
                 continue
@@ -363,6 +388,71 @@ class ROMParser:
                 file_dict[dat_cat_dict] = file_dict[dat_cat_dict] | cat_val
             else:
                 file_dict[dat_cat_dict] = cat_val
+
+        # Get the checksums out
+        checksums = self.default_config.get("dat_checksums", [])
+        for checksum in checksums:
+
+            # Because sometimes we have multiple files within the ROM, loop over and append them all
+            rom_entries = dat_entry.get("rom", [])
+            if isinstance(rom_entries, dict):
+                rom_entries = [rom_entries]
+
+            for rom_entry in rom_entries:
+
+                if checksum in rom_entry:
+                    if checksum not in file_dict:
+                        file_dict[checksum] = []
+
+                    file_dict[checksum].append(rom_entry[checksum])
+
+        return file_dict
+
+    def parse_ra_hashes(self, f, file_dict=None):
+        """See if we can find ROMs that support RetroAchievements"""
+
+        # If we don't have a dictionary already, then we can't
+        if file_dict is None:
+            file_dict = {}
+
+        # Set up a list of potential hashes
+        potential_hashes = []
+
+        # Look for an exact match to the short name
+        f_short = get_short_name(f)
+        if f_short in self.ra_hashes:
+            potential_hashes.extend(self.ra_hashes[f_short].get("Hashes", []))
+
+        ra_hash_names = [a for a in self.ra_hashes]
+        ra_hash_clean_names = [re.sub("[^a-z0-9]+", "", a.lower()) for a in ra_hash_names]
+        f_short_clean = re.sub("[^a-z0-9]+", "", f_short.lower())
+
+        # Because there's inconsistency between the naming schemes, strip out everything that's not a letter/number
+        # and search within the strings
+        for i, ra_hash in enumerate(ra_hash_clean_names):
+            if f_short_clean in ra_hash:
+                potential_hashes.extend(self.ra_hashes[ra_hash_names[i]].get("Hashes", []))
+
+        # TODO: It also seems like there might be some options for like demos and unlicensed stuff. Figure this out
+
+        hash_method = self.platform_config.get("ra_hash_method", None)
+        if hash_method is None:
+            self.logger.warning(centred_string(f"RA hash method not defined for {self.platform}",
+                                               total_length=self.log_line_length)
+                                )
+        elif hash_method == "md5":
+
+            f_hashes = file_dict.get("md5", [])
+            if len(f_hashes) > 0:
+                for f_hash in f_hashes:
+                    for potential_hash in potential_hashes:
+                        if f_hash == potential_hash:
+                            file_dict["has_cheevos"] = True
+
+        else:
+            self.logger.debug(centred_string(f"Cannot currently handle {hash_method} hash method",
+                                             total_length=self.log_line_length)
+                                )
 
         return file_dict
 

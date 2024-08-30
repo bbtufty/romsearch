@@ -118,6 +118,7 @@ class DATParser:
     def run(self):
 
         run_datparser = True
+        rom_dict = None
 
         if self.dat_dir is None:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
@@ -142,9 +143,9 @@ class DATParser:
             run_datparser = False
 
         if run_datparser:
-            self.run_datparser()
+            rom_dict = self.run_datparser()
 
-        return True
+        return rom_dict
 
     def run_datparser(self):
         """The main meat of running the dat parser"""
@@ -184,7 +185,7 @@ class DATParser:
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        return True
+        return rom_dict
 
     def get_zip_file(self):
         """Get zip file from the dat directory

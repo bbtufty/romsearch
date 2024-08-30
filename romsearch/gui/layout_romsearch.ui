@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1036</width>
-    <height>798</height>
+    <width>1094</width>
+    <height>785</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -216,6 +216,43 @@
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButtonConfigRomDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRAHashDir">
+                    <property name="statusTip">
+                     <string>Location for the final, sorted ROM files</string>
+                    </property>
+                    <property name="text">
+                     <string>RA Hash Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigRAHashDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigRAHashDir">
+                      <property name="statusTip">
+                       <string>Location for the parsed RetroAchievement hashes</string>
+                      </property>
+                      <property name="text">
+                       <string>ra_hash</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string>ra_hash</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigRAHashDir">
                       <property name="text">
                        <string>Browse</string>
                       </property>
@@ -460,7 +497,7 @@
                   <item>
                    <widget class="QLabel" name="labelConfigRomsearchModulesDescription">
                     <property name="text">
-                     <string>Check to include the various ROMSearch modules. By default, all are selected</string>
+                     <string>Check to include the various ROMSearch modules.</string>
                     </property>
                     <property name="wordWrap">
                      <bool>true</bool>
@@ -493,6 +530,22 @@
                     </property>
                     <property name="checked">
                      <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunRAHasher">
+                    <property name="toolTip">
+                     <string/>
+                    </property>
+                    <property name="statusTip">
+                     <string>Run the RetroAchievements hash downloader?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run RAHasher</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -1139,15 +1192,111 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabConfigDupeParser">
+          <widget class="QWidget" name="tabConfigRAHasher">
            <attribute name="title">
-            <string>DupeParser</string>
+            <string>RAHasher</string>
            </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <layout class="QGridLayout" name="gridLayoutConfigDupeParser">
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayoutConfigRAHasher">
+              <item row="0" column="2">
+               <layout class="QVBoxLayout" name="verticalLayoutConfigRAHasherMiddle">
+                <item>
+                 <spacer name="verticalSpacerConfigRAHasherTop">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRAHasherDividerTop">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigRAHasherUsernameDescription">
+                  <property name="text">
+                   <string>RetroAchievements Username</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEditConfigRAHasherUsername">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>username</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="labelConfigRAHasherAPIKeyDescription">
+                  <property name="text">
+                   <string>RetroAchievements API Key</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEditConfigRAHasherAPIKey">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>1234567890abcde</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRAHasherDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacerConfigRAHasherBottom">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
               <item row="0" column="3">
-               <spacer name="gridLayoutConfigDupeParserRight">
+               <spacer name="gridLayoutConfigRAHasherRight">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -1160,7 +1309,44 @@
                </spacer>
               </item>
               <item row="0" column="1">
+               <spacer name="gridLayoutConfigRAHasherLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabConfigDupeParser">
+           <attribute name="title">
+            <string>DupeParser</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigDupeParser">
+              <item row="0" column="1">
                <spacer name="gridLayoutConfigDupeParserLeft">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigDupeParserRight">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -1207,16 +1393,6 @@
                   </property>
                   <property name="checked">
                    <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="Line" name="lineConfigDupeParserUseRetoolTop">
-                  <property name="frameShadow">
-                   <enum>QFrame::Shadow::Plain</enum>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
                   </property>
                  </widget>
                 </item>
@@ -1369,8 +1545,8 @@
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
              <layout class="QGridLayout" name="gridLayoutConfigRomParser">
-              <item row="0" column="3">
-               <spacer name="gridLayoutConfigRomParserRight">
+              <item row="0" column="1">
+               <spacer name="gridLayouConfigRomParserLeft">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -1382,8 +1558,8 @@
                 </property>
                </spacer>
               </item>
-              <item row="0" column="1">
-               <spacer name="gridLayouConfigRomParserLeft">
+              <item row="0" column="3">
+               <spacer name="gridLayoutConfigRomParserRight">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -1434,12 +1610,28 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="Line" name="lineConfigRomParserUseFilenamelTop">
-                  <property name="frameShadow">
-                   <enum>QFrame::Shadow::Plain</enum>
+                 <widget class="QCheckBox" name="checkBoxConfigRomParserUseRetool">
+                  <property name="statusTip">
+                   <string>Whether to use the retool file to parse ROM information. Default checked</string>
                   </property>
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
+                  <property name="text">
+                   <string>Use retool</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomParserUseRAHashes">
+                  <property name="statusTip">
+                   <string>Whether to use the RA hashes to find ROMs with achievements. Default unchecked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use RA hashes</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -2243,7 +2435,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1036</width>
+     <width>1094</width>
      <height>33</height>
     </rect>
    </property>

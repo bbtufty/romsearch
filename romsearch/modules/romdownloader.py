@@ -186,7 +186,7 @@ class ROMDownloader:
 
     def run(self,
             ):
-        """Run Rclone sync tool"""
+        """Run Rclone downloader tool"""
 
         start_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
@@ -397,7 +397,7 @@ class ROMDownloader:
                     out_dir=None,
                     max_retries=5,
                     ):
-        """Use rclone to sync files one-by-one
+        """Use rclone to copy files one-by-one
 
         Args:
             remote_dir: rclone remote path
@@ -410,13 +410,15 @@ class ROMDownloader:
 
         for fi, f in enumerate(self.copy_files):
 
+            remote_file_name = f"{self.remote_name}:{remote_dir}{f}"
+
             cmd = (
                 f'rclone copy '
                 f"--no-traverse "
                 f"--disable-http2 "
                 f"--multi-thread-streams=0 "
                 f"--size-only "
-                f'"{self.remote_name}:{remote_dir}{f}" "{out_dir}" '
+                f'"{remote_file_name}" "{out_dir}" '
                 f'-v '
             )
 
@@ -457,7 +459,7 @@ class ROMDownloader:
                                 continue
 
                             # If the file doesn't exist, set a high number and immediately terminate the process
-                            if "directory not found" in line:
+                            if "directory not found" in line or "object not found" in line:
                                 retcode = 9999
                                 process.kill()
                                 continue

@@ -133,6 +133,7 @@ class ConfigWindow(QMainWindow):
         self.all_dirs = {
             "raw_dir": self.ui.lineEditConfigRawDir,
             "rom_dir": self.ui.lineEditConfigRomDir,
+            "ra_hash_dir": self.ui.lineEditConfigRAHashDir,
             "dat_dir": self.ui.lineEditConfigDatDir,
             "parsed_dat_dir": self.ui.lineEditConfigParsedDatDir,
             "dupe_dir": self.ui.lineEditConfigDupeDir,
@@ -143,6 +144,7 @@ class ConfigWindow(QMainWindow):
         self.all_dirs_buttons = {
             "raw_dir": self.ui.pushButtonConfigRawDir,
             "rom_dir": self.ui.pushButtonConfigRomDir,
+            "ra_hash_dir": self.ui.pushButtonConfigRAHashDir,
             "dat_dir": self.ui.pushButtonConfigDatDir,
             "parsed_dat_dir": self.ui.pushButtonConfigParsedDatDir,
             "dupe_dir": self.ui.pushButtonConfigDupeDir,
@@ -156,6 +158,11 @@ class ConfigWindow(QMainWindow):
 
         self.romdownloader_text_fields = {
             "remote_name": self.ui.lineEditConfigRomDownloaderRemoteName,
+        }
+
+        self.rahasher_text_fields = {
+            "username": self.ui.lineEditConfigRAHasherUsername,
+            "api_key": self.ui.lineEditConfigRAHasherAPIKey,
         }
 
         self.discord_text_fields = {
@@ -188,6 +195,8 @@ class ConfigWindow(QMainWindow):
 
         self.all_romparser_options = {
             "use_dat": self.ui.checkBoxConfigRomParserUseDat,
+            "use_retool": self.ui.checkBoxConfigRomParserUseRetool,
+            "use_ra_hashes": self.ui.checkBoxConfigRomParserUseRAHashes,
             "use_filename": self.ui.checkBoxConfigRomParserUseFilename,
         }
 
@@ -479,6 +488,7 @@ class ConfigWindow(QMainWindow):
         keys = {
             "dirs": self.all_dirs,
             "romdownloader": self.romdownloader_text_fields,
+            "rahasher": self.rahasher_text_fields,
             "discord": self.discord_text_fields,
         }
 
@@ -497,7 +507,7 @@ class ConfigWindow(QMainWindow):
         """
 
         if config_key not in self.config:
-            return False
+            self.config[config_key] = {}
 
         for d in text_fields:
             if d in self.config[config_key]:
@@ -622,6 +632,7 @@ class ConfigWindow(QMainWindow):
         # Then text fields
         keys = {
             "romdownloader": self.romdownloader_text_fields,
+            "rahasher": self.rahasher_text_fields,
             "discord": self.discord_text_fields,
         }
         for k in keys:

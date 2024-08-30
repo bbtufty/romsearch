@@ -12,6 +12,7 @@ Syntax: ::
     dirs:
       raw_dir: [raw_dir]                # Raw directory to download ROM files using ROMDownloader
       rom_dir: [rom_dir]                # Final output directory for ROMs. Will automatically subdivide by platform
+      ra_hash_dir: [ra_hash_dir]        # Directory for parsed RA platform hashes
       dat_dir: [dat_dir]                # Directory to place raw .dat files
       parsed_dat_dir: [parsed_dat_dir]  # Directory to place parsed .dat files, as well as clonelists
       dupe_dir: [dupe_dir]              # Directory to place dupe files
@@ -37,6 +38,7 @@ Syntax: ::
       method: 'filter_then_download'    # OPTIONAL. Method to use, option are 'filter_then_download', or
                                         #           'download_then_filter'. Defaults to 'filter_then_download'
       run_romdownloader: true           # OPTIONAL. Whether to run ROMDownloader. Defaults to true
+      run_rahasher: false               # OPTIONAL. Whether to run RAHasher. Defaults to false
       run_datparser: true               # OPTIONAL. Whether to run DATParser. Defaults to true
       run_dupeparser: true              # OPTIONAL. Whether to run DupeParsed. Defaults to true
       run_romchooser: true              # OPTIONAL. Whether to run ROMChooser. Defaults to true
@@ -51,6 +53,10 @@ Syntax: ::
       sync_all: false                   # OPTIONAL. If true, will download everything that rclone finds. Set to false to
                                         #           use the include_games above
 
+    rahasher:                           # RAHasher specific options
+      username: "user"                  # RA username
+      api_key: "1234567890abcde"        # RA API key
+
     dupeparser:                         # DupeParser specific options
       use_dat: true                     # OPTIONAL. Whether to use .dat files or not. Defaults to true
       use_retool: true                  # OPTIONAL. Whether to use retool clonelists or not. Defaults to true
@@ -59,8 +65,10 @@ Syntax: ::
       filter_dupes: true                # OPTIONAL. Whether to filter dupes or not. Defaults to true
 
     romparser:                          # ROMParser specific options
-      use_dat: true                     # OPTIONAL. Whether to parse properties from .dat files. Defaults to true
       use_filename: true                # OPTIONAL. Whether to parse properties from filename. Defaults to true
+      use_dat: true                     # OPTIONAL. Whether to parse properties from .dat files. Defaults to true
+      use_retool: true                  # OPTIONAL. Whether to parse properties from retool files. Defaults to true
+      use_ra_hashes: false              # OPTIONAL. Whether to parse achievements from RA. Defaults to false
 
     romchooser:                         # ROMChooser specific options
       dry_run: false                    # OPTIONAL. Set to true to not make any changes to filesystem. Defaults to false

@@ -564,6 +564,7 @@ class ROMChooser:
         revision_score = 1e4
         budget_edition_score = 1e6
         language_score = 1e8
+        cheevo_score = 1e10
 
         # Negative scores
         demoted_version_score = -1
@@ -594,6 +595,9 @@ class ROMChooser:
         # Language priorities
         language_score_to_add = add_language_score(files, rom_dict, language_priorities=self.language_preferences)
         file_scores += language_score * (1 + (language_score_to_add - 1) / 100)
+
+        # Achievement hashes
+        file_scores += cheevo_score * np.array([int(rom_dict[f]["has_cheevos"]) for f in files])
 
         # Negative scores
 

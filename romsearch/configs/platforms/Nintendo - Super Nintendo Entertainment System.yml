@@ -1,3 +1,6 @@
 group: "No-Intro"
 dir: "/No-Intro/Nintendo - Super Nintendo Entertainment System/"
 unzip: false
+
+ra_id: 3
+ra_hash_method: "custom"

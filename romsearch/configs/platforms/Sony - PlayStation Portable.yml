@@ -1,3 +1,6 @@
 group: "Redump"
 dir: "/Redump/Sony - PlayStation Portable/"
 unzip: true
+
+ra_id: 41
+ra_hash_method: "custom"
