@@ -5,6 +5,7 @@ datetime_format: "%Y/%m/%d, %H:%M:%S"
 
 platforms:
   - "Nintendo - Game Boy"
+  - "Nintendo - Game Boy Color"
   - "Nintendo - GameCube"
   - "Nintendo - Nintendo Entertainment System"
   - "Nintendo - Super Nintendo Entertainment System"

@@ -1,6 +1,9 @@
 Nintendo - Game Boy:
   file_mapping: "Nintendo - Game Boy"
 
+Nintendo - Game Boy Color:
+  file_mapping: "Nintendo - Game Boy Color"
+
 Nintendo - Nintendo Entertainment System:
   file_mapping: "Nintendo - Nintendo Entertainment System (Headered)"
 

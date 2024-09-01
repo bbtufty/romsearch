@@ -203,8 +203,13 @@ enhanced:
   pattern: "\\(Enhanced\\)"
   group: "improved_version"
 
-e_reader_edition:
-  pattern: "\\(e-Reader Edition\\)"
+gb_compatible:
+  pattern: "\\(GB Compatible\\)"
+  group: "improved_version"
+
+gba_enhanced:
+  pattern: "\\(GBA Enhanced\\)"
+  group: "improved_version"
 
 gentei:
   pattern: "\\((?:(?!\\(|Gentei.*?)[\\s\\S])*Gentei.*?\\)"
@@ -266,12 +271,20 @@ renkaban:
   pattern: "\\(Renkaban\\)"
   group: "improved_version"
 
+rumble_verion:
+  pattern: "\\(Rumble Version\\)"
+  group: "improved_version"
+
 sachen:
   pattern: "\\(Sachen\\)"
   group: "improved_version"
 
 sgb_enhanced:
   pattern: "\\(SGB Enhanced\\)"
+  group: "improved_version"
+
+sgb_enhanced_gb_compatible:
+  pattern: "\\(SGB Enhanced, GB Compatible\\)"
   group: "improved_version"
 
 subor_keyboard:
@@ -465,6 +478,10 @@ disney_classic_games:
   pattern: "\\(Disney Classic Games\\)"
   group: "modern_version"
 
+e_reader_edition:
+  pattern: "\\(e-Reader Edition\\)"
+  group: "modern_version"
+
 gamecube:
   pattern: "\\(Game[Cc]ube.*?\\)"
   group: "modern_version"
@@ -495,6 +512,10 @@ namcot_collection:
 
 namco_museum_archives:
   pattern: "\\(Namco Museum Archives Vol [0-9]\\)"
+  group: "modern_version"
+
+ninja_jajamaru_retro:
+  pattern: "\\(Ninja JaJaMaru Retro Collection\\)"
   group: "modern_version"
 
 qubyte_classic:
@@ -687,3 +708,6 @@ fw:
 
 u_numbers:
   pattern: "\\(U[CLT][EJUS][BST]-\\d{5}\\)"
+
+product_ids:
+  pattern: "\\((?:A[BDEFNPS]|B[58DFJNPT]|CX|FT|JE|K[AFIKMRZ]|PN|QA|RC|S[KN]|T[ABCJQ]|V[BEJKLMW]|Y[XW])[ABCDEFGHIKJMLNPQSTUVWYZ0-9][DEJPVXYZ]\\)"

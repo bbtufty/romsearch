@@ -20,6 +20,11 @@ Nintendo - Game Boy
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Game Boy.yml
 
+Nintendo - Game Boy Color
+=========================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Game Boy Color.yml
+
 Nintendo - GameCube
 ===================
 
