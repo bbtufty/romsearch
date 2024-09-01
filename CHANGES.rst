@@ -5,11 +5,11 @@ Features
 --------
 
 - Added Nintendo - Game Boy
+- Initial support for RetroAchievements (RAHasher), to choose ROMs that match RA hashes
+- Added Nintendo - Game Boy Color
 
-RAHasher
-~~~~~~~~
-
-- Initial support for RetroAchievements, to choose ROMs that match RA hashes
+Fixes
+-----
 
 DATParser
 ~~~~~~~~~

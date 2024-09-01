@@ -40,6 +40,7 @@ has the capability for:
 * Nintendo
 
   * Game Boy
+  * Game Boy Color
   * GameCube
   * Nintendo - Nintendo Entertainment System
   * Nintendo - Super Nintendo Entertainment System

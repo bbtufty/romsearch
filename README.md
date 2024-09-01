@@ -28,6 +28,7 @@ works for the following consoles:
 
 * Nintendo
    * Game Boy
+   * Game Boy Color
    * Nintendo Entertainment System
    * Super Nintendo Entertainment System
    * GameCube
