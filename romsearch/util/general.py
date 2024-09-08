@@ -60,15 +60,25 @@ def get_parent_name(game_name,
 
 
 def get_file_time(f,
-                  datetime_format,
+                  datetime_format="%Y/%m/%d, %H:%M:%S",
+                  return_as_str=True
                   ):
-    """Get created file time from the file itself"""
+    """Get created file time from the file itself
+
+    Args:
+        f (str): Filename
+        datetime_format (str, optional): Date and time format. Defaults to "%Y/%m/%d %H:%M:%S"
+        return_as_str (bool, optional): Return string or full datetime. Defaults to True
+    """
 
     if os.path.exists(f):
         ti_m = os.path.getmtime(f)
         date_ti_m = datetime.strptime(time.ctime(ti_m), "%a %b %d %H:%M:%S %Y")
     else:
         date_ti_m = datetime(year=1900, month=1, day=1, hour=0, minute=0, second=0)
-    date_ti_m_str = date_ti_m.strftime(format=datetime_format)
 
-    return date_ti_m_str
+    if return_as_str:
+        date_ti_m_str = date_ti_m.strftime(format=datetime_format)
+        return date_ti_m_str
+    else:
+        return date_ti_m

@@ -56,6 +56,8 @@ Syntax: ::
     rahasher:                           # RAHasher specific options
       username: "user"                  # RA username
       api_key: "1234567890abcde"        # RA API key
+      cache_period: 30                  # Cache period for GameList in days. Since this is a heavy API operation, RA
+                                        # suggests caching this aggressively. Defaults to 30
 
     dupeparser:                         # DupeParser specific options
       use_dat: true                     # OPTIONAL. Whether to use .dat files or not. Defaults to true

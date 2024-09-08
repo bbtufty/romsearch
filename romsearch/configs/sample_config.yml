@@ -34,6 +34,11 @@ romdownloader:
   remote_name: 'rclone_remote'
   sync_all: false
 
+rahasher:
+  username: "user"
+  api_key: "1234567890abcde"
+  cache_period: 30
+
 dupeparser:
   use_dat: true
   use_retool: true

@@ -1271,6 +1271,29 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QLabel" name="labelConfigRAHasherCachePeriodDescription">
+                  <property name="text">
+                   <string>Cache Period</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEditConfigRAHasherCachePeriod">
+                  <property name="text">
+                   <string>30</string>
+                  </property>
+                  <property name="frame">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>30</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="Line" name="lineConfigRAHasherDividerBottom">
                   <property name="frameShadow">
                    <enum>QFrame::Shadow::Plain</enum>
@@ -2527,7 +2550,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigRomsearchMethod"/>
   <buttongroup name="radioButtonConfigLoggerLevel"/>
+  <buttongroup name="radioButtonConfigRomsearchMethod"/>
  </buttongroups>
 </ui>

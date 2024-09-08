@@ -163,6 +163,7 @@ class ConfigWindow(QMainWindow):
         self.rahasher_text_fields = {
             "username": self.ui.lineEditConfigRAHasherUsername,
             "api_key": self.ui.lineEditConfigRAHasherAPIKey,
+            "cache_period": self.ui.lineEditConfigRAHasherCachePeriod,
         }
 
         self.discord_text_fields = {

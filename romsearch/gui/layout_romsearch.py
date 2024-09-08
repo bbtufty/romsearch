@@ -756,6 +756,18 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRAHasherMiddle.addWidget(self.lineEditConfigRAHasherAPIKey)
 
+        self.labelConfigRAHasherCachePeriodDescription = QLabel(self.tabConfigRAHasher)
+        self.labelConfigRAHasherCachePeriodDescription.setObjectName(u"labelConfigRAHasherCachePeriodDescription")
+        self.labelConfigRAHasherCachePeriodDescription.setWordWrap(True)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.labelConfigRAHasherCachePeriodDescription)
+
+        self.lineEditConfigRAHasherCachePeriod = QLineEdit(self.tabConfigRAHasher)
+        self.lineEditConfigRAHasherCachePeriod.setObjectName(u"lineEditConfigRAHasherCachePeriod")
+        self.lineEditConfigRAHasherCachePeriod.setFrame(True)
+
+        self.verticalLayoutConfigRAHasherMiddle.addWidget(self.lineEditConfigRAHasherCachePeriod)
+
         self.lineConfigRAHasherDividerBottom = QFrame(self.tabConfigRAHasher)
         self.lineConfigRAHasherDividerBottom.setObjectName(u"lineConfigRAHasherDividerBottom")
         self.lineConfigRAHasherDividerBottom.setFrameShadow(QFrame.Shadow.Plain)
@@ -1623,6 +1635,9 @@ class Ui_RomSearch(object):
         self.labelConfigRAHasherAPIKeyDescription.setText(QCoreApplication.translate("RomSearch", u"RetroAchievements API Key", None))
         self.lineEditConfigRAHasherAPIKey.setText("")
         self.lineEditConfigRAHasherAPIKey.setPlaceholderText(QCoreApplication.translate("RomSearch", u"1234567890abcde", None))
+        self.labelConfigRAHasherCachePeriodDescription.setText(QCoreApplication.translate("RomSearch", u"Cache Period", None))
+        self.lineEditConfigRAHasherCachePeriod.setText(QCoreApplication.translate("RomSearch", u"30", None))
+        self.lineEditConfigRAHasherCachePeriod.setPlaceholderText(QCoreApplication.translate("RomSearch", u"30", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRAHasher), QCoreApplication.translate("RomSearch", u"RAHasher", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigDupeParserUseDat.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the dat file to figure out dupes. Default checked", None))
