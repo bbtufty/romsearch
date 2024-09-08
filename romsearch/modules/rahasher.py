@@ -1,15 +1,39 @@
 import copy
 import os
 import requests
+from datetime import datetime
 
 import romsearch
 from ..util import (centred_string,
                     load_yml,
                     setup_logger,
+                    load_json,
                     save_json,
+                    get_file_time,
                     )
 
 RA_URL = "https://retroachievements.org/API"
+
+
+def format_game_list(in_file,
+                     ):
+    """Format the GameList neatly
+
+    Args:
+        in_file (str): Input GameList file
+    """
+
+    data = load_json(in_file)
+
+    ra_game_info = {}
+    for d in data:
+        # RA uses "Title: Subtitle" logic, while No-Intro/Redump do not
+        clean_title = d['Title'].replace(":", " -")
+
+        ra_game_info[clean_title] = copy.deepcopy(d)
+
+    return ra_game_info
+
 
 class RAHasher:
 
@@ -22,7 +46,7 @@ class RAHasher:
                  log_line_sep="=",
                  log_line_length=100,
                  ):
-        """Get supported ROM hashes for RetroAchievements
+        """Get supported ROM files and hashes for RetroAchievements
 
         This works per-platform, so must be specified here
 
@@ -68,6 +92,11 @@ class RAHasher:
         self.username = self.config.get("rahasher", {}).get("username", None)
         self.api_key = self.config.get("rahasher", {}).get("api_key", None)
 
+        cache_period = self.config.get("rahasher", {}).get("cache_period", 30)
+        if isinstance(cache_period, str):
+            cache_period = float(cache_period)
+        self.cache_period = cache_period
+
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
 
@@ -75,7 +104,7 @@ class RAHasher:
         """Run the RA hasher"""
 
         run_rahasher = True
-        ra_hashes = None
+        ra_game_info = None
 
         if self.ra_hash_dir is None:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
@@ -114,9 +143,9 @@ class RAHasher:
             run_rahasher = False
 
         if run_rahasher:
-            ra_hashes = self.run_rahasher()
+            ra_game_info = self.run_rahasher()
 
-        return ra_hashes
+        return ra_game_info
 
     def run_rahasher(self):
         """The main meat of running the RA hasher"""
@@ -127,15 +156,42 @@ class RAHasher:
                          )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        ra_hashes = self.get_ra_hashes()
-        self.save_ra_hashes(ra_hashes)
+        ra_game_info = self.get_ra_game_info()
+        self.save_ra_game_info(ra_game_info)
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        return ra_hashes
+        return ra_game_info
 
-    def get_ra_hashes(self):
-        """Download the RA hashes using the API. Parse to JSON"""
+    def get_ra_game_info(self):
+        """Download or read in RA game info."""
+
+        game_list_file = os.path.join(self.ra_hash_dir, f"{self.platform} GameList.json")
+        game_list_modtime = get_file_time(game_list_file,
+                                          return_as_str=False,
+                                          )
+
+        cur_time = datetime.now()
+        diff = cur_time - game_list_modtime
+
+        if diff.days > self.cache_period:
+            self.logger.info(centred_string(f"Downloading latest GameList to {game_list_file}",
+                                            total_length=self.log_line_length)
+                             )
+            self.download_ra_game_list(out_file=game_list_file)
+
+        ra_game_info = format_game_list(game_list_file)
+
+        return ra_game_info
+
+    def download_ra_game_list(self,
+                              out_file,
+                              ):
+        """Download the RA GameList using the API
+
+        Args:
+            out_file (string): output file name.
+        """
 
         console_id = self.platform_config["ra_id"]
 
@@ -143,28 +199,29 @@ class RAHasher:
         resp = requests.get(url=url)
         data = resp.json()
 
-        hash_dict = {}
-        for d in data:
+        save_json(data, out_file)
 
-            # RA uses "Title: Subtitle" logic, while No-Intro/Redump do not
-            clean_title = d['Title'].replace(":", " -")
+        return True
 
-            hash_dict[clean_title] = copy.deepcopy(d)
-
-        return hash_dict
-
-    def save_ra_hashes(self, ra_hashes):
-        """Save out the RA hashes to a file"""
+    def save_ra_game_info(self,
+                          ra_game_info,
+                          ):
+        """Save out the RA game info to a file"""
 
         if not os.path.exists(self.ra_hash_dir):
             os.makedirs(self.ra_hash_dir)
 
-        out_name = os.path.join(self.ra_hash_dir, f"{self.platform}.json")
+        out_name = os.path.join(self.ra_hash_dir,
+                                f"{self.platform}.json",
+                                )
 
-        self.logger.info(centred_string(f"Saving to {out_name}",
-                                        total_length=self.log_line_length)
+        self.logger.info(centred_string(f"Saving full game info to {out_name}",
+                                        total_length=self.log_line_length
+                                        )
                          )
 
-        save_json(ra_hashes, out_name)
+        save_json(ra_game_info,
+                  out_name,
+                  )
 
         return True
