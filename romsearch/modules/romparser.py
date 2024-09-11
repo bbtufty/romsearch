@@ -415,6 +415,36 @@ class ROMParser:
         if file_dict is None:
             file_dict = {}
 
+        hash_method = self.platform_config.get("ra_hash_method", None)
+
+        if hash_method is None:
+            self.logger.warning(centred_string(f"RA hash method not defined for {self.platform}",
+                                               total_length=self.log_line_length)
+                                )
+            return file_dict
+
+        elif hash_method == "md5":
+
+            file_dict = self.match_md5_hashes(f, file_dict)
+
+        else:
+            self.logger.warning(centred_string(f"Cannot currently handle {hash_method} hash method",
+                                             total_length=self.log_line_length)
+                                )
+
+        return file_dict
+
+    def match_md5_hashes(self,
+                         f,
+                         file_dict,
+                         ):
+        """Get whether ROM has cheevos by md5 hashes
+
+        Args:
+            f (str): Filename
+            file_dict (dict): Dictionary of ROM descriptions
+        """
+
         # Set up a list of potential hashes
         potential_hashes = []
 
@@ -423,11 +453,10 @@ class ROMParser:
         if f_short in self.ra_hashes:
             potential_hashes.extend(self.ra_hashes[f_short].get("Hashes", []))
 
+        # Because there's inconsistency between the naming schemes, strip out everything that's not a letter/number
         ra_hash_names = [a for a in self.ra_hashes]
         ra_hash_clean_names = [re.sub("[^a-z0-9]+", "", a.lower()) for a in ra_hash_names]
         f_short_clean = re.sub("[^a-z0-9]+", "", f_short.lower())
-
-        # Because there's inconsistency between the naming schemes, strip out everything that's not a letter/number
         # and search within the strings
         for i, ra_hash in enumerate(ra_hash_clean_names):
             if f_short_clean in ra_hash:
@@ -435,24 +464,12 @@ class ROMParser:
 
         # TODO: It also seems like there might be some options for like demos and unlicensed stuff. Figure this out
 
-        hash_method = self.platform_config.get("ra_hash_method", None)
-        if hash_method is None:
-            self.logger.warning(centred_string(f"RA hash method not defined for {self.platform}",
-                                               total_length=self.log_line_length)
-                                )
-        elif hash_method == "md5":
-
-            f_hashes = file_dict.get("md5", [])
-            if len(f_hashes) > 0:
-                for f_hash in f_hashes:
-                    for potential_hash in potential_hashes:
-                        if f_hash == potential_hash:
-                            file_dict["has_cheevos"] = True
-
-        else:
-            self.logger.debug(centred_string(f"Cannot currently handle {hash_method} hash method",
-                                             total_length=self.log_line_length)
-                                )
+        f_hashes = file_dict.get("md5", [])
+        if len(f_hashes) > 0:
+            for f_hash in f_hashes:
+                for potential_hash in potential_hashes:
+                    if f_hash == potential_hash:
+                        file_dict["has_cheevos"] = True
 
         return file_dict
 
