@@ -41,17 +41,19 @@ def get_gui_logger(log_level="info"):
 
     # Set the log level based on the provided parameter
     log_level = log_level.upper()
-    if log_level == 'DEBUG':
+    if log_level == "DEBUG":
         logger.setLevel(logging.DEBUG)
-    elif log_level == 'INFO':
+    elif log_level == "INFO":
         logger.setLevel(logging.INFO)
-    elif log_level == 'CRITICAL':
+    elif log_level == "CRITICAL":
         logger.setLevel(logging.CRITICAL)
     else:
         logger.critical(f"Invalid log level '{log_level}', defaulting to 'INFO'")
         logger.setLevel(logging.INFO)
     log_handler = colorlog.StreamHandler(sys.stdout)
-    log_handler.setFormatter(colorlog.ColoredFormatter("%(log_color)s%(levelname)s: %(message)s"))
+    log_handler.setFormatter(
+        colorlog.ColoredFormatter("%(log_color)s%(levelname)s: %(message)s")
+    )
     logger.addHandler(log_handler)
 
     return logger

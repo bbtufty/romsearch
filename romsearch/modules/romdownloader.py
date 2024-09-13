@@ -5,13 +5,14 @@ import re
 import subprocess
 
 import romsearch
-from ..util import (setup_logger,
-                    load_yml,
-                    get_file_pattern,
-                    discord_push,
-                    split,
-                    centred_string
-                    )
+from ..util import (
+    setup_logger,
+    load_yml,
+    get_file_pattern,
+    discord_push,
+    split,
+    centred_string,
+)
 
 RCLONE_METHODS = [
     "sync",
@@ -19,10 +20,11 @@ RCLONE_METHODS = [
 ]
 
 
-def add_rclone_filter(pattern=None,
-                      filter_type="include",
-                      include_wildcard=True,
-                      ):
+def add_rclone_filter(
+    pattern=None,
+    filter_type="include",
+    include_wildcard=True,
+):
     if filter_type == "include":
         filter_str = "+"
     elif filter_type == "exclude":
@@ -61,18 +63,19 @@ def get_tidy_files(glob_pattern):
 
 class ROMDownloader:
 
-    def __init__(self,
-                 platform=None,
-                 config_file=None,
-                 config=None,
-                 platform_config=None,
-                 rclone_method="sync",
-                 copy_files=None,
-                 logger=None,
-                 include_filter_wildcard=True,
-                 log_line_sep="=",
-                 log_line_length=100,
-                 ):
+    def __init__(
+        self,
+        platform=None,
+        config_file=None,
+        config=None,
+        platform_config=None,
+        rclone_method="sync",
+        copy_files=None,
+        logger=None,
+        include_filter_wildcard=True,
+        log_line_sep="=",
+        log_line_length=100,
+    ):
         """Downloader tool via rclone
 
         This works per-platform, so must be specified here.
@@ -106,13 +109,16 @@ class ROMDownloader:
         self.config = config
 
         if logger is None:
-            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            log_dir = self.config.get("dirs", {}).get(
+                "log_dir", os.path.join(os.getcwd(), "logs")
+            )
             log_level = self.config.get("logger", {}).get("level", "info")
-            logger = setup_logger(log_level=log_level,
-                                  script_name=f"ROMDownloader",
-                                  log_dir=log_dir,
-                                  additional_dir=platform,
-                                  )
+            logger = setup_logger(
+                log_level=log_level,
+                script_name=f"ROMDownloader",
+                log_dir=log_dir,
+                additional_dir=platform,
+            )
         self.logger = logger
 
         if rclone_method not in RCLONE_METHODS:
@@ -162,7 +168,9 @@ class ROMDownloader:
         mod_dir = os.path.dirname(romsearch.__file__)
 
         if platform_config is None:
-            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config_file = os.path.join(
+                mod_dir, "configs", "platforms", f"{platform}.yml"
+            )
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
 
@@ -171,7 +179,9 @@ class ROMDownloader:
             raise ValueError(f"dir should be defined in the platform config file!")
 
         # If we're not using absolute URLs, then remove that here
-        self.use_absolute_url = self.config.get("romdownloader", {}).get("use_absolute_url", True)
+        self.use_absolute_url = self.config.get("romdownloader", {}).get(
+            "use_absolute_url", True
+        )
         if not self.use_absolute_url:
             if remote_dir[0] == "/":
                 remote_dir = remote_dir[1:]
@@ -184,30 +194,29 @@ class ROMDownloader:
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
 
-    def run(self,
-            ):
+    def run(
+        self,
+    ):
         """Run Rclone downloader tool"""
 
         start_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
-        self.logger.info(centred_string("Running ROMDownloader",
-                                        total_length=self.log_line_length)
-                         )
+        self.logger.info(
+            centred_string("Running ROMDownloader", total_length=self.log_line_length)
+        )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        self.rclone_download(remote_dir=self.remote_dir,
-                             out_dir=self.out_dir,
-                             )
+        self.rclone_download(
+            remote_dir=self.remote_dir,
+            out_dir=self.out_dir,
+        )
 
         end_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
         if self.discord_url is not None:
             name = f"ROMDownloader: {self.platform}"
-            self.post_to_discord(start_files,
-                                 end_files,
-                                 name=name
-                                 )
+            self.post_to_discord(start_files, end_files, name=name)
 
         # If there are potential additional files to download, do that here
         if "additional_dirs" in self.platform_config:
@@ -224,28 +233,27 @@ class ROMDownloader:
 
                 start_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
 
-                self.rclone_download(remote_dir=add_remote_dir,
-                                     out_dir=add_out_dir,
-                                     )
+                self.rclone_download(
+                    remote_dir=add_remote_dir,
+                    out_dir=add_out_dir,
+                )
 
                 end_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
 
                 if self.discord_url is not None:
                     name = f"ROMDownloader: {self.platform} ({add_dir})"
-                    self.post_to_discord(start_files,
-                                         end_files,
-                                         name=name
-                                         )
+                    self.post_to_discord(start_files, end_files, name=name)
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         return True
 
-    def rclone_download(self,
-                        remote_dir,
-                        out_dir=None,
-                        max_retries=5,
-                        ):
+    def rclone_download(
+        self,
+        remote_dir,
+        out_dir=None,
+        max_retries=5,
+    ):
         """Download from rclone, either via sync or copy
 
         Args:
@@ -261,24 +269,27 @@ class ROMDownloader:
             os.makedirs(out_dir)
 
         if self.rclone_method == "sync":
-            self.rclone_sync(remote_dir=remote_dir,
-                             out_dir=out_dir,
-                             max_retries=max_retries,
-                             )
+            self.rclone_sync(
+                remote_dir=remote_dir,
+                out_dir=out_dir,
+                max_retries=max_retries,
+            )
         elif self.rclone_method == "copy":
-            self.rclone_copy(remote_dir=remote_dir,
-                             out_dir=out_dir,
-                             max_retries=max_retries,
-                             )
+            self.rclone_copy(
+                remote_dir=remote_dir,
+                out_dir=out_dir,
+                max_retries=max_retries,
+            )
         else:
             raise ValueError(f"rclone_method should be one of {RCLONE_METHODS}")
 
-    def rclone_sync(self,
-                    remote_dir,
-                    out_dir=None,
-                    transfers=5,
-                    max_retries=5,
-                    ):
+    def rclone_sync(
+        self,
+        remote_dir,
+        out_dir=None,
+        transfers=5,
+        max_retries=5,
+    ):
         """Use rclone to sync an entire directory
 
         Args:
@@ -293,16 +304,16 @@ class ROMDownloader:
         # - Disable multi-thread transfers
 
         cmd = (
-            f'rclone sync '
+            f"rclone sync "
             f"--fast-list "
             f"--delete-after "
             f"--disable-http2 "
             f"--multi-thread-streams=0 "
             f"--size-only "
-            f'--transfers={transfers} '
+            f"--transfers={transfers} "
             f'"{self.remote_name}:{remote_dir}" '
             f'"{out_dir}" '
-            f'-v '
+            f"-v "
         )
 
         # Include any filters if necessary (which is probably the case)
@@ -320,10 +331,11 @@ class ROMDownloader:
                 pattern = None
 
             if pattern:
-                cmd += add_rclone_filter(pattern=pattern,
-                                         filter_type="exclude",
-                                         include_wildcard=self.include_filter_wildcard,
-                                         )
+                cmd += add_rclone_filter(
+                    pattern=pattern,
+                    filter_type="exclude",
+                    include_wildcard=self.include_filter_wildcard,
+                )
 
             # Now onto positive filters
             searches = []
@@ -338,37 +350,41 @@ class ROMDownloader:
                 pattern = None
 
             if pattern:
-                cmd += add_rclone_filter(pattern=pattern,
-                                         filter_type="include",
-                                         include_wildcard=self.include_filter_wildcard,
-                                         )
+                cmd += add_rclone_filter(
+                    pattern=pattern,
+                    filter_type="include",
+                    include_wildcard=self.include_filter_wildcard,
+                )
 
                 cmd += '--filter "- *" '
 
         if self.dry_run:
-            self.logger.info(centred_string(f"Dry run, would rclone sync with:",
-                                            total_length=self.log_line_length)
-                             )
-            self.logger.info(centred_string(cmd,
-                                            total_length=self.log_line_length)
-                             )
+            self.logger.info(
+                centred_string(
+                    f"Dry run, would rclone sync with:",
+                    total_length=self.log_line_length,
+                )
+            )
+            self.logger.info(centred_string(cmd, total_length=self.log_line_length))
         else:
 
             retry = 0
             retcode = 1
 
-            self.logger.info(centred_string("Running rclone sync",
-                                            total_length=self.log_line_length)
-                             )
+            self.logger.info(
+                centred_string("Running rclone sync", total_length=self.log_line_length)
+            )
 
             while retcode != 0 and retry < max_retries:
 
                 # Execute the command and capture the output
-                with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+                with subprocess.Popen(
+                    cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                ) as process:
                     for line in process.stdout:
 
                         # Replace any potential tabs in the line, strip whitespace and skip newline at the end
-                        line = re.sub('\s+', ' ', line[:-1])
+                        line = re.sub("\s+", " ", line[:-1])
                         line = line.lstrip().rstrip()
 
                         if len(line) == 0:
@@ -379,9 +395,9 @@ class ROMDownloader:
                             continue
 
                         # Log each line of the output using the provided logger
-                        self.logger.info(centred_string(line,
-                                                        total_length=self.log_line_length)
-                                         )
+                        self.logger.info(
+                            centred_string(line, total_length=self.log_line_length)
+                        )
 
                 retcode = process.poll()
                 retry += 1
@@ -392,11 +408,12 @@ class ROMDownloader:
 
         return True
 
-    def rclone_copy(self,
-                    remote_dir,
-                    out_dir=None,
-                    max_retries=5,
-                    ):
+    def rclone_copy(
+        self,
+        remote_dir,
+        out_dir=None,
+        max_retries=5,
+    ):
         """Use rclone to copy files one-by-one
 
         Args:
@@ -413,42 +430,48 @@ class ROMDownloader:
             remote_file_name = f"{self.remote_name}:{remote_dir}{f}"
 
             cmd = (
-                f'rclone copy '
+                f"rclone copy "
                 f"--no-traverse "
                 f"--disable-http2 "
                 f"--multi-thread-streams=0 "
                 f"--size-only "
                 f'"{remote_file_name}" "{out_dir}" '
-                f'-v '
+                f"-v "
             )
 
             short_out_dir = os.path.split(out_dir)[-1]
 
             if self.dry_run:
-                self.logger.info(centred_string(f"Dry run, would rclone copy {short_out_dir}, {f} with:",
-                                                total_length=self.log_line_length)
-                                 )
-                self.logger.info(centred_string(cmd,
-                                                total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    centred_string(
+                        f"Dry run, would rclone copy {short_out_dir}, {f} with:",
+                        total_length=self.log_line_length,
+                    )
+                )
+                self.logger.info(centred_string(cmd, total_length=self.log_line_length))
             else:
 
                 retry = 0
                 retcode = 1
 
-                self.logger.info(centred_string(f"Running rclone copy for {short_out_dir}, {f}",
-                                                total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    centred_string(
+                        f"Running rclone copy for {short_out_dir}, {f}",
+                        total_length=self.log_line_length,
+                    )
+                )
 
                 # The retcode is set to 9999 if the file doesn't exist
                 while retcode not in [0, 9999] and retry < max_retries:
 
                     # Execute the command and capture the output
-                    with subprocess.Popen(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+                    with subprocess.Popen(
+                        cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+                    ) as process:
                         for line in process.stdout:
 
                             # Replace any potential tabs in the line, strip whitespace and skip newline at the end
-                            line = re.sub('\s+', ' ', line[:-1])
+                            line = re.sub("\s+", " ", line[:-1])
                             line = line.lstrip().rstrip()
 
                             if len(line) == 0:
@@ -459,15 +482,21 @@ class ROMDownloader:
                                 continue
 
                             # If the file doesn't exist, set a high number and immediately terminate the process
-                            if "directory not found" in line or "object not found" in line:
+                            if (
+                                "directory not found" in line
+                                or "object not found" in line
+                            ):
                                 retcode = 9999
                                 process.kill()
                                 continue
 
                             # Log each line of the output using the provided logger
-                            self.logger.info(centred_string(line, # Exclude the newline character
-                                                            total_length=self.log_line_length)
-                                             )
+                            self.logger.info(
+                                centred_string(
+                                    line,  # Exclude the newline character
+                                    total_length=self.log_line_length,
+                                )
+                            )
 
                     if retcode != 9999:
                         retcode = process.poll()
@@ -477,10 +506,13 @@ class ROMDownloader:
                 if retcode not in [0, 9999]:
                     raise subprocess.CalledProcessError(retcode, process.args)
                 if retcode == 9999:
-                    self.logger.warning(centred_string(f"Could not find {self.remote_name}:{remote_dir}{f}. "
-                                                       f"This may not be an issue",
-                                                       total_length=self.log_line_length)
-                                        )
+                    self.logger.warning(
+                        centred_string(
+                            f"Could not find {self.remote_name}:{remote_dir}{f}. "
+                            f"This may not be an issue",
+                            total_length=self.log_line_length,
+                        )
+                    )
 
             if fi != len(self.copy_files) - 1:
                 self.logger.info(f"{'-' * self.log_line_length}")
@@ -499,19 +531,20 @@ class ROMDownloader:
                     found_match = True
 
             if not found_match:
-                self.logger.info(centred_string(f"Removing {f}",
-                                                total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    centred_string(f"Removing {f}", total_length=self.log_line_length)
+                )
                 os.remove(os.path.join(str(out_dir), f))
 
         return True
 
-    def post_to_discord(self,
-                        start_files,
-                        end_files,
-                        name,
-                        max_per_message=10,
-                        ):
+    def post_to_discord(
+        self,
+        start_files,
+        end_files,
+        name,
+        max_per_message=10,
+    ):
         """Create a discord post summarising files added and removed
 
         Args:
@@ -532,16 +565,15 @@ class ROMDownloader:
 
                 fields = []
 
-                field_dict = {"name": "Added",
-                              "value": "\n".join(items_split)
-                              }
+                field_dict = {"name": "Added", "value": "\n".join(items_split)}
                 fields.append(field_dict)
 
                 if len(fields) > 0:
-                    discord_push(url=self.discord_url,
-                                 name=name,
-                                 fields=fields,
-                                 )
+                    discord_push(
+                        url=self.discord_url,
+                        name=name,
+                        fields=fields,
+                    )
 
         if len(items_deleted) > 0:
 
@@ -551,15 +583,14 @@ class ROMDownloader:
 
                 fields = []
 
-                field_dict = {"name": "Deleted",
-                              "value": "\n".join(items_split)
-                              }
+                field_dict = {"name": "Deleted", "value": "\n".join(items_split)}
                 fields.append(field_dict)
 
                 if len(fields) > 0:
-                    discord_push(url=self.discord_url,
-                                 name=name,
-                                 fields=fields,
-                                 )
+                    discord_push(
+                        url=self.discord_url,
+                        name=name,
+                        fields=fields,
+                    )
 
         return True

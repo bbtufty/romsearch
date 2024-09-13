@@ -1,9 +1,11 @@
 from discordwebhook import Discord
 
-def discord_push(url,
-                 name,
-                 fields,
-                 ):
+
+def discord_push(
+    url,
+    name,
+    fields,
+):
     """Post a message to Discord"""
 
     discord = Discord(url=url)
@@ -14,7 +16,7 @@ def discord_push(url,
                     "name": name,
                     "url": "https://github.com/bbtufty/romsearch",
                 },
-                "fields": fields
+                "fields": fields,
             }
         ],
     )

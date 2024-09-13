@@ -32,10 +32,11 @@ def check_regex_parsing(dat_filename):
     # Parse all the names in the dat file
     all_file_dict = {}
     for f in all_files:
-        short_name = get_short_name(f,
-                                    regex_config=regex_config,
-                                    default_config=default_config,
-                                    )
+        short_name = get_short_name(
+            f,
+            regex_config=regex_config,
+            default_config=default_config,
+        )
 
         all_file_dict[f] = {
             "short_name": short_name,
@@ -45,9 +46,10 @@ def check_regex_parsing(dat_filename):
     return all_file_dict
 
 
-def parse_games_from_dat(config_file,
-                         platform,
-                         ):
+def parse_games_from_dat(
+    config_file,
+    platform,
+):
     """Using a config file and platform, parse all the games from a dat
 
     This will include the dupe parsing and everything if specified in the config
@@ -67,9 +69,10 @@ def parse_games_from_dat(config_file,
 
     all_file_dict = check_regex_parsing(dat_filename)
 
-    finder = GameFinder(config_file=config_file,
-                        platform=platform,
-                        )
+    finder = GameFinder(
+        config_file=config_file,
+        platform=platform,
+    )
     finder.logger.setLevel(logging.WARNING)
 
     all_games = finder.run(files=all_file_dict)

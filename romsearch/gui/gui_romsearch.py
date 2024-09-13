@@ -1,7 +1,8 @@
 from PySide6.QtCore import Slot, Signal, QObject, QThread
-from PySide6.QtWidgets import (QApplication,
-                               QMainWindow,
-                               )
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+)
 
 from romsearch import ROMSearch
 from .gui_about import AboutWindow
@@ -53,10 +54,14 @@ class MainWindow(QMainWindow):
 
         # Help menu buttons
         documentation = self.ui.actionDocumentation
-        documentation.triggered.connect(lambda: open_url("https://romsearch.readthedocs.io"))
+        documentation.triggered.connect(
+            lambda: open_url("https://romsearch.readthedocs.io")
+        )
 
         issues = self.ui.actionIssues
-        issues.triggered.connect(lambda: open_url("https://github.com/bbtufty/romsearch/issues"))
+        issues.triggered.connect(
+            lambda: open_url("https://github.com/bbtufty/romsearch/issues")
+        )
 
         about = self.ui.actionAbout
         about.triggered.connect(lambda: AboutWindow(self).exec())

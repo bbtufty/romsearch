@@ -8,12 +8,13 @@ import colorlog
 from pathvalidate import sanitize_filename
 
 
-def setup_logger(log_level,
-                 script_name,
-                 log_dir,
-                 additional_dir="",
-                 max_logs=9,
-                 ):
+def setup_logger(
+    log_level,
+    script_name,
+    log_dir,
+    additional_dir="",
+    max_logs=9,
+):
     """
     Set up the logger.
 
@@ -31,13 +32,13 @@ def setup_logger(log_level,
     # Sanitize the directories if we need to
     additional_dir = [sanitize_filename(f) for f in additional_dir.split(os.path.sep)]
 
-    if os.environ.get('DOCKER_ENV'):
+    if os.environ.get("DOCKER_ENV"):
         log_dir = os.path.join(log_dir, script_name, *additional_dir)
     else:
         log_dir = os.path.join(log_dir, script_name, *additional_dir)
 
-    if log_level not in ['debug', 'info', 'critical']:
-        log_level = 'info'
+    if log_level not in ["debug", "info", "critical"]:
+        log_level = "info"
         print(f"Invalid log level '{log_level}', defaulting to 'info'")
 
     # Create the log directory if it doesn't exist
@@ -64,18 +65,20 @@ def setup_logger(log_level,
 
     # Set the log level based on the provided parameter
     log_level = log_level.upper()
-    if log_level == 'DEBUG':
+    if log_level == "DEBUG":
         logger.setLevel(logging.DEBUG)
-    elif log_level == 'INFO':
+    elif log_level == "INFO":
         logger.setLevel(logging.INFO)
-    elif log_level == 'CRITICAL':
+    elif log_level == "CRITICAL":
         logger.setLevel(logging.CRITICAL)
     else:
         logger.critical(f"Invalid log level '{log_level}', defaulting to 'INFO'")
         logger.setLevel(logging.INFO)
 
     # Define the log message format for the log files
-    logfile_formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%y %I:%M %p')
+    logfile_formatter = logging.Formatter(
+        fmt="%(asctime)s %(levelname)s: %(message)s", datefmt="%m/%d/%y %I:%M %p"
+    )
 
     # Create a RotatingFileHandler for log files
     handler = RotatingFileHandler(log_file, delay=True, mode="w", backupCount=max_logs)
@@ -86,15 +89,17 @@ def setup_logger(log_level,
 
     # Configure console logging with the specified log level
     console_handler = colorlog.StreamHandler(sys.stdout)
-    if log_level == 'DEBUG':
+    if log_level == "DEBUG":
         console_handler.setLevel(logging.DEBUG)
-    elif log_level == 'INFO':
+    elif log_level == "INFO":
         console_handler.setLevel(logging.INFO)
-    elif log_level == 'CRITICAL':
+    elif log_level == "CRITICAL":
         console_handler.setLevel(logging.CRITICAL)
 
     # Add the console handler to the logger
-    console_handler.setFormatter(colorlog.ColoredFormatter("%(log_color)s%(levelname)s: %(message)s"))
+    console_handler.setFormatter(
+        colorlog.ColoredFormatter("%(log_color)s%(levelname)s: %(message)s")
+    )
     logger.addHandler(console_handler)
 
     # Overwrite previous logger if exists
@@ -105,9 +110,10 @@ def setup_logger(log_level,
     return logger
 
 
-def centred_string(str_to_centre,
-                   total_length=80,
-                   ):
+def centred_string(
+    str_to_centre,
+    total_length=80,
+):
     """Centre string for a logger
 
     Args:
@@ -122,9 +128,10 @@ def centred_string(str_to_centre,
     return f"|{' ' * left_side_length} {str_to_centre} {' ' * right_side_length}|"
 
 
-def left_aligned_string(str_to_align,
-                        total_length=80,
-                        ):
+def left_aligned_string(
+    str_to_align,
+    total_length=80,
+):
     """Left-align string for a logger
 
     Args:

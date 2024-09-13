@@ -3,21 +3,18 @@ import os
 import re
 
 import romsearch
-from ..util import (centred_string,
-                    left_aligned_string,
-                    setup_logger,
-                    get_file_time,
-                    load_yml,
-                    load_json,
-                    get_game_name,
-                    get_short_name,
-                    )
+from ..util import (
+    centred_string,
+    left_aligned_string,
+    setup_logger,
+    get_file_time,
+    load_yml,
+    load_json,
+    get_game_name,
+    get_short_name,
+)
 
-DICT_DEFAULT_VALS = {
-    "bool": False,
-    "str": "",
-    "list": []
-}
+DICT_DEFAULT_VALS = {"bool": False, "str": "", "list": []}
 
 
 def find_pattern(regex, search_str, group_number=0):
@@ -33,11 +30,7 @@ def find_pattern(regex, search_str, group_number=0):
     return regex_search_str
 
 
-def get_pattern_val(regex,
-                    tag,
-                    regex_type,
-                    pattern_mappings=None
-                    ):
+def get_pattern_val(regex, tag, regex_type, pattern_mappings=None):
     """Get values out from a regex pattern, optionally mapping back to something more readable for lists"""
 
     pattern_string = find_pattern(regex, tag)
@@ -73,21 +66,22 @@ def get_pattern_val(regex,
 
 class ROMParser:
 
-    def __init__(self,
-                 platform,
-                 game,
-                 dat=None,
-                 retool=None,
-                 ra_hashes=None,
-                 config_file=None,
-                 config=None,
-                 platform_config=None,
-                 default_config=None,
-                 regex_config=None,
-                 logger=None,
-                 log_line_sep="=",
-                 log_line_length=100,
-                 ):
+    def __init__(
+        self,
+        platform,
+        game,
+        dat=None,
+        retool=None,
+        ra_hashes=None,
+        config_file=None,
+        config=None,
+        platform_config=None,
+        default_config=None,
+        regex_config=None,
+        logger=None,
+        log_line_sep="=",
+        log_line_length=100,
+    ):
         """ROM parser tool
 
         This works per-game, per-platform, so must be specified here
@@ -121,14 +115,17 @@ class ROMParser:
         self.game = game
 
         if logger is None:
-            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            log_dir = self.config.get("dirs", {}).get(
+                "log_dir", os.path.join(os.getcwd(), "logs")
+            )
             logger_add_dir = str(os.path.join(platform, game))
             log_level = self.config.get("logger", {}).get("level", "info")
-            logger = setup_logger(log_level=log_level,
-                                  script_name=f"ROMParser",
-                                  log_dir=log_dir,
-                                  additional_dir=logger_add_dir,
-                                  )
+            logger = setup_logger(
+                log_level=log_level,
+                script_name=f"ROMParser",
+                log_dir=log_dir,
+                additional_dir=logger_add_dir,
+            )
         self.logger = logger
 
         mod_dir = os.path.dirname(romsearch.__file__)
@@ -144,7 +141,9 @@ class ROMParser:
         self.regex_config = regex_config
 
         if platform_config is None:
-            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config_file = os.path.join(
+                mod_dir, "configs", "platforms", f"{platform}.yml"
+            )
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
 
@@ -154,7 +153,9 @@ class ROMParser:
 
         self.use_dat = self.config.get("romparser", {}).get("use_dat", True)
         self.use_retool = self.config.get("romparser", {}).get("use_retool", True)
-        self.use_ra_hashes = self.config.get("romparser", {}).get("use_ra_hashes", False)
+        self.use_ra_hashes = self.config.get("romparser", {}).get(
+            "use_ra_hashes", False
+        )
         self.use_filename = self.config.get("romparser", {}).get("use_filename", True)
         self.dry_run = self.config.get("romparser", {}).get("dry_run", False)
 
@@ -192,17 +193,20 @@ class ROMParser:
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
 
-    def run(self,
-            files,
-            ):
+    def run(
+        self,
+        files,
+    ):
         """Run the ROM parser"""
 
         game_dict = {}
 
         self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
-        self.logger.debug(centred_string(f"Running ROMParser for {self.game}",
-                                         total_length=self.log_line_length)
-                         )
+        self.logger.debug(
+            centred_string(
+                f"Running ROMParser for {self.game}", total_length=self.log_line_length
+            )
+        )
         self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
 
         for f in files:
@@ -213,9 +217,10 @@ class ROMParser:
 
         return game_dict
 
-    def parse_file(self,
-                   f,
-                   ):
+    def parse_file(
+        self,
+        f,
+    ):
         """Parse useful info out of a specific file"""
 
         file_dict = {}
@@ -238,15 +243,14 @@ class ROMParser:
 
         # File modification time
         full_file_path = os.path.join(self.raw_dir, self.platform, f)
-        file_time = get_file_time(full_file_path,
-                                  datetime_format=self.default_config["datetime_format"],
-                                  )
+        file_time = get_file_time(
+            full_file_path,
+            datetime_format=self.default_config["datetime_format"],
+        )
         file_dict["file_mod_time"] = file_time
 
         # Log out these tags in a nice readable way
-        self.logger.debug(centred_string(f"{f}:",
-                                         total_length=self.log_line_length)
-                          )
+        self.logger.debug(centred_string(f"{f}:", total_length=self.log_line_length))
 
         # Track the various tags we can have
         true_tags = []
@@ -265,47 +269,54 @@ class ROMParser:
             elif isinstance(file_dict[key], list):
                 list_tags[key] = file_dict[key]
             else:
-                raise ValueError(f"{file_dict[key]} is not something I know how to parse")
+                raise ValueError(
+                    f"{file_dict[key]} is not something I know how to parse"
+                )
 
         # Log the string tags
-        self.logger.debug(left_aligned_string(f"String tags:",
-                                              total_length=self.log_line_length)
-                          )
+        self.logger.debug(
+            left_aligned_string(f"String tags:", total_length=self.log_line_length)
+        )
         for tag in str_tags:
             if str_tags[tag] == "":
                 continue
-            self.logger.debug(left_aligned_string(f"-> {tag}: {str_tags[tag]}",
-                                                  total_length=self.log_line_length)
-                              )
+            self.logger.debug(
+                left_aligned_string(
+                    f"-> {tag}: {str_tags[tag]}", total_length=self.log_line_length
+                )
+            )
 
         # Log the list tags
-        self.logger.debug(left_aligned_string(f"List tags:",
-                                              total_length=self.log_line_length)
-                          )
+        self.logger.debug(
+            left_aligned_string(f"List tags:", total_length=self.log_line_length)
+        )
         for tag in list_tags:
             if not list_tags[tag]:
                 continue
-            self.logger.debug(left_aligned_string(f"-> {tag}: {', '.join(str(i) for i in list_tags[tag])}",
-                                                  total_length=self.log_line_length)
-                              )
+            self.logger.debug(
+                left_aligned_string(
+                    f"-> {tag}: {', '.join(str(i) for i in list_tags[tag])}",
+                    total_length=self.log_line_length,
+                )
+            )
 
         # Log the True bool tags
-        self.logger.debug(left_aligned_string(f"Tagged:",
-                                              total_length=self.log_line_length)
-                          )
+        self.logger.debug(
+            left_aligned_string(f"Tagged:", total_length=self.log_line_length)
+        )
         for tag in true_tags:
-            self.logger.debug(left_aligned_string(f"-> {tag}",
-                                                  total_length=self.log_line_length)
-                              )
+            self.logger.debug(
+                left_aligned_string(f"-> {tag}", total_length=self.log_line_length)
+            )
 
         # Log the False bool tags
-        self.logger.debug(left_aligned_string(f"Not tagged:",
-                                              total_length=self.log_line_length)
-                          )
+        self.logger.debug(
+            left_aligned_string(f"Not tagged:", total_length=self.log_line_length)
+        )
         for tag in false_tags:
-            self.logger.debug(left_aligned_string(f"-> {tag}",
-                                                  total_length=self.log_line_length)
-                              )
+            self.logger.debug(
+                left_aligned_string(f"-> {tag}", total_length=self.log_line_length)
+            )
 
         self.logger.debug(f"{'-' * self.log_line_length}")
 
@@ -319,9 +330,12 @@ class ROMParser:
 
         if self.retool is None:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(centred_string(f"No retool file found for {self.platform}. Skipping",
-                                             total_length=self.log_line_length)
-                              )
+            self.logger.warning(
+                centred_string(
+                    f"No retool file found for {self.platform}. Skipping",
+                    total_length=self.log_line_length,
+                )
+            )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
@@ -361,9 +375,12 @@ class ROMParser:
 
         if self.dat is None:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(centred_string(f"No dat file found for {self.platform}. Skipping",
-                                             total_length=self.log_line_length)
-                              )
+            self.logger.warning(
+                centred_string(
+                    f"No dat file found for {self.platform}. Skipping",
+                    total_length=self.log_line_length,
+                )
+            )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
@@ -371,9 +388,12 @@ class ROMParser:
         dat_entry = self.dat.get(f.strip(".zip"), None)
         if not dat_entry:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(centred_string(f"No dat entry found for {f}. Skipping",
-                                             total_length=self.log_line_length)
-                              )
+            self.logger.warning(
+                centred_string(
+                    f"No dat entry found for {f}. Skipping",
+                    total_length=self.log_line_length,
+                )
+            )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
@@ -418,9 +438,12 @@ class ROMParser:
         hash_method = self.platform_config.get("ra_hash_method", None)
 
         if hash_method is None:
-            self.logger.warning(centred_string(f"RA hash method not defined for {self.platform}",
-                                               total_length=self.log_line_length)
-                                )
+            self.logger.warning(
+                centred_string(
+                    f"RA hash method not defined for {self.platform}",
+                    total_length=self.log_line_length,
+                )
+            )
             return file_dict
 
         elif hash_method == "md5":
@@ -428,16 +451,20 @@ class ROMParser:
             file_dict = self.match_md5_hashes(f, file_dict)
 
         else:
-            self.logger.warning(centred_string(f"Cannot currently handle {hash_method} hash method",
-                                             total_length=self.log_line_length)
-                                )
+            self.logger.warning(
+                centred_string(
+                    f"Cannot currently handle {hash_method} hash method",
+                    total_length=self.log_line_length,
+                )
+            )
 
         return file_dict
 
-    def match_md5_hashes(self,
-                         f,
-                         file_dict,
-                         ):
+    def match_md5_hashes(
+        self,
+        f,
+        file_dict,
+    ):
         """Get whether ROM has cheevos by md5 hashes
 
         Args:
@@ -455,12 +482,16 @@ class ROMParser:
 
         # Because there's inconsistency between the naming schemes, strip out everything that's not a letter/number
         ra_hash_names = [a for a in self.ra_hashes]
-        ra_hash_clean_names = [re.sub("[^a-z0-9]+", "", a.lower()) for a in ra_hash_names]
+        ra_hash_clean_names = [
+            re.sub("[^a-z0-9]+", "", a.lower()) for a in ra_hash_names
+        ]
         f_short_clean = re.sub("[^a-z0-9]+", "", f_short.lower())
         # and search within the strings
         for i, ra_hash in enumerate(ra_hash_clean_names):
             if f_short_clean in ra_hash:
-                potential_hashes.extend(self.ra_hashes[ra_hash_names[i]].get("Hashes", []))
+                potential_hashes.extend(
+                    self.ra_hashes[ra_hash_names[i]].get("Hashes", [])
+                )
 
         # TODO: It also seems like there might be some options for like demos and unlicensed stuff. Figure this out
 
@@ -473,9 +504,10 @@ class ROMParser:
 
         return file_dict
 
-    def finalise_file_dict(self,
-                           file_dict,
-                           ):
+    def finalise_file_dict(
+        self,
+        file_dict,
+    ):
         """Do any last minute finalisation to the file dict"""
 
         file_dict = self.set_game_category(file_dict)
@@ -483,9 +515,10 @@ class ROMParser:
 
         return file_dict
 
-    def set_game_category(self,
-                          file_dict,
-                          ):
+    def set_game_category(
+        self,
+        file_dict,
+    ):
         """If a dat category hasn't been set, set it to game"""
 
         dat_categories = self.default_config.get("dat_categories", [])
@@ -496,14 +529,17 @@ class ROMParser:
             if d_sanitized not in file_dict:
                 file_dict[d_sanitized] = False
 
-        if all([file_dict[d.lower().replace(" ", "_")] is False for d in dat_categories]):
+        if all(
+            [file_dict[d.lower().replace(" ", "_")] is False for d in dat_categories]
+        ):
             file_dict["games"] = True
 
         return file_dict
 
-    def set_implicit_languages(self,
-                               file_dict,
-                               ):
+    def set_implicit_languages(
+        self,
+        file_dict,
+    ):
         """Set implicit language from region, if we don't already have languages"""
 
         implied_languages = self.default_config.get("implied_languages", {})
@@ -523,7 +559,7 @@ class ROMParser:
             file_dict = {}
 
         # Split file into tags
-        tags = [f'({x}' for x in f.strip(".zip").split(' (')][1:]
+        tags = [f"({x}" for x in f.strip(".zip").split(" (")][1:]
 
         for regex_key in self.regex_config:
 
@@ -531,12 +567,16 @@ class ROMParser:
             search_tags = self.regex_config[regex_key].get("search_tags", True)
             group = self.regex_config[regex_key].get("group", None)
             regex_flags = self.regex_config[regex_key].get("flags", "I")
-            transform_pattern = self.regex_config[regex_key].get("transform_pattern", None)
+            transform_pattern = self.regex_config[regex_key].get(
+                "transform_pattern", None
+            )
             transform_repl = self.regex_config[regex_key].get("transform_repl", None)
 
             dict_default_val = DICT_DEFAULT_VALS.get(regex_type, None)
             if dict_default_val is None:
-                raise ValueError(f"regex_type should be one of {list(DICT_DEFAULT_VALS.keys())}")
+                raise ValueError(
+                    f"regex_type should be one of {list(DICT_DEFAULT_VALS.keys())}"
+                )
 
             if regex_key not in file_dict:
                 file_dict[regex_key] = dict_default_val
@@ -555,7 +595,10 @@ class ROMParser:
             if regex_type == "list":
 
                 if isinstance(self.default_config[regex_key], dict):
-                    str_to_join = [self.default_config[regex_key][key] for key in self.default_config[regex_key]]
+                    str_to_join = [
+                        self.default_config[regex_key][key]
+                        for key in self.default_config[regex_key]
+                    ]
                     pattern_mappings = self.default_config[regex_key]
                 else:
                     str_to_join = copy.deepcopy(self.default_config[regex_key])
@@ -572,25 +615,26 @@ class ROMParser:
                     if found_tag:
                         continue
 
-                    pattern_string = get_pattern_val(regex,
-                                                     tag,
-                                                     regex_type,
-                                                     pattern_mappings=pattern_mappings,
-                                                     )
+                    pattern_string = get_pattern_val(
+                        regex,
+                        tag,
+                        regex_type,
+                        pattern_mappings=pattern_mappings,
+                    )
                     if pattern_string is not None:
 
                         if transform_pattern is not None:
 
-                            pattern_string = re.sub(transform_pattern, transform_repl, pattern_string)
+                            pattern_string = re.sub(
+                                transform_pattern, transform_repl, pattern_string
+                            )
 
                         file_dict[regex_key] = pattern_string
                         found_tag = True
             else:
-                pattern_string = get_pattern_val(regex,
-                                                 f,
-                                                 regex_type,
-                                                 pattern_mappings=pattern_mappings
-                                                 )
+                pattern_string = get_pattern_val(
+                    regex, f, regex_type, pattern_mappings=pattern_mappings
+                )
                 if pattern_string is not None:
                     file_dict[regex_key] = pattern_string
 
@@ -609,6 +653,8 @@ class ROMParser:
                 elif regex_type == "list":
                     file_dict[group].extend(file_dict[regex_key])
                 else:
-                    raise ValueError(f"regex_type should be one of {list(DICT_DEFAULT_VALS.keys())}")
+                    raise ValueError(
+                        f"regex_type should be one of {list(DICT_DEFAULT_VALS.keys())}"
+                    )
 
         return file_dict
