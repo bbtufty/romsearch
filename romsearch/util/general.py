@@ -13,12 +13,13 @@ def split(full_list, chunk_size=10):
     """
 
     for i in range(0, len(full_list), chunk_size):
-        yield full_list[i:i + chunk_size]
+        yield full_list[i : i + chunk_size]
 
 
-def get_parent_name(game_name,
-                    dupe_dict,
-                    ):
+def get_parent_name(
+    game_name,
+    dupe_dict,
+):
     """Get the parent name recursively searching through a dupe dict"""
 
     # We do this by lowercase checking
@@ -59,10 +60,11 @@ def get_parent_name(game_name,
     return found_parent_name
 
 
-def get_file_time(f,
-                  datetime_format="%Y/%m/%d, %H:%M:%S",
-                  return_as_str=True
-                  ):
+def get_file_time(
+    f,
+    datetime_format="%Y/%m/%d, %H:%M:%S",
+    return_as_str=True,
+):
     """Get created file time from the file itself
 
     Args:

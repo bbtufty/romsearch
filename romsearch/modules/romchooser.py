@@ -7,11 +7,12 @@ import packaging.version
 from packaging import version
 
 import romsearch
-from ..util import (setup_logger,
-                    centred_string,
-                    left_aligned_string,
-                    load_yml,
-                    )
+from ..util import (
+    setup_logger,
+    centred_string,
+    left_aligned_string,
+    load_yml,
+)
 
 DAT_FILTERS = [
     "add-ons",
@@ -68,12 +69,13 @@ def argsort(seq):
     return sorted(range(len(seq)), key=seq.__getitem__)
 
 
-def remove_rom_dict_entries(rom_dict,
-                            key,
-                            remove_type="bool",
-                            bool_remove=True,
-                            list_preferences=None,
-                            ):
+def remove_rom_dict_entries(
+    rom_dict,
+    key,
+    remove_type="bool",
+    bool_remove=True,
+    list_preferences=None,
+):
     """Exclude entries from the game dict based on various rules"""
 
     f_to_exclude = []
@@ -120,16 +122,20 @@ def remove_rom_dict_entries(rom_dict,
     return rom_dict
 
 
-def get_best_version(rom_dict,
-                     version_key="version",
-                     ):
+def get_best_version(
+    rom_dict,
+    version_key="version",
+):
     """Pull out all the regions we've got left, to loop over and search for versions"""
 
     all_regions = np.unique([",".join(rom_dict[key]["regions"]) for key in rom_dict])
 
     for region in all_regions:
-        region_rom_dict = {key: rom_dict[key][version_key]
-                           for key in rom_dict if ",".join(rom_dict[key]["regions"]) == region}
+        region_rom_dict = {
+            key: rom_dict[key][version_key]
+            for key in rom_dict
+            if ",".join(rom_dict[key]["regions"]) == region
+        }
 
         # Pull out all the versions we have
         all_vers = [region_rom_dict[key] for key in region_rom_dict]
@@ -169,7 +175,9 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
     for region in all_regions:
 
         # Pull out the unique regions
-        region_game_keys = {key for key in rom_dict if ",".join(rom_dict[key]["regions"]) == region}
+        region_game_keys = {
+            key for key in rom_dict if ",".join(rom_dict[key]["regions"]) == region
+        }
 
         # Only filter things down if we've got multiples here
         if len(region_game_keys) > 1:
@@ -185,7 +193,9 @@ def remove_unwanted_roms(rom_dict, key_to_check, check_type="include"):
                         if rom_dict[key][key_to_check]:
                             keys_to_exclude.append(key)
                     else:
-                        raise ValueError(f"check_type should be one of include or exclude")
+                        raise ValueError(
+                            f"check_type should be one of include or exclude"
+                        )
 
     for key in keys_to_exclude:
         rom_dict[key]["excluded"] = True
@@ -242,10 +252,11 @@ def add_language_score(files, rom_dict, language_priorities):
     return language_scores
 
 
-def filter_by_list(rom_dict,
-                   key,
-                   key_prefs,
-                   ):
+def filter_by_list(
+    rom_dict,
+    key,
+    key_prefs,
+):
     """Find file with highest value in given list. If there are multiple matches, find the most updated one"""
 
     roms = []
@@ -278,17 +289,18 @@ def filter_by_list(rom_dict,
 
 class ROMChooser:
 
-    def __init__(self,
-                 platform,
-                 game,
-                 config_file=None,
-                 config=None,
-                 default_config=None,
-                 regex_config=None,
-                 logger=None,
-                 log_line_sep="=",
-                 log_line_length=100,
-                 ):
+    def __init__(
+        self,
+        platform,
+        game,
+        config_file=None,
+        config=None,
+        default_config=None,
+        regex_config=None,
+        logger=None,
+        log_line_sep="=",
+        log_line_length=100,
+    ):
         """ROM choose tool
 
         This works per-game, per-platform, so must be specified here
@@ -320,14 +332,17 @@ class ROMChooser:
         self.config = config
 
         if logger is None:
-            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            log_dir = self.config.get("dirs", {}).get(
+                "log_dir", os.path.join(os.getcwd(), "logs")
+            )
             logger_add_dir = str(os.path.join(platform, game))
             log_level = self.config.get("logger", {}).get("level", "info")
-            logger = setup_logger(log_level=log_level,
-                                  script_name=f"ROMChooser",
-                                  log_dir=log_dir,
-                                  additional_dir=logger_add_dir,
-                                  )
+            logger = setup_logger(
+                log_level=log_level,
+                script_name=f"ROMChooser",
+                log_dir=log_dir,
+                additional_dir=logger_add_dir,
+            )
         self.logger = logger
 
         mod_dir = os.path.dirname(romsearch.__file__)
@@ -343,29 +358,39 @@ class ROMChooser:
         self.regex_config = regex_config
 
         # Region preference (usually set USA for retroachievements, can also be a list to fall back to)
-        region_preferences = self.config.get("region_preferences", self.default_config["default_region"])
+        region_preferences = self.config.get(
+            "region_preferences", self.default_config["default_region"]
+        )
         if isinstance(region_preferences, str):
             region_preferences = [region_preferences]
 
         for region_pref in region_preferences:
             if region_pref not in self.default_config["regions"]:
-                raise ValueError(f"Regions should be any of {self.default_config['regions']}, not {region_pref}")
+                raise ValueError(
+                    f"Regions should be any of {self.default_config['regions']}, not {region_pref}"
+                )
 
         self.region_preferences = region_preferences
 
         # Language preference (usually set En, can also be a list to fall back to)
-        language_preferences = self.config.get("language_preferences", self.default_config["default_language"])
+        language_preferences = self.config.get(
+            "language_preferences", self.default_config["default_language"]
+        )
         if isinstance(language_preferences, str):
             language_preferences = [language_preferences]
 
         for language_pref in language_preferences:
             if language_pref not in self.default_config["languages"]:
-                raise ValueError(f"Regions should be any of {self.default_config['languages']}, not {language_pref}")
+                raise ValueError(
+                    f"Regions should be any of {self.default_config['languages']}, not {language_pref}"
+                )
 
         self.language_preferences = language_preferences
 
         # Various filters. First are the boolean ones
-        dat_filters = self.config.get("romchooser", {}).get("dat_filters", "all_but_games")
+        dat_filters = self.config.get("romchooser", {}).get(
+            "dat_filters", "all_but_games"
+        )
         if "all" in dat_filters:
             all_dat_filters = copy.deepcopy(DAT_FILTERS)
             if "all_but" in dat_filters:
@@ -377,24 +402,33 @@ class ROMChooser:
             dat_filters = [dat_filters]
         self.dat_filters = dat_filters
 
-        self.filter_regions = self.config.get("romchooser", {}).get("filter_regions", True)
-        self.filter_languages = self.config.get("romchooser", {}).get("filter_languages", True)
-        self.allow_multiple_regions = self.config.get("romchooser", {}).get("allow_multiple_regions", False)
-        self.use_best_version = self.config.get("romchooser", {}).get("use_best_version", True)
+        self.filter_regions = self.config.get("romchooser", {}).get(
+            "filter_regions", True
+        )
+        self.filter_languages = self.config.get("romchooser", {}).get(
+            "filter_languages", True
+        )
+        self.allow_multiple_regions = self.config.get("romchooser", {}).get(
+            "allow_multiple_regions", False
+        )
+        self.use_best_version = self.config.get("romchooser", {}).get(
+            "use_best_version", True
+        )
 
         self.dry_run = self.config.get("romchooser", {}).get("dry_run", False)
 
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
 
-    def run(self,
-            rom_dict):
+    def run(self, rom_dict):
         """Run the ROM chooser"""
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
-        self.logger.info(centred_string(f"Running ROMChooser for {self.game}",
-                                        total_length=self.log_line_length)
-                         )
+        self.logger.info(
+            centred_string(
+                f"Running ROMChooser for {self.game}", total_length=self.log_line_length
+            )
+        )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         rom_dict = self.run_chooser(rom_dict)
@@ -402,14 +436,15 @@ class ROMChooser:
         self.print_summary(rom_dict)
 
         # Filter out excluded ROMs before we return
-        rom_dict = {key: rom_dict[key] for key in rom_dict if not rom_dict[key]["excluded"]}
+        rom_dict = {
+            key: rom_dict[key] for key in rom_dict if not rom_dict[key]["excluded"]
+        }
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         return rom_dict
 
-    def run_chooser(self,
-                    rom_dict):
+    def run_chooser(self, rom_dict):
         """Make a ROM choice based on various factors
 
         This chooser works in this order:
@@ -432,69 +467,94 @@ class ROMChooser:
             rom_dict[r]["excluded_reason"] = []
 
         for f in self.dat_filters:
-            self.logger.debug(left_aligned_string(f"Filtering {f}",
-                                                  total_length=self.log_line_length)
-                              )
+            self.logger.debug(
+                left_aligned_string(f"Filtering {f}", total_length=self.log_line_length)
+            )
             if f in DAT_FILTERS:
-                rom_dict = remove_rom_dict_entries(rom_dict,
-                                                   f,
-                                                   remove_type="bool",
-                                                   bool_remove=True,
-                                                   )
+                rom_dict = remove_rom_dict_entries(
+                    rom_dict,
+                    f,
+                    remove_type="bool",
+                    bool_remove=True,
+                )
             else:
                 raise ValueError(f"Unknown filter type {f}")
 
         # Language
         if self.filter_languages:
-            self.logger.debug(left_aligned_string(f"Filtering languages",
-                                                  total_length=self.log_line_length)
-                              )
-            rom_dict = remove_rom_dict_entries(rom_dict,
-                                               "languages",
-                                               remove_type="list",
-                                               list_preferences=self.language_preferences,
-                                               )
+            self.logger.debug(
+                left_aligned_string(
+                    f"Filtering languages", total_length=self.log_line_length
+                )
+            )
+            rom_dict = remove_rom_dict_entries(
+                rom_dict,
+                "languages",
+                remove_type="list",
+                list_preferences=self.language_preferences,
+            )
 
         # Regions
         if self.filter_regions:
-            self.logger.debug(left_aligned_string(f"Filtering regions",
-                                                  total_length=self.log_line_length)
-                              )
-            rom_dict = remove_rom_dict_entries(rom_dict,
-                                               "regions",
-                                               remove_type="list",
-                                               list_preferences=self.region_preferences,
-                                               )
+            self.logger.debug(
+                left_aligned_string(
+                    f"Filtering regions", total_length=self.log_line_length
+                )
+            )
+            rom_dict = remove_rom_dict_entries(
+                rom_dict,
+                "regions",
+                remove_type="list",
+                list_preferences=self.region_preferences,
+            )
 
         # Remove versions we potentially don't want around
         if self.use_best_version:
-            self.logger.debug(left_aligned_string(f"Getting best version",
-                                                  total_length=self.log_line_length)
-                              )
+            self.logger.debug(
+                left_aligned_string(
+                    f"Getting best version", total_length=self.log_line_length
+                )
+            )
             rom_dict = get_best_version(rom_dict)
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="improved_version", check_type="include")
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="budget_edition", check_type="include")
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="demoted_version", check_type="exclude")
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="modern_version", check_type="exclude")
-            rom_dict = remove_unwanted_roms(rom_dict, key_to_check="alternate", check_type="exclude")
-            rom_dict = self.get_best_rom_per_region(rom_dict,
-                                                    self.region_preferences,
-                                                    )
+            rom_dict = remove_unwanted_roms(
+                rom_dict, key_to_check="improved_version", check_type="include"
+            )
+            rom_dict = remove_unwanted_roms(
+                rom_dict, key_to_check="budget_edition", check_type="include"
+            )
+            rom_dict = remove_unwanted_roms(
+                rom_dict, key_to_check="demoted_version", check_type="exclude"
+            )
+            rom_dict = remove_unwanted_roms(
+                rom_dict, key_to_check="modern_version", check_type="exclude"
+            )
+            rom_dict = remove_unwanted_roms(
+                rom_dict, key_to_check="alternate", check_type="exclude"
+            )
+            rom_dict = self.get_best_rom_per_region(
+                rom_dict,
+                self.region_preferences,
+            )
 
         if not self.allow_multiple_regions:
-            self.logger.debug(left_aligned_string(f"Trimming down to a single region",
-                                                  total_length=self.log_line_length)
-                              )
-            rom_dict = filter_by_list(rom_dict,
-                                      "regions",
-                                      self.region_preferences,
-                                      )
+            self.logger.debug(
+                left_aligned_string(
+                    f"Trimming down to a single region",
+                    total_length=self.log_line_length,
+                )
+            )
+            rom_dict = filter_by_list(
+                rom_dict,
+                "regions",
+                self.region_preferences,
+            )
 
         return rom_dict
 
-    def print_summary(self,
-                      rom_dict,
-                      ):
+    def print_summary(
+        self,
+        rom_dict,
+    ):
         """Log out a nice summary of what ROM has been chosen here
 
         Args:
@@ -503,16 +563,16 @@ class ROMChooser:
 
         if len(rom_dict) == 0:
             # Just say nothing found
-            self.logger.info(centred_string("No ROMs found",
-                                            total_length=self.log_line_length)
-                             )
+            self.logger.info(
+                centred_string("No ROMs found", total_length=self.log_line_length)
+            )
         else:
 
             # Start with found ROMs, then excluded ROMs and reasons
             if np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0:
-                self.logger.info(centred_string("Included ROMs:",
-                                                total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    centred_string("Included ROMs:", total_length=self.log_line_length)
+                )
 
             for r in rom_dict:
 
@@ -520,18 +580,20 @@ class ROMChooser:
                 if rom_dict[r]["excluded"]:
                     continue
 
-                self.logger.info(left_aligned_string(f"-> {r}",
-                                                     total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    left_aligned_string(f"-> {r}", total_length=self.log_line_length)
+                )
 
-            if (np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0
-                    and np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0):
+            if (
+                np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0
+                and np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0
+            ):
                 self.logger.info(f"{'-' * self.log_line_length}")
 
             if np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0:
-                self.logger.info(centred_string("Excluded ROMs:",
-                                                total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    centred_string("Excluded ROMs:", total_length=self.log_line_length)
+                )
 
             for r in rom_dict:
 
@@ -541,21 +603,27 @@ class ROMChooser:
 
                 # Make the exclusion reason more human-readable
                 exclusion_reason = rom_dict[r]["excluded_reason"]
-                exclusion_reason = [e.capitalize().replace("_", " ") for e in exclusion_reason]
+                exclusion_reason = [
+                    e.capitalize().replace("_", " ") for e in exclusion_reason
+                ]
 
-                self.logger.info(left_aligned_string(f"-> {r}",
-                                                     total_length=self.log_line_length)
-                                 )
-                self.logger.info(left_aligned_string(f"--> Reason(s): {', '.join(exclusion_reason)}",
-                                                     total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    left_aligned_string(f"-> {r}", total_length=self.log_line_length)
+                )
+                self.logger.info(
+                    left_aligned_string(
+                        f"--> Reason(s): {', '.join(exclusion_reason)}",
+                        total_length=self.log_line_length,
+                    )
+                )
 
         return True
 
-    def get_best_roms(self,
-                      files,
-                      rom_dict,
-                      ):
+    def get_best_roms(
+        self,
+        files,
+        rom_dict,
+    ):
         """Get the best ROM(s) from a list, using a scoring system"""
 
         # Positive scores
@@ -579,7 +647,9 @@ class ROMChooser:
         # Positive scores
 
         # Improved version
-        file_scores += improved_version_score * np.array([int(rom_dict[f]["improved_version"]) for f in files])
+        file_scores += improved_version_score * np.array(
+            [int(rom_dict[f]["improved_version"]) for f in files]
+        )
 
         # Version numbering, which needs to be parsed. We edit these to only add a little each time
         version_score_to_add = add_versioned_score(files, rom_dict, "version")
@@ -590,38 +660,53 @@ class ROMChooser:
         file_scores += revision_score * (1 + (revision_score_to_add - 1) / 100)
 
         # Budget edition
-        file_scores += budget_edition_score * np.array([int(rom_dict[f]["budget_edition"]) for f in files])
+        file_scores += budget_edition_score * np.array(
+            [int(rom_dict[f]["budget_edition"]) for f in files]
+        )
 
         # Language priorities
-        language_score_to_add = add_language_score(files, rom_dict, language_priorities=self.language_preferences)
+        language_score_to_add = add_language_score(
+            files, rom_dict, language_priorities=self.language_preferences
+        )
         file_scores += language_score * (1 + (language_score_to_add - 1) / 100)
 
         # Achievement hashes
-        file_scores += cheevo_score * np.array([int(rom_dict[f]["has_cheevos"]) for f in files])
+        file_scores += cheevo_score * np.array(
+            [int(rom_dict[f]["has_cheevos"]) for f in files]
+        )
 
         # Negative scores
 
         # Demoted version
-        file_scores += demoted_version_score * np.array([int(rom_dict[f]["demoted_version"]) for f in files])
+        file_scores += demoted_version_score * np.array(
+            [int(rom_dict[f]["demoted_version"]) for f in files]
+        )
 
         # Alternate version
-        file_scores += alternate_version_score * np.array([int(rom_dict[f]["alternate"]) for f in files])
+        file_scores += alternate_version_score * np.array(
+            [int(rom_dict[f]["alternate"]) for f in files]
+        )
 
         # Modern version
-        file_scores += modern_version_score * np.array([int(rom_dict[f]["modern_version"]) for f in files])
+        file_scores += modern_version_score * np.array(
+            [int(rom_dict[f]["modern_version"]) for f in files]
+        )
 
         # Priority scoring. We subtract 1 so that the highest priority has no changed
-        file_scores += priority_score * (np.array([int(rom_dict[f]["priority"]) for f in files]) - 1)
+        file_scores += priority_score * (
+            np.array([int(rom_dict[f]["priority"]) for f in files]) - 1
+        )
 
         files_idx = np.where(file_scores == np.nanmax(file_scores))[0]
         files = np.asarray(files)[files_idx]
 
         return files
 
-    def get_best_rom_per_region(self,
-                                rom_dict,
-                                region_preferences,
-                                ):
+    def get_best_rom_per_region(
+        self,
+        rom_dict,
+        region_preferences,
+    ):
         """For each individual region, get an overall best ROM"""
         for reg_pref in region_preferences:
 

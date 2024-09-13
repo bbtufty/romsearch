@@ -17,8 +17,9 @@ def get_file_pattern(str_to_match):
     return pattern
 
 
-def get_bracketed_file_pattern(str_to_match,
-                               ):
+def get_bracketed_file_pattern(
+    str_to_match,
+):
     """Get file pattern to match bracketed things
 
     This is a little tricky since sometimes things can be matched a little unusually.
@@ -49,10 +50,11 @@ def get_game_name(f):
     return f
 
 
-def get_short_name(f,
-                   regex_config=None,
-                   default_config=None,
-                   ):
+def get_short_name(
+    f,
+    regex_config=None,
+    default_config=None,
+):
     """Get short game name from the ROM file naming convention"""
 
     if ".zip" in f:
@@ -71,7 +73,9 @@ def get_short_name(f,
     for regex_key in regex_config:
 
         # If we have patterns that we do want to keep in the long name, then skip
-        include_in_short_title = regex_config[regex_key].get("include_in_short_name", False)
+        include_in_short_title = regex_config[regex_key].get(
+            "include_in_short_name", False
+        )
         if include_in_short_title:
             continue
 
@@ -83,7 +87,9 @@ def get_short_name(f,
         if regex_type == "list":
 
             if isinstance(default_config[regex_key], dict):
-                str_to_join = [default_config[regex_key][key] for key in default_config[regex_key]]
+                str_to_join = [
+                    default_config[regex_key][key] for key in default_config[regex_key]
+                ]
             else:
                 str_to_join = copy.deepcopy(default_config[regex_key])
 

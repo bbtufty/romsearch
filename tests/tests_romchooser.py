@@ -12,16 +12,18 @@ def test_romchooser_version():
         f"{TEST_NAME} (v2.00)": {"priority": 1},
     }
 
-    rp = ROMParser(config_file="test_config.yml",
-                   platform="Nintendo - Super Nintendo Entertainment System",
-                   game="Example Game",
-                   )
+    rp = ROMParser(
+        config_file="test_config.yml",
+        platform="Nintendo - Super Nintendo Entertainment System",
+        game="Example Game",
+    )
     rom_dict = rp.run(test_case)
 
-    rc = ROMChooser(config_file="test_config.yml",
-                    platform="Nintendo - Super Nintendo Entertainment System",
-                    game="Example Game",
-                    )
+    rc = ROMChooser(
+        config_file="test_config.yml",
+        platform="Nintendo - Super Nintendo Entertainment System",
+        game="Example Game",
+    )
     rom_dict = rc.run(rom_dict)
 
     roms_found = [r for r in rom_dict]

@@ -5,46 +5,52 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'romsearch'
-copyright = '2024, bbtufty'
-author = 'bbtufty'
-release = '0.0.7'
+project = "romsearch"
+copyright = "2024, bbtufty"
+author = "bbtufty"
+release = "0.0.7"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.coverage',
-              'sphinx.ext.napoleon',
-              'sphinx.ext.todo',
-              'sphinx.ext.viewcode',
-              'sphinx_automodapi.automodapi',
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
+    "sphinx_automodapi.automodapi",
 ]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+]
 
-master_doc = 'index'
+master_doc = "index"
 
 todo_include_todos = True
 
 html_theme_options = {
-    'collapse_navigation': False,
-    'navigation_depth': 4,
-    'globaltoc_collapse': False,
-    'globaltoc_includehidden': False,
-    'display_version': True,
+    "collapse_navigation": False,
+    "navigation_depth": 4,
+    "globaltoc_collapse": False,
+    "globaltoc_includehidden": False,
+    "display_version": True,
 }
 
-autoclass_content = 'both'
+autoclass_content = "both"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 html_static_path = []

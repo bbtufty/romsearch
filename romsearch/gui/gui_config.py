@@ -1,16 +1,17 @@
 import os
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import (QMainWindow,
-                               QFileDialog,
-                               QWidget,
-                               QGridLayout,
-                               QHBoxLayout,
-                               QVBoxLayout,
-                               QLabel,
-                               QFrame,
-                               QPlainTextEdit,
-                               )
+from PySide6.QtWidgets import (
+    QMainWindow,
+    QFileDialog,
+    QWidget,
+    QGridLayout,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLabel,
+    QFrame,
+    QPlainTextEdit,
+)
 from functools import partial
 
 import romsearch
@@ -18,10 +19,11 @@ from romsearch.util import load_yml, save_yml, load_json, save_json
 from .gui_utils import add_item_to_list, get_gui_logger
 
 
-def set_ordered_list(list_widget,
-                     item_dict,
-                     items,
-                     ):
+def set_ordered_list(
+    list_widget,
+    item_dict,
+    items,
+):
     """Set checked items from an ordered list
 
     Args:
@@ -45,9 +47,10 @@ def set_ordered_list(list_widget,
     return True
 
 
-def add_include_exclude_layout(tab_config,
-                               text="Includes",
-                               ):
+def add_include_exclude_layout(
+    tab_config,
+    text="Includes",
+):
     """Add the include/exclude table
 
     Args:
@@ -85,10 +88,11 @@ def add_include_exclude_layout(tab_config,
 
 class ConfigWindow(QMainWindow):
 
-    def __init__(self,
-                 main_ui,
-                 logger=None,
-                 ):
+    def __init__(
+        self,
+        main_ui,
+        logger=None,
+    ):
         """Class for the configuration window"""
 
         super().__init__()
@@ -96,7 +100,9 @@ class ConfigWindow(QMainWindow):
         self.ui = main_ui
 
         if logger is None:
-            log_level = self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+            log_level = (
+                self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+            )
             logger = get_gui_logger(log_level=log_level)
         self.logger = logger
 
@@ -112,22 +118,27 @@ class ConfigWindow(QMainWindow):
         self.include_exclude_dict = {}
 
         # Set up platforms
-        self.platform_items = self.populate_list("platforms",
-                                                 self.ui.listWidgetConfigPlatforms,
-                                                 check_state=False,
-                                                 )
+        self.platform_items = self.populate_list(
+            "platforms",
+            self.ui.listWidgetConfigPlatforms,
+            check_state=False,
+        )
 
-        self.ui.listWidgetConfigPlatforms.itemChanged.connect(self.get_platforms_changed)
+        self.ui.listWidgetConfigPlatforms.itemChanged.connect(
+            self.get_platforms_changed
+        )
 
         # Set up regions/languages
-        self.region_items = self.populate_list("regions",
-                                               self.ui.listWidgetConfigRegionsLanguagesRegions,
-                                               check_state=False,
-                                               )
-        self.language_items = self.populate_list("languages",
-                                                 self.ui.listWidgetConfigRegionsLanguagesLanguages,
-                                                 check_state=False,
-                                                 )
+        self.region_items = self.populate_list(
+            "regions",
+            self.ui.listWidgetConfigRegionsLanguagesRegions,
+            check_state=False,
+        )
+        self.language_items = self.populate_list(
+            "languages",
+            self.ui.listWidgetConfigRegionsLanguagesLanguages,
+            check_state=False,
+        )
 
         # Set up groupings for later
         self.all_dirs = {
@@ -154,7 +165,9 @@ class ConfigWindow(QMainWindow):
 
         # Get the buttons hooked up to the line edits. Because we're looping, lambda can get wonky so use partial
         for b in self.all_dirs_buttons:
-            self.all_dirs_buttons[b].clicked.connect(partial(self.set_directory_name, line_edit=self.all_dirs[b]))
+            self.all_dirs_buttons[b].clicked.connect(
+                partial(self.set_directory_name, line_edit=self.all_dirs[b])
+            )
 
         self.romdownloader_text_fields = {
             "remote_name": self.ui.lineEditConfigRomDownloaderRemoteName,
@@ -263,7 +276,9 @@ class ConfigWindow(QMainWindow):
         """
 
         try:
-            idx = self.ui.tabWidgetConfigIncludeExclude.indexOf(self.include_exclude_dict[platform]["tab"])
+            idx = self.ui.tabWidgetConfigIncludeExclude.indexOf(
+                self.include_exclude_dict[platform]["tab"]
+            )
         except KeyError:
             return False
 
@@ -274,9 +289,10 @@ class ConfigWindow(QMainWindow):
 
         return True
 
-    def add_include_exclude_tab(self,
-                                platform,
-                                ):
+    def add_include_exclude_tab(
+        self,
+        platform,
+    ):
         """Add an include/exclude tab for a platform
 
         Args:
@@ -287,10 +303,14 @@ class ConfigWindow(QMainWindow):
         grid_layout = QGridLayout()
         hlayout = QHBoxLayout(tab_config)
 
-        text_edit_include, include_layout = add_include_exclude_layout(tab_config, text=self.tr("Includes"))
+        text_edit_include, include_layout = add_include_exclude_layout(
+            tab_config, text=self.tr("Includes")
+        )
         grid_layout.addLayout(include_layout, 0, 0, 1, 1)
 
-        text_edit_exclude, exclude_layout = add_include_exclude_layout(tab_config, text=self.tr("Excludes"))
+        text_edit_exclude, exclude_layout = add_include_exclude_layout(
+            tab_config, text=self.tr("Excludes")
+        )
         grid_layout.addLayout(exclude_layout, 0, 2, 1, 1)
 
         # Middle sep
@@ -306,16 +326,17 @@ class ConfigWindow(QMainWindow):
         self.include_exclude_dict[platform] = {
             "tab": tab_config,
             "includes": text_edit_include,
-            "excludes": text_edit_exclude
+            "excludes": text_edit_exclude,
         }
 
         return True
 
-    def populate_list(self,
-                      default_config_key,
-                      list_widget,
-                      check_state=None,
-                      ):
+    def populate_list(
+        self,
+        default_config_key,
+        list_widget,
+        check_state=None,
+    ):
         """Load items from a dict, potentially checked/unchecked"""
 
         item_dict = {}
@@ -323,13 +344,15 @@ class ConfigWindow(QMainWindow):
         all_keys = self.default_config[default_config_key]
 
         for key in all_keys:
-            item = add_item_to_list(list_widget,
-                                    self.tr(key),
-                                    check_state=check_state,
-                                    )
-            item_dict[key] = {"item": item,
-                              "check_state": check_state,
-                              }
+            item = add_item_to_list(
+                list_widget,
+                self.tr(key),
+                check_state=check_state,
+            )
+            item_dict[key] = {
+                "item": item,
+                "check_state": check_state,
+            }
 
         return item_dict
 
@@ -341,18 +364,20 @@ class ConfigWindow(QMainWindow):
 
     def get_config_name(self):
 
-        filename, _ = QFileDialog.getOpenFileName(self,
-                                                  caption=self.tr("Open config"),
-                                                  dir=os.getcwd(),
-                                                  filter=self.tr("Config file (*.yml;*.yaml)"),
-                                                  )
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            caption=self.tr("Open config"),
+            dir=os.getcwd(),
+            filter=self.tr("Config file (*.yml;*.yaml)"),
+        )
         self.ui.lineEditConfigConfigFile.setText(filename)
 
         return filename
 
-    def load_config(self,
-                    filename,
-                    ):
+    def load_config(
+        self,
+        filename,
+    ):
         """Load config yaml from file"""
 
         # Only load if we actually have a filename
@@ -367,19 +392,21 @@ class ConfigWindow(QMainWindow):
             self.set_logger_level()
             self.set_includes_excludes()
 
-    def set_directory_name(self,
-                           line_edit,
-                           ):
+    def set_directory_name(
+        self,
+        line_edit,
+    ):
         """Make a button set a directory name
 
         Args:
             line_edit (QLineEdit): The QLineEdit widget to set the text for
         """
 
-        filename = QFileDialog.getExistingDirectory(self,
-                                                    caption=self.tr("Select directory"),
-                                                    dir=os.getcwd(),
-                                                    )
+        filename = QFileDialog.getExistingDirectory(
+            self,
+            caption=self.tr("Select directory"),
+            dir=os.getcwd(),
+        )
         if filename != "":
             line_edit.setText(filename)
 
@@ -397,10 +424,11 @@ class ConfigWindow(QMainWindow):
             return False
 
         platforms = self.config["platforms"]
-        set_ordered_list(self.ui.listWidgetConfigPlatforms,
-                         item_dict=self.platform_items,
-                         items=platforms,
-                         )
+        set_ordered_list(
+            self.ui.listWidgetConfigPlatforms,
+            item_dict=self.platform_items,
+            items=platforms,
+        )
 
     def set_regions(self):
         """Set the regions list"""
@@ -409,10 +437,11 @@ class ConfigWindow(QMainWindow):
             return False
 
         regions = self.config["region_preferences"]
-        set_ordered_list(self.ui.listWidgetConfigRegionsLanguagesRegions,
-                         item_dict=self.region_items,
-                         items=regions,
-                         )
+        set_ordered_list(
+            self.ui.listWidgetConfigRegionsLanguagesRegions,
+            item_dict=self.region_items,
+            items=regions,
+        )
 
     def set_languages(self):
         """Set the language list"""
@@ -421,10 +450,11 @@ class ConfigWindow(QMainWindow):
             return False
 
         languages = self.config["language_preferences"]
-        set_ordered_list(self.ui.listWidgetConfigRegionsLanguagesLanguages,
-                         item_dict=self.language_items,
-                         items=languages,
-                         )
+        set_ordered_list(
+            self.ui.listWidgetConfigRegionsLanguagesLanguages,
+            item_dict=self.language_items,
+            items=languages,
+        )
 
     def set_checkboxes(self):
         """Set checkboxes across the config"""
@@ -445,10 +475,11 @@ class ConfigWindow(QMainWindow):
         # Dat filters we do a bit differently
         self.set_dat_filter_checkboxes()
 
-    def set_generic_checkbox(self,
-                             config_key,
-                             options,
-                             ):
+    def set_generic_checkbox(
+        self,
+        config_key,
+        options,
+    ):
         """Set checkboxes across generic tabs in the config"""
 
         if config_key not in self.config:
@@ -496,10 +527,11 @@ class ConfigWindow(QMainWindow):
         for k in keys:
             self.set_generic_text_fields(k, keys[k])
 
-    def set_generic_text_fields(self,
-                                config_key,
-                                text_fields,
-                                ):
+    def set_generic_text_fields(
+        self,
+        config_key,
+        text_fields,
+    ):
         """Set generic text fields
 
         Args:
@@ -582,11 +614,12 @@ class ConfigWindow(QMainWindow):
     def create_file(self):
         """Get filename to save config file to"""
 
-        filename, _ = QFileDialog.getSaveFileName(self,
-                                                  caption=self.tr("New config"),
-                                                  dir=os.getcwd(),
-                                                  filter=self.tr("Config file (*.yml)"),
-                                                  )
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            caption=self.tr("New config"),
+            dir=os.getcwd(),
+            filter=self.tr("Config file (*.yml)"),
+        )
         self.ui.lineEditConfigConfigFile.setText(filename)
 
     def save_config(self):
@@ -599,19 +632,21 @@ class ConfigWindow(QMainWindow):
         self.config = {}
 
         # Get the config directories
-        self.get_generic_text_value("dirs",
-                                    self.all_dirs,
-                                    )
+        self.get_generic_text_value(
+            "dirs",
+            self.all_dirs,
+        )
 
         # Platforms
-        self.get_ordered_list(self.ui.listWidgetConfigPlatforms,
-                              "platforms")
+        self.get_ordered_list(self.ui.listWidgetConfigPlatforms, "platforms")
 
         # Regions/languages
-        self.get_ordered_list(self.ui.listWidgetConfigRegionsLanguagesRegions,
-                              "region_preferences")
-        self.get_ordered_list(self.ui.listWidgetConfigRegionsLanguagesLanguages,
-                              "language_preferences")
+        self.get_ordered_list(
+            self.ui.listWidgetConfigRegionsLanguagesRegions, "region_preferences"
+        )
+        self.get_ordered_list(
+            self.ui.listWidgetConfigRegionsLanguagesLanguages, "language_preferences"
+        )
 
         # Includes/Excludes
         self.get_include_excludes()
@@ -663,11 +698,12 @@ class ConfigWindow(QMainWindow):
             if dir_name != "":
                 self.config["dirs"][d] = dir_name
 
-    def get_generic_text_value(self,
-                               key,
-                               text_fields,
-                               add_at_top=True,
-                               ):
+    def get_generic_text_value(
+        self,
+        key,
+        text_fields,
+        add_at_top=True,
+    ):
         """Get text fields generically
 
         Args:
@@ -696,10 +732,11 @@ class ConfigWindow(QMainWindow):
         if len(self.config[key]) == 0:
             del self.config[key]
 
-    def get_ordered_list(self,
-                         list_widget,
-                         key,
-                         ):
+    def get_ordered_list(
+        self,
+        list_widget,
+        key,
+    ):
         """Get checked items from an ordered list"""
 
         n_items = list_widget.count()
@@ -724,17 +761,20 @@ class ConfigWindow(QMainWindow):
         """Get includes/excludes from the list"""
 
         # Includes
-        self.add_include_exclude_to_config(config_key="include_games",
-                                           dict_key="includes",
-                                           )
-        self.add_include_exclude_to_config(config_key="exclude_games",
-                                           dict_key="excludes",
-                                           )
+        self.add_include_exclude_to_config(
+            config_key="include_games",
+            dict_key="includes",
+        )
+        self.add_include_exclude_to_config(
+            config_key="exclude_games",
+            dict_key="excludes",
+        )
 
-    def add_include_exclude_to_config(self,
-                                      config_key,
-                                      dict_key,
-                                      ):
+    def add_include_exclude_to_config(
+        self,
+        config_key,
+        dict_key,
+    ):
         """Add from the include/exclude text edit boxes to config
 
         Args:
@@ -766,10 +806,11 @@ class ConfigWindow(QMainWindow):
 
         return True
 
-    def get_generic_options(self,
-                            key,
-                            options,
-                            ):
+    def get_generic_options(
+        self,
+        key,
+        options,
+    ):
         """Get generic options from a config tab
 
         Args:
@@ -797,14 +838,18 @@ class ConfigWindow(QMainWindow):
             self.config["romsearch"] = {}
 
         # Get the method from the radio button group
-        romsearch_method_text = self.ui.radioButtonConfigRomsearchMethod.checkedButton().text()
+        romsearch_method_text = (
+            self.ui.radioButtonConfigRomsearchMethod.checkedButton().text()
+        )
 
         if romsearch_method_text == "Filter, then download":
             romsearch_method = "filter_then_download"
         elif romsearch_method_text == "Download, then filter":
             romsearch_method = "download_then_filter"
         else:
-            raise ValueError(f"Do not understand ROMSearch method {romsearch_method_text}")
+            raise ValueError(
+                f"Do not understand ROMSearch method {romsearch_method_text}"
+            )
 
         self.config["romsearch"]["method"] = romsearch_method
 
@@ -834,7 +879,9 @@ class ConfigWindow(QMainWindow):
             self.config["logger"] = {}
 
         # Get the method from the radio button group
-        logger_level = self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+        logger_level = (
+            self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
+        )
         self.config["logger"]["level"] = logger_level
 
         return True

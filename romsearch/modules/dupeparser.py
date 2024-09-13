@@ -4,14 +4,15 @@ import numpy as np
 import requests
 
 import romsearch
-from ..util import (centred_string,
-                    setup_logger,
-                    load_yml,
-                    get_parent_name,
-                    get_short_name,
-                    load_json,
-                    save_json,
-                    )
+from ..util import (
+    centred_string,
+    setup_logger,
+    load_yml,
+    get_parent_name,
+    get_short_name,
+    load_json,
+    save_json,
+)
 
 ID_CLONE_KEYS = [
     "cloneof",
@@ -21,16 +22,17 @@ ID_CLONE_KEYS = [
 
 class DupeParser:
 
-    def __init__(self,
-                 platform=None,
-                 config_file=None,
-                 config=None,
-                 default_config=None,
-                 regex_config=None,
-                 logger=None,
-                 log_line_sep="=",
-                 log_line_length=100,
-                 ):
+    def __init__(
+        self,
+        platform=None,
+        config_file=None,
+        config=None,
+        default_config=None,
+        regex_config=None,
+        logger=None,
+        log_line_sep="=",
+        log_line_length=100,
+    ):
         """Tool for figuring out a list of dupes
 
         Args:
@@ -58,17 +60,20 @@ class DupeParser:
         self.config = config
 
         if logger is None:
-            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            log_dir = self.config.get("dirs", {}).get(
+                "log_dir", os.path.join(os.getcwd(), "logs")
+            )
             log_level = self.config.get("logger", {}).get("level", "info")
-            logger = setup_logger(log_level=log_level,
-                                  script_name=f"DupeParser",
-                                  log_dir=log_dir,
-                                  additional_dir=platform,
-                                  )
+            logger = setup_logger(
+                log_level=log_level,
+                script_name=f"DupeParser",
+                log_dir=log_dir,
+                additional_dir=platform,
+            )
         self.logger = logger
 
         self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
-        self.use_retool = self.config.get("dupeparser", {}).get('use_retool', True)
+        self.use_retool = self.config.get("dupeparser", {}).get("use_retool", True)
 
         self.parsed_dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
         if self.use_dat and self.parsed_dat_dir is None:
@@ -80,7 +85,9 @@ class DupeParser:
 
         # Pull in platform config that we need
         mod_dir = os.path.dirname(romsearch.__file__)
-        retool_config_file = os.path.join(mod_dir, "configs", "clonelists", f"retool.yml")
+        retool_config_file = os.path.join(
+            mod_dir, "configs", "clonelists", f"retool.yml"
+        )
         retool_config = load_yml(retool_config_file)
 
         self.retool_url = retool_config.get("url", None)
@@ -102,19 +109,24 @@ class DupeParser:
     def run(self):
         """Run the dupe parser"""
 
-        if (self.retool_platform_file is None or self.retool_url is None) and self.use_retool:
+        if (
+            self.retool_platform_file is None or self.retool_url is None
+        ) and self.use_retool:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(centred_string("retool config for the platform needs to be present "
-                                               "if using retool",
-                                               total_length=self.log_line_length)
-                                )
+            self.logger.warning(
+                centred_string(
+                    "retool config for the platform needs to be present "
+                    "if using retool",
+                    total_length=self.log_line_length,
+                )
+            )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return False
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
-        self.logger.info(centred_string("Running DupeParser",
-                                        total_length=self.log_line_length)
-                         )
+        self.logger.info(
+            centred_string("Running DupeParser", total_length=self.log_line_length)
+        )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         dupe_dict = self.get_dupe_dict()
@@ -148,18 +160,25 @@ class DupeParser:
         if dupe_dict is None:
             dupe_dict = {}
 
-        json_dat = os.path.join(self.parsed_dat_dir, f"{self.platform} (dat parsed).json")
+        json_dat = os.path.join(
+            self.parsed_dat_dir, f"{self.platform} (dat parsed).json"
+        )
         if not os.path.exists(json_dat):
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(centred_string(f"No dat file found for {self.platform}",
-                                               total_length=self.log_line_length)
-                                )
+            self.logger.warning(
+                centred_string(
+                    f"No dat file found for {self.platform}",
+                    total_length=self.log_line_length,
+                )
+            )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return None
 
-        self.logger.info(centred_string(f"Using parsed dat file {json_dat}",
-                                        total_length=self.log_line_length)
-                         )
+        self.logger.info(
+            centred_string(
+                f"Using parsed dat file {json_dat}", total_length=self.log_line_length
+            )
+        )
 
         dat_dict = load_json(json_dat)
 
@@ -175,7 +194,9 @@ class DupeParser:
 
                         # Sometimes, IDs are missing from the dat so just move on
                         try:
-                            dat_idx = np.where([dat_dict[key]["id"] == clone_key for key in dat_dict])[0][0]
+                            dat_idx = np.where(
+                                [dat_dict[key]["id"] == clone_key for key in dat_dict]
+                            )[0][0]
                         except IndexError:
                             continue
                         parent_entry = dat_dict[all_keys[dat_idx]]
@@ -189,22 +210,25 @@ class DupeParser:
 
                     # Get short names here
                     # parent_game_name = get_game_name(parent_name)
-                    parent_game_name = get_short_name(parent_name,
-                                                      default_config=self.default_config,
-                                                      regex_config=self.regex_config,
-                                                      )
-                    clone_short_name = get_short_name(clone_name,
-                                                      default_config=self.default_config,
-                                                      regex_config=self.regex_config,
-                                                      )
+                    parent_game_name = get_short_name(
+                        parent_name,
+                        default_config=self.default_config,
+                        regex_config=self.regex_config,
+                    )
+                    clone_short_name = get_short_name(
+                        clone_name,
+                        default_config=self.default_config,
+                        regex_config=self.regex_config,
+                    )
 
                     # If the names are the same, just skip
                     if parent_game_name == clone_short_name:
                         continue
 
-                    found_parent_name = get_parent_name(game_name=parent_game_name,
-                                                        dupe_dict=dupe_dict,
-                                                        )
+                    found_parent_name = get_parent_name(
+                        game_name=parent_game_name,
+                        dupe_dict=dupe_dict,
+                    )
                     if found_parent_name not in dupe_dict:
                         dupe_dict[found_parent_name] = {}
 
@@ -226,21 +250,26 @@ class DupeParser:
                 continue
 
             group = retool_dupe["group"]
-            group_titles = [get_short_name(f["searchTerm"],
-                                           default_config=self.default_config,
-                                           regex_config=self.regex_config,
-                                           )
-                            for f in retool_dupe["titles"]]
+            group_titles = [
+                get_short_name(
+                    f["searchTerm"],
+                    default_config=self.default_config,
+                    regex_config=self.regex_config,
+                )
+                for f in retool_dupe["titles"]
+            ]
             priorities = [f.get("priority", 1) for f in retool_dupe["titles"]]
 
-            group_parsed = get_short_name(group,
-                                          default_config=self.default_config,
-                                          regex_config=self.regex_config,
-                                          )
+            group_parsed = get_short_name(
+                group,
+                default_config=self.default_config,
+                regex_config=self.regex_config,
+            )
 
-            found_parent_name = get_parent_name(game_name=group_parsed,
-                                                dupe_dict=dupe_dict,
-                                                )
+            found_parent_name = get_parent_name(
+                game_name=group_parsed,
+                dupe_dict=dupe_dict,
+            )
             if found_parent_name not in dupe_dict:
                 dupe_dict[found_parent_name] = {}
 
@@ -249,10 +278,11 @@ class DupeParser:
 
         return dupe_dict
 
-    def download_retool_dupe(self,
-                             out_file=None,
-                             just_date=False,
-                             ):
+    def download_retool_dupe(
+        self,
+        out_file=None,
+        just_date=False,
+    ):
         """Download the retool curated list, optionally just returning the last modified date"""
 
         retool_url = f"{self.retool_url}/{self.retool_platform_file}"
@@ -263,7 +293,9 @@ class DupeParser:
             retool_full_file = r.text
 
         if out_file is None:
-            raise ValueError("Should specify an out_file to save the retool dupe list to")
+            raise ValueError(
+                "Should specify an out_file to save the retool dupe list to"
+            )
 
         with open(out_file, "w", encoding="utf-8") as f:
             f.write(retool_full_file)
@@ -276,15 +308,20 @@ class DupeParser:
         if not os.path.exists(self.dupe_dir):
             os.makedirs(self.dupe_dir)
 
-        retool_dupe_file = os.path.join(self.parsed_dat_dir, f"{self.platform} (retool).json")
+        retool_dupe_file = os.path.join(
+            self.parsed_dat_dir, f"{self.platform} (retool).json"
+        )
         if not os.path.exists(retool_dupe_file):
 
             if not os.path.exists(self.parsed_dat_dir):
                 os.makedirs(self.parsed_dat_dir)
 
-            self.logger.info(centred_string("No retool dupe file found. Downloading",
-                                            total_length=self.log_line_length)
-                             )
+            self.logger.info(
+                centred_string(
+                    "No retool dupe file found. Downloading",
+                    total_length=self.log_line_length,
+                )
+            )
             self.download_retool_dupe(retool_dupe_file)
 
         retool_dupes = load_json(retool_dupe_file)
@@ -294,14 +331,20 @@ class DupeParser:
         remote_file_time = self.download_retool_dupe(just_date=True)
 
         if not local_file_time == remote_file_time:
-            self.logger.info(centred_string("More up-to-date dupe file found. Will download",
-                                            total_length=self.log_line_length)
-                             )
+            self.logger.info(
+                centred_string(
+                    "More up-to-date dupe file found. Will download",
+                    total_length=self.log_line_length,
+                )
+            )
             self.download_retool_dupe(retool_dupe_file)
 
-        self.logger.info(centred_string(f"Using retool clonelist {retool_dupe_file}",
-                                        total_length=self.log_line_length)
-                         )
+        self.logger.info(
+            centred_string(
+                f"Using retool clonelist {retool_dupe_file}",
+                total_length=self.log_line_length,
+            )
+        )
 
         retool_dupes = load_json(retool_dupe_file)
         retool_dupes = retool_dupes["variants"]

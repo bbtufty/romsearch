@@ -3,27 +3,29 @@ import os
 import shutil
 
 import romsearch
-from ..util import (centred_string,
-                    load_yml,
-                    setup_logger,
-                    unzip_file,
-                    load_json,
-                    save_json
-                    )
+from ..util import (
+    centred_string,
+    load_yml,
+    setup_logger,
+    unzip_file,
+    load_json,
+    save_json,
+)
 
 
 class ROMMover:
 
-    def __init__(self,
-                 platform,
-                 game,
-                 config_file=None,
-                 config=None,
-                 platform_config=None,
-                 logger=None,
-                 log_line_sep="=",
-                 log_line_length=100,
-                 ):
+    def __init__(
+        self,
+        platform,
+        game,
+        config_file=None,
+        config=None,
+        platform_config=None,
+        logger=None,
+        log_line_sep="=",
+        log_line_length=100,
+    ):
         """ROM Moving and cache updating tool
 
         Because we do this per-platform, per-game, they need to be specified here
@@ -46,14 +48,17 @@ class ROMMover:
         self.config = config
 
         if logger is None:
-            log_dir = self.config.get("dirs", {}).get("log_dir", os.path.join(os.getcwd(), "logs"))
+            log_dir = self.config.get("dirs", {}).get(
+                "log_dir", os.path.join(os.getcwd(), "logs")
+            )
             logger_add_dir = str(os.path.join(platform, game))
             log_level = self.config.get("logger", {}).get("level", "info")
-            logger = setup_logger(log_level=log_level,
-                                  script_name=f"ROMMover",
-                                  log_dir=log_dir,
-                                  additional_dir=logger_add_dir,
-                                  )
+            logger = setup_logger(
+                log_level=log_level,
+                script_name=f"ROMMover",
+                log_dir=log_dir,
+                additional_dir=logger_add_dir,
+            )
         self.logger = logger
 
         self.raw_dir = self.config.get("dirs", {}).get("raw_dir", None)
@@ -84,7 +89,9 @@ class ROMMover:
         mod_dir = os.path.dirname(romsearch.__file__)
 
         if platform_config is None:
-            platform_config_file = os.path.join(mod_dir, "configs", "platforms", f"{platform}.yml")
+            platform_config_file = os.path.join(
+                mod_dir, "configs", "platforms", f"{platform}.yml"
+            )
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
 
@@ -93,9 +100,10 @@ class ROMMover:
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
 
-    def run(self,
-            rom_dict,
-            ):
+    def run(
+        self,
+        rom_dict,
+    ):
 
         roms_moved = self.move_roms(rom_dict)
         self.save_cache()
@@ -109,16 +117,20 @@ class ROMMover:
 
         for rom_no, rom in enumerate(rom_dict):
 
-            cache_mod_time = (self.cache.get(self.platform, {}).
-                              get(self.game, {}).
-                              get(rom, {}).
-                              get("file_mod_time", 0)
-                              )
+            cache_mod_time = (
+                self.cache.get(self.platform, {})
+                .get(self.game, {})
+                .get(rom, {})
+                .get("file_mod_time", 0)
+            )
 
             if rom_dict[rom]["file_mod_time"] == cache_mod_time:
-                self.logger.info(centred_string(f"No updates for {rom}, skipping",
-                                                total_length=self.log_line_length)
-                                 )
+                self.logger.info(
+                    centred_string(
+                        f"No updates for {rom}, skipping",
+                        total_length=self.log_line_length,
+                    )
+                )
                 continue
 
             if rom_no == 0:
@@ -130,9 +142,9 @@ class ROMMover:
             full_dir = os.path.join(self.raw_dir, self.platform)
             full_rom = os.path.join(str(full_dir), rom)
             self.move_file(full_rom, unzip=self.unzip, delete_folder=delete_folder)
-            self.logger.info(centred_string(f"Moved {rom}",
-                                            total_length=self.log_line_length)
-                             )
+            self.logger.info(
+                centred_string(f"Moved {rom}", total_length=self.log_line_length)
+            )
 
             # If there are additional file to move/unzip, do that now
             if "additional_dirs" in self.platform_config:
@@ -142,9 +154,12 @@ class ROMMover:
                     add_file = os.path.join(add_full_dir, rom)
                     if os.path.exists(add_file):
                         self.move_file(add_file, unzip=self.unzip)
-                        self.logger.info(centred_string(f"Moved {rom} {add_dir}",
-                                                        total_length=self.log_line_length)
-                                         )
+                        self.logger.info(
+                            centred_string(
+                                f"Moved {rom} {add_dir}",
+                                total_length=self.log_line_length,
+                            )
+                        )
 
             # Update the cache
             self.cache_update(file=rom, rom_dict=rom_dict)
@@ -153,11 +168,12 @@ class ROMMover:
 
         return roms_moved
 
-    def move_file(self,
-                  zip_file_name,
-                  unzip=False,
-                  delete_folder=False,
-                  ):
+    def move_file(
+        self,
+        zip_file_name,
+        unzip=False,
+        delete_folder=False,
+    ):
         """Move file to directory structure, optionally unzipping"""
 
         out_dir = os.path.join(self.rom_dir, self.platform, self.game)
@@ -196,7 +212,9 @@ class ROMMover:
         if not self.cache[self.platform][self.game]:
             self.cache[self.platform][self.game] = {}
 
-        self.cache[self.platform][self.game][file] = {"file_mod_time": rom_dict[file]["file_mod_time"]}
+        self.cache[self.platform][self.game][file] = {
+            "file_mod_time": rom_dict[file]["file_mod_time"]
+        }
 
     def save_cache(self):
         """Save out the cache file"""

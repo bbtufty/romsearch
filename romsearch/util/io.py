@@ -30,25 +30,27 @@ def save_yml(f, data):
     """Save YAML file"""
 
     with open(f, "w") as file:
-        yaml.dump(data,
-                  file,
-                  Dumper=DumperEdit,
-                  default_flow_style=False,
-                  sort_keys=False,
-                  indent=2,
-                  )
+        yaml.dump(
+            data,
+            file,
+            Dumper=DumperEdit,
+            default_flow_style=False,
+            sort_keys=False,
+            indent=2,
+        )
 
 
-def unzip_file(zip_file_name,
-               out_dir,
-               ):
+def unzip_file(
+    zip_file_name,
+    out_dir,
+):
     """Unzip a file"""
 
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     out_dir = str(out_dir)
 
-    with zipfile.ZipFile(zip_file_name, 'r') as zip_file:
+    with zipfile.ZipFile(zip_file_name, "r") as zip_file:
         zip_file.extractall(out_dir)
 
     return True
@@ -67,8 +69,9 @@ def save_json(data, out_file):
     """Save json in a pretty way"""
 
     with open(out_file, "w", encoding="utf-8") as f:
-        json.dump(data,
-                  f,
-                  ensure_ascii=False,
-                  indent=4,
-                  )
+        json.dump(
+            data,
+            f,
+            ensure_ascii=False,
+            indent=4,
+        )

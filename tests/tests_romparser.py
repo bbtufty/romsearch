@@ -10,10 +10,11 @@ def test_romparser_regions():
 
     test_case = {TEST_NAME: {"priority": 1}}
 
-    rp = ROMParser(config_file="test_config.yml",
-                   platform="Nintendo - Super Nintendo Entertainment System",
-                   game="Example Game",
-                   )
+    rp = ROMParser(
+        config_file="test_config.yml",
+        platform="Nintendo - Super Nintendo Entertainment System",
+        game="Example Game",
+    )
     roms_parsed = rp.run(test_case)
 
     assert roms_parsed[TEST_NAME]["regions"] == expected_regions
@@ -26,10 +27,11 @@ def test_romparser_languages():
 
     test_case = {TEST_NAME: {"priority": 1}}
 
-    rp = ROMParser(config_file="test_config.yml",
-                   platform="Nintendo - Super Nintendo Entertainment System",
-                   game="Example Game",
-                   )
+    rp = ROMParser(
+        config_file="test_config.yml",
+        platform="Nintendo - Super Nintendo Entertainment System",
+        game="Example Game",
+    )
     roms_parsed = rp.run(test_case)
 
     assert roms_parsed[TEST_NAME]["languages"] == expected_languages
