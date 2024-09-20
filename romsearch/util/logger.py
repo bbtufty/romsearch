@@ -113,34 +113,38 @@ def setup_logger(
 def centred_string(
     str_to_centre,
     total_length=80,
+    str_prefix="",
 ):
     """Centre string for a logger
 
     Args:
         str_to_centre: String to centre
         total_length: Total length of the string. Defaults to 80.
+        str_prefix: Will include this at the start of any string. Defaults to ""
     """
 
     remaining_length = total_length - len(str_to_centre) - 4
     left_side_length = math.floor(remaining_length / 2)
     right_side_length = remaining_length - left_side_length
 
-    return f"|{' ' * left_side_length} {str_to_centre} {' ' * right_side_length}|"
+    return f"{str_prefix}|{' ' * left_side_length} {str_to_centre} {' ' * right_side_length}|"
 
 
 def left_aligned_string(
     str_to_align,
     total_length=80,
+    str_prefix="",
 ):
     """Left-align string for a logger
 
     Args:
         str_to_align: String to align
         total_length: Total length of the string
+        str_prefix: Will include this at the start of any string. Defaults to ""
     """
 
     remaining_length = total_length - len(str_to_align) - 4
     left_side_length = 1
     right_side_length = remaining_length - left_side_length
 
-    return f"|{' ' * left_side_length} {str_to_align} {' ' * right_side_length}|"
+    return f"{str_prefix}|{' ' * left_side_length} {str_to_align} {' ' * right_side_length}|"

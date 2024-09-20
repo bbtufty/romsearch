@@ -1,6 +1,7 @@
 import copy
 import os
 import requests
+import time
 from datetime import datetime
 
 import romsearch
@@ -14,27 +15,6 @@ from ..util import (
 )
 
 RA_URL = "https://retroachievements.org/API"
-
-
-def format_game_list(
-    in_file,
-):
-    """Format the GameList neatly
-
-    Args:
-        in_file (str): Input GameList file
-    """
-
-    data = load_json(in_file)
-
-    ra_game_info = {}
-    for d in data:
-        # RA uses "Title: Subtitle" logic, while No-Intro/Redump do not
-        clean_title = d["Title"].replace(":", " -")
-
-        ra_game_info[clean_title] = copy.deepcopy(d)
-
-    return ra_game_info
 
 
 class RAHasher:
@@ -134,16 +114,6 @@ class RAHasher:
             )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             run_rahasher = False
-        if "ra_hash_method" not in self.platform_config:
-            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(
-                centred_string(
-                    "RA hash method not defined in platform config file",
-                    total_length=self.log_line_length,
-                )
-            )
-            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            run_rahasher = False
         if self.username is None:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             self.logger.warning(
@@ -183,7 +153,6 @@ class RAHasher:
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         ra_game_info = self.get_ra_game_info()
-        self.save_ra_game_info(ra_game_info)
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
@@ -203,6 +172,7 @@ class RAHasher:
         cur_time = datetime.now()
         diff = cur_time - game_list_modtime
 
+        # If we're still in the cache period, don't overwrite
         if diff.days > self.cache_period:
             self.logger.info(
                 centred_string(
@@ -212,7 +182,43 @@ class RAHasher:
             )
             self.download_ra_game_list(out_file=game_list_file)
 
-        ra_game_info = format_game_list(game_list_file)
+        # Now pull out the game info
+        game_info_file = os.path.join(
+            self.ra_hash_dir,
+            f"{self.platform}.json",
+        )
+        game_info_modtime = get_file_time(
+            game_info_file,
+            return_as_str=False,
+        )
+        cur_time = datetime.now()
+        diff = cur_time - game_info_modtime
+
+        # If we're still in the cache period, don't overwrite
+        if diff.days > self.cache_period:
+            self.logger.info(
+                centred_string(
+                    f"Pulling game info out to {game_info_file}",
+                    total_length=self.log_line_length,
+                )
+            )
+            self.download_ra_game_list(out_file=game_list_file)
+
+            ra_game_info = self.format_game_list(game_list_file)
+
+            self.save_ra_game_info(
+                ra_game_info,
+                game_info_file,
+            )
+
+        else:
+            self.logger.info(
+                centred_string(
+                    f"Loading existing game info file",
+                    total_length=self.log_line_length,
+                )
+            )
+            ra_game_info = load_json(game_info_file)
 
         return ra_game_info
 
@@ -236,30 +242,96 @@ class RAHasher:
 
         return True
 
+    def format_game_list(
+        self,
+        in_file,
+        sleep_time=0.1,
+    ):
+        """Format the GameList neatly
+
+        Args:
+            in_file (str): Input GameList file
+            sleep_time (float): Sleep time for API queries. Defaults to 0.1
+        """
+
+        data = load_json(in_file)
+
+        ra_game_info = {}
+
+        # To not totally clutter the terminal, overwrite each line in the loop
+        orig_terminator = self.logger.handlers[-1].terminator
+        self.logger.handlers[-1].terminator = ""
+
+        tot = len(data)
+        for i, d in enumerate(data):
+
+            # RA uses "Title: Subtitle" logic, while No-Intro/Redump do not
+            clean_title = d["Title"].replace(":", " -")
+
+            # Format this string neatly
+            self.logger.info(
+                centred_string(
+                    f"{i+1}/{tot}: {clean_title}",
+                    total_length=self.log_line_length,
+                    str_prefix="\rINFO: ",
+                )
+            )
+
+            # Use ID to get all the useful hash info
+            game_hashes = self.get_game_hash(d["ID"])
+            d["Hashes"] = copy.deepcopy(game_hashes)
+
+            ra_game_info[clean_title] = copy.deepcopy(d)
+
+            # To avoid overloading the API, add a pause here
+            time.sleep(sleep_time)
+
+        # Set the logger back to what it was,
+        # and avoid any last minute formatting errors
+        self.logger.handlers[-1].terminator = orig_terminator
+        self.logger.info("")
+
+        return ra_game_info
+
+    def get_game_hash(
+        self,
+        game_id,
+    ):
+        """Using a game ID, get list of the game hashes"""
+
+        url = f"{RA_URL}/API_GetGameHashes.php?i={game_id}&y={self.api_key}&z={self.username}"
+        resp = requests.get(url=url)
+        game_hashes = resp.json()
+
+        game_hashes = game_hashes["Results"]
+
+        return game_hashes
+
     def save_ra_game_info(
         self,
         ra_game_info,
+        out_file,
     ):
-        """Save out the RA game info to a file"""
+        """Save out the RA game info to a file
+
+        Args:
+            ra_game_info (dict): RA game info
+            out_file (string): output file name
+        """
 
         if not os.path.exists(self.ra_hash_dir):
             os.makedirs(self.ra_hash_dir)
 
-        out_name = os.path.join(
-            self.ra_hash_dir,
-            f"{self.platform}.json",
-        )
-
         self.logger.info(
             centred_string(
-                f"Saving full game info to {out_name}",
+                f"Saving full game info to {out_file}",
                 total_length=self.log_line_length,
             )
         )
 
         save_json(
             ra_game_info,
-            out_name,
+            out_file,
         )
 
         return True
