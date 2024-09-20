@@ -451,9 +451,30 @@ class ROMParser:
             )
             return file_dict
 
-        elif self.hash_method == "md5":
+        file_dict = self.match_hashes(f, file_dict)
 
-            file_dict = self.match_md5_hashes(f, file_dict)
+        return file_dict
+
+    def match_hashes(
+        self,
+        f,
+        file_dict,
+    ):
+        """Get whether ROM has cheevos by various potential hash methods
+
+        Args:
+            f (str): Filename
+            file_dict (dict): Dictionary of ROM descriptions
+        """
+
+        has_cheevos = False
+        patch_file = ""
+
+        if self.hash_method == "md5":
+            match_list = file_dict.get("md5", [])
+
+        elif self.hash_method == "custom":
+            match_list = [os.path.splitext(f)[0]]
 
         else:
             self.logger.warning(
@@ -462,54 +483,22 @@ class ROMParser:
                     total_length=self.log_line_length,
                 )
             )
+            return has_cheevos, patch_file
 
-        return file_dict
-
-    def match_md5_hashes(
-        self,
-        f,
-        file_dict,
-    ):
-        """Get whether ROM has cheevos by md5 hashes
-
-        Args:
-            f (str): Filename
-            file_dict (dict): Dictionary of ROM descriptions
-        """
-
-        f_hashes = file_dict.get("md5", [])
-
-        # First, search for exact match
-        has_cheevos, patch_file = self.get_exact_name_match(
-            f,
-            match_list=f_hashes,
+        # Get the potential RA match by name (this won't include potentially patched ROMs)
+        has_cheevos, patch_file = self.get_ra_match(
+            match_list=match_list,
         )
 
         file_dict["has_cheevos"] = has_cheevos
         file_dict["patch_file"] = patch_file
 
-        if has_cheevos:
-            return file_dict
-
-        # Also do inexact matches
-        has_cheevos, patch_file = self.get_inexact_name_match(
-            f,
-            match_list=f_hashes,
-        )
-
-        file_dict["has_cheevos"] = has_cheevos
-        file_dict["patch_file"] = patch_file
-
-        if has_cheevos:
-            return file_dict
-
         return file_dict
 
-    def get_exact_name_match(self, f, match_list=None):
-        """Match short file name exactly to a name in the RA game list
+    def get_ra_match(self, match_list=None):
+        """Match a file to RetroAchievements supported files
 
         Args:
-            f (str): Filename
             match_list (list): List of potential match patterns. Defaults to an empty list
         """
 
@@ -519,105 +508,40 @@ class ROMParser:
         # Set up a list of potential matches
         if match_list is None:
             match_list = []
-
         # If we've got nothing, don't waste time
         if len(match_list) == 0:
             return has_cheevos, patch_file
 
-        potential_matches = {}
-
-        # Look for an exact match to the short name
-        f_short = get_short_name(f)
-        if f_short in self.ra_hashes:
-
-            if self.hash_method == "md5":
-
-                hashes = {
-                    h["MD5"]: h["PatchUrl"] for h in self.ra_hashes[f_short]["Hashes"]
-                }
-                potential_matches.update(hashes)
-
-            # FIXME
-            else:
-                self.logger.warning(
-                    centred_string(
-                        f"Cannot currently handle {self.hash_method} hash method",
-                        total_length=self.log_line_length,
-                    )
+        # Pull out the particular key we need
+        if self.hash_method == "md5":
+            key = "MD5"
+        elif self.hash_method == "custom":
+            key = "Name"
+        else:
+            self.logger.warning(
+                centred_string(
+                    f"Cannot currently handle {self.hash_method} hash method",
+                    total_length=self.log_line_length,
                 )
-                return has_cheevos, patch_file
-
-        if len(match_list) > 0:
-            for m in match_list:
-                for p in potential_matches:
-                    if m == p:
-                        has_cheevos = True
-                        patch_file = potential_matches[p]
-
-        if patch_file is None:
-            patch_file = ""
-
-        return has_cheevos, patch_file
-
-    def get_inexact_name_match(
-        self,
-        f,
-        match_list=None,
-    ):
-        """Match short file name inexactly to a name in the RA game list
-
-        Args:
-            f (str): Filename
-            match_list (list): List of potential match patterns. Defaults to an empty list
-        """
-
-        has_cheevos = False
-        patch_file = ""
-
-        # Set up a list of potential matches
-        if match_list is None:
-            match_list = []
-
-        # If we've got nothing, don't waste time
-        if len(match_list) == 0:
+            )
             return has_cheevos, patch_file
 
-        potential_matches = {}
+        # Because of inconsistencies between naming schemes, just pull a huge dictionary out here rather than try
+        # to be clever
+        ra_dict = {}
+        for r in self.ra_hashes:
+            hashes = {h[key]: h["PatchUrl"] for h in self.ra_hashes[r]["Hashes"]}
+            ra_dict.update(hashes)
 
-        # Because there's inconsistency between the naming schemes, strip out everything that's not a letter/number
-        f_short = get_short_name(f)
-        ra_names = [a for a in self.ra_hashes]
+        # Again, if there's nothing here just return
+        if len(ra_dict) == 0:
+            return has_cheevos, patch_file
 
-        ra_names_clean = [re.sub("[^a-z0-9]+", "", a.lower()) for a in ra_names]
-        f_short_clean = re.sub("[^a-z0-9]+", "", f_short.lower())
-
-        # Search within the strings. Just get a partial match here
-        for i, ra_name in enumerate(ra_names_clean):
-            if f_short_clean in ra_name:
-
-                if self.hash_method == "md5":
-                    hashes = {
-                        h["MD5"]: h["PatchUrl"]
-                        for h in self.ra_hashes[ra_names[i]]["Hashes"]
-                    }
-                    potential_matches.update(hashes)
-
-                # FIXME
-                else:
-                    self.logger.warning(
-                        centred_string(
-                            f"Cannot currently handle {self.hash_method} hash method",
-                            total_length=self.log_line_length,
-                        )
-                    )
-                    return has_cheevos, patch_file
-
-        if len(match_list) > 0:
-            for m in match_list:
-                for p in potential_matches:
-                    if m == p:
-                        has_cheevos = True
-                        patch_file = potential_matches[p]
+        for m in match_list:
+            for r in ra_dict:
+                if m == r:
+                    has_cheevos = True
+                    patch_file = ra_dict[r]
 
         if patch_file is None:
             patch_file = ""
