@@ -361,23 +361,29 @@ class ROMChooser:
 
         This chooser works in this order:
 
-        - Filter out dat categories we don't want (e.g. demos, betas)
-        - Filter out ROMs that don't have any languages in the user preferences
-        - Filter out ROMs that don't have any regions in the user preferences
+        * Filter out dat categories we don't want (e.g. demos, betas)
+        * Filter out ROMs that don't have any languages in the user preferences
+        * Filter out ROMs that don't have any regions in the user preferences
 
         For the ROMs left, we then choose a best one, using a scoring system with
         this priority:
-          - Achievements
-          - Regions
-          - Languages
-          - Budget editions
-          - Versions and revisions
-          - Improved versions
-        We also demote ROMs, with this priority (most to least demoted)
-          - Retool priority
-          - Modern versions
-          - Alternate versions
-          - Demoted versions
+
+        * Achievements
+        * Regions
+        * Languages
+        * Budget editions
+        * Versions and revisions
+        * Improved versions
+
+        We also demote ROMs, with this priority (most to least demoted):
+
+        * Retool priority
+        * Modern versions
+        * Alternate versions
+        * Demoted versions
+
+        Args:
+            rom_dict (dict): Dictionary of ROMs to choose between
         """
 
         # Add in whether these are excluded or not, and why
