@@ -1,6 +1,7 @@
 import copy
 import os
 import re
+from packaging.version import Version
 
 import romsearch
 from ..util import (
@@ -11,7 +12,6 @@ from ..util import (
     load_yml,
     load_json,
     get_game_name,
-    get_short_name,
 )
 
 DICT_DEFAULT_VALS = {"bool": False, "str": "", "list": []}
@@ -137,6 +137,10 @@ class ROMParser:
             default_file = os.path.join(mod_dir, "configs", "defaults.yml")
             default_config = load_yml(default_file)
         self.default_config = default_config
+
+        self.ra_file_exts = self.default_config.get("ra_file_exts", [])
+        self.ra_labels = self.default_config.get("ra_labels", [])
+        self.ra_patch_checks = self.default_config.get("ra_patch_checks", [])
 
         if regex_config is None:
             regex_file = os.path.join(mod_dir, "configs", "regex.yml")
@@ -392,7 +396,7 @@ class ROMParser:
             return file_dict
 
         # Remember there aren't zips in the dat entries
-        dat_entry = self.dat.get(f.strip(".zip"), None)
+        dat_entry = self.dat.get(f.rstrip(".zip"), None)
         if not dat_entry:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             self.logger.warning(
@@ -474,7 +478,7 @@ class ROMParser:
             match_list = file_dict.get("md5", [])
 
         elif self.hash_method == "custom":
-            match_list = [os.path.splitext(f)[0]]
+            match_list = [f.rstrip(".zip")]
 
         else:
             self.logger.warning(
@@ -490,12 +494,39 @@ class ROMParser:
             match_list=match_list,
         )
 
+        # If we've found something, stop here
+        if has_cheevos:
+            file_dict["has_cheevos"] = has_cheevos
+            file_dict["patch_file"] = patch_file
+            return file_dict
+
+        # If we're on a custom hash, and we haven't found anything, now look
+        # via parsing the names
+        if self.hash_method == "custom":
+            has_cheevos, patch_file = self.get_parsed_match(
+                match_list=match_list, want_patched_files=False
+            )
+            if has_cheevos:
+                file_dict["has_cheevos"] = has_cheevos
+                file_dict["patch_file"] = patch_file
+                return file_dict
+
+        # If we still haven't, now look through files to see if we just need
+        # a patch (i.e. the hash will change, but we have the file)
+        match_list = [f]
+        has_cheevos, patch_file = self.get_parsed_match(
+            match_list=match_list,
+        )
+
         file_dict["has_cheevos"] = has_cheevos
         file_dict["patch_file"] = patch_file
 
         return file_dict
 
-    def get_ra_match(self, match_list=None):
+    def get_ra_match(
+        self,
+        match_list=None,
+    ):
         """Match a file to RetroAchievements supported files
 
         Args:
@@ -529,9 +560,39 @@ class ROMParser:
         # Because of inconsistencies between naming schemes, just pull a huge dictionary out here rather than try
         # to be clever
         ra_dict = {}
+
         for r in self.ra_hashes:
-            hashes = {h[key]: h["PatchUrl"] for h in self.ra_hashes[r]["Hashes"]}
-            ra_dict.update(hashes)
+            for h in self.ra_hashes[r]["Hashes"]:
+
+                # Since these should be exact matches, skip those that have
+                # patches
+                if h["PatchUrl"] is not None:
+                    continue
+
+                # Also mark anything that's not pure No-Intro/Redump labelled
+                if any([l not in self.ra_labels for l in h["Labels"]]):
+                    continue
+
+                # Use the md5 as the unique key, and then name as the thing we'll match to
+                md5 = copy.deepcopy(h["MD5"])
+                name = copy.deepcopy(h[key])
+                name = name.strip()
+
+                # If we're dealing with names, there might
+                # be file extensions to strip
+                if key in ["Name"]:
+                    for ext in self.ra_file_exts:
+                        if name.endswith(ext):
+                            name = name.rstrip(ext)
+
+                # FIXME: Here as a catch-all, hopefully won't be a problem
+                if md5 in ra_dict:
+                    raise ValueError(f"Hash {md5} multiply defined")
+
+                ra_dict[md5] = {
+                    "name": name,
+                    "patch_file": h["PatchUrl"],
+                }
 
         # Again, if there's nothing here just return
         if len(ra_dict) == 0:
@@ -539,9 +600,113 @@ class ROMParser:
 
         for m in match_list:
             for r in ra_dict:
-                if m == r:
+                if m == ra_dict[r]["name"]:
                     has_cheevos = True
-                    patch_file = ra_dict[r]
+                    patch_file = ra_dict[r]["patch_file"]
+
+        if patch_file is None:
+            patch_file = ""
+
+        return has_cheevos, patch_file
+
+    def get_parsed_match(
+        self,
+        match_list=None,
+        want_patched_files=True,
+    ):
+        """Match a file to RetroAchievements supported files that need patches
+
+        Args:
+            match_list (list): List of potential match patterns. Defaults to an empty list
+            want_patched_files (bool): Whether we're looking for hashes with patches or not. Defaults to True
+        """
+
+        has_cheevos = False
+        patch_file = ""
+
+        # Set up a list of potential matches
+        if match_list is None:
+            match_list = []
+        # If we've got nothing, don't waste time
+        if len(match_list) == 0:
+            return has_cheevos, patch_file
+
+        # Because of inconsistencies between naming schemes, just pull a huge dictionary out here rather than try
+        # to be clever
+        ra_dict = {}
+        for r in self.ra_hashes:
+            for h in self.ra_hashes[r]["Hashes"]:
+
+                # Are we looking for patch URLs or not?
+                if want_patched_files:
+                    if h["PatchUrl"] is None:
+                        continue
+                else:
+                    if h["PatchUrl"] is not None:
+                        continue
+
+                # Use the md5 as the unique key, and then name as the thing we'll match to
+                md5 = copy.deepcopy(h["MD5"])
+                name = copy.deepcopy(h["Name"])
+                name = name.strip()
+
+                # There might be file extensions to strip
+                for ext in self.ra_file_exts:
+                    if name.endswith(ext):
+                        name = name.rstrip(ext)
+
+                # FIXME: Here as a catch-all, hopefully won't be a problem
+                if md5 in ra_dict:
+                    raise ValueError(f"Hash {md5} multiply defined")
+
+                # Pull out the name before the first bracket to match later
+                ra_dict[md5] = {
+                    "name": name,
+                    "short_name": name.split(" (")[0],
+                    "patch_url": h["PatchUrl"],
+                }
+
+        # Again, if there's nothing here just return
+        if len(ra_dict) == 0:
+            return has_cheevos, patch_file
+
+        for m in match_list:
+
+            # Parse filename and get the short name
+            m_parsed = self.parse_filename(m, file_dict={})
+            m_short = m.split(" (")[0]
+
+            for r in ra_dict:
+
+                # Match by short names to start
+                if m_short == ra_dict[r]["short_name"]:
+
+                    r_parsed = self.parse_filename(ra_dict[r]["name"], file_dict={})
+
+                    # Force some version info in here, if the RA name doesn't have it
+                    if r_parsed["version_no"] == "" and m_parsed["version_no"] != "":
+                        if Version(m_parsed["version_no"]) == Version("1"):
+                            r_parsed["version_no"] = copy.deepcopy(
+                                m_parsed["version_no"]
+                            )
+
+                    # Now, make sure all the useful checks pass
+                    if all(
+                        [
+                            m_parsed[check] == r_parsed[check]
+                            for check in self.ra_patch_checks
+                        ]
+                    ):
+
+                        has_cheevos = True
+
+                        # FIXME: Here as a catch-all, hopefully won't be a problem
+                        if patch_file != "":
+                            raise ValueError(
+                                f"Multiple patch files found for {m_short}"
+                            )
+
+                        patch_file = ra_dict[r]["patch_url"]
 
         if patch_file is None:
             patch_file = ""
@@ -603,7 +768,7 @@ class ROMParser:
             file_dict = {}
 
         # Split file into tags
-        tags = [f"({x}" for x in f.strip(".zip").split(" (")][1:]
+        tags = [f"({x}" for x in f.rstrip(".zip").split(" (")][1:]
 
         for regex_key in self.regex_config:
 
@@ -668,7 +833,6 @@ class ROMParser:
                     if pattern_string is not None:
 
                         if transform_pattern is not None:
-
                             pattern_string = re.sub(
                                 transform_pattern, transform_repl, pattern_string
                             )

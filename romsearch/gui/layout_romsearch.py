@@ -1003,19 +1003,6 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomChooserSettings.addWidget(self.checkBoxConfigRomChooserUseBestVersion)
 
-        self.lineConfigRomChooserUseBestVersionDividerBottom = QFrame(self.tabConfigRomChooser)
-        self.lineConfigRomChooserUseBestVersionDividerBottom.setObjectName(u"lineConfigRomChooserUseBestVersionDividerBottom")
-        self.lineConfigRomChooserUseBestVersionDividerBottom.setFrameShadow(QFrame.Shadow.Plain)
-        self.lineConfigRomChooserUseBestVersionDividerBottom.setFrameShape(QFrame.Shape.HLine)
-
-        self.verticalLayoutConfigRomChooserSettings.addWidget(self.lineConfigRomChooserUseBestVersionDividerBottom)
-
-        self.checkBoxConfigRomChooserAllowMultipleRegions = QCheckBox(self.tabConfigRomChooser)
-        self.checkBoxConfigRomChooserAllowMultipleRegions.setObjectName(u"checkBoxConfigRomChooserAllowMultipleRegions")
-        self.checkBoxConfigRomChooserAllowMultipleRegions.setChecked(False)
-
-        self.verticalLayoutConfigRomChooserSettings.addWidget(self.checkBoxConfigRomChooserAllowMultipleRegions)
-
         self.lineConfigRomChooserFilterRegionsDividerTop = QFrame(self.tabConfigRomChooser)
         self.lineConfigRomChooserFilterRegionsDividerTop.setObjectName(u"lineConfigRomChooserFilterRegionsDividerTop")
         self.lineConfigRomChooserFilterRegionsDividerTop.setFrameShadow(QFrame.Shadow.Plain)
@@ -1674,10 +1661,6 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomChooserUseBestVersion.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to only use the best ROM version per-region. Default checked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRomChooserUseBestVersion.setText(QCoreApplication.translate("RomSearch", u"Use best version?", None))
-#if QT_CONFIG(statustip)
-        self.checkBoxConfigRomChooserAllowMultipleRegions.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to allow multiple regions, or to just use the most preferred region. Default unchecked", None))
-#endif // QT_CONFIG(statustip)
-        self.checkBoxConfigRomChooserAllowMultipleRegions.setText(QCoreApplication.translate("RomSearch", u"Allow multiple regions?", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRomChooserFilterRegions.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to remove ROMs that don't fall into the selected region choices. Default checked", None))
 #endif // QT_CONFIG(statustip)

@@ -76,8 +76,6 @@ Syntax: ::
       dry_run: false                    # OPTIONAL. Set to true to not make any changes to filesystem. Defaults to false
       use_best_version: true            # OPTIONAL. Whether to choose only what ROMChooser decides is the best version.
                                         #           Defaults to true
-      allow_multiple_regions: false     # OPTIONAL. If true, will allow files from multiple regions, else will choose the
-                                        #           highest region in the list. Defaults to false
       filter_regions: true              # OPTIONAL. Whether to filter by region or not. Defaults to true
       filter_languages: true            # OPTIONAL. Whether to filter by language or not. Defaults to true
       bool_filters: "all_but_games"     # OPTIONAL. Can filter out non-games by various dat categories. If you want to

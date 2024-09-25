@@ -3,49 +3,42 @@
 ####
 
 ROMSearch operates on a "one game, one ROM" (1G1R) philosophy. This means that for each game, it will find the
-ROM file that it believes to be the best. The approach ROMSearch takes depends mostly on regions, languages,
-versioning, and optional name priority, with regions being the ultimate discriminator.
+ROM file that it believes to be the best. The approach ROMSearch takes is to (1) filter out ROMs that the user does
+not want, and then (2) score the remaining ROMs to find an overall "best" ROM.
 
-Languages
----------
-
-Many ROMs are tagged with languages (En, Es, etc), that will be parsed out during the run. If a ROM does not contain
-the language the user has specified (most likely En), then this will be removed from the choice.
-
-A lot of ROMs do not have any language tags (particularly US ones). For these, we currently do not cut them out,
-but this may change in the future to associate a region with an implicit language.
-
-Versions
---------
-
-There may be different versions of ROMs (e.g. Rev 1, v2.0, etc). For these, we will take the latest one per unique
-region combination as the latest and greatest version.
-
-Priority
---------
-
-Some files are essentially stripped down versions of games and so should be de-prioritised versus others. To get
-a priority, we use the ``retool`` clonelists.
-
-Regions
+Filters
 -------
 
-After the various cuts, there will still be a number ROMs that pass all checks. We therefore do a filter by
-region (e.g. USA, Europe) to get to a final ROM. ROMSearch will generally choose the ROM with the highest
-region preference for each game, so order is important here!
+Firstly, ROMs are filtered.
 
-Achievements
-------------
+* This starts with dat categories the user may not want (by default, this is everything not a game,
+  so demos, beta, etc.)
+* We then filter out ROMs that don't have languages (or implied languages) that are in the user preferences
+* ROMs are filtered if they don't have regions in the user preferences
 
-ROMSearch will prioritise ROMs that are RetroAchievement enabled over others. This may mean you don't necessarily
-get the most up-to-date version or your top region.
+Scoring
+-------
 
-Others
-------
+After the initial round of filtering, we then score the ROMs. Some have an ordered priority, which means that
+the order the user has selected matters (e.g. USA, World, Europe for regions).
 
-There are some other cuts that go into deciding the best ROM. These include:
+Scores are boosted in this order of priority:
 
-* Improved version tags (e.g. "EDC" for PS1 games)
-* Removing of demos/preproduction ROMs
+* Has RetroAchievements
+* Regions (ordered priority)
+* Languages (ordered priority)
+* Budget editions
+* Versions/revisions
+* Improved versions (e.g. EDC)
+
+There are also some demotions that go on. The priority is (from most to least demoted):
+
+* Priority from ``retool`` clonelists
+* Modern versions
+* Alternate versions
+* Demoted versions (e.g. arcade versions)
+
+End result
+----------
 
 The final result is that you should get the single best ROM for your preferences. Hooray!

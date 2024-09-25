@@ -1756,29 +1756,6 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="Line" name="lineConfigRomChooserUseBestVersionDividerBottom">
-                  <property name="frameShadow">
-                   <enum>QFrame::Shadow::Plain</enum>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Orientation::Horizontal</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="checkBoxConfigRomChooserAllowMultipleRegions">
-                  <property name="statusTip">
-                   <string>Whether to allow multiple regions, or to just use the most preferred region. Default unchecked</string>
-                  </property>
-                  <property name="text">
-                   <string>Allow multiple regions?</string>
-                  </property>
-                  <property name="checked">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="Line" name="lineConfigRomChooserFilterRegionsDividerTop">
                   <property name="frameShadow">
                    <enum>QFrame::Shadow::Plain</enum>

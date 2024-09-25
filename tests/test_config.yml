@@ -49,7 +49,6 @@ romparser:
 romchooser:
   dry_run: false
   use_best_version: true
-  allow_multiple_regions: false
   filter_regions: true
   filter_languages: true
   bool_filters: "all_but_games"
