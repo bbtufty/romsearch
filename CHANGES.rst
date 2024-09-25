@@ -1,4 +1,4 @@
-0.0.8 (Unreleased)
+0.0.8 (2024-09-25)
 ==================
 
 Features
@@ -54,6 +54,7 @@ ROMSearch
 General
 ~~~~~~~
 
+- Bump to 0.0.8
 - Build RTDs on PRs
 
 0.0.7 (2024-08-28)
