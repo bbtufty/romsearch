@@ -208,3 +208,28 @@ dat_checksums:
   - "md5"
   - "sha1"
   - "sha256"
+
+ra_file_exts:
+  - ".bin"
+  - ".bs"
+  - ".iso"
+  - ".fds"
+  - ".gb"
+  - ".gbc"
+  - ".nds"
+  - ".nes"
+  - ".sfc"
+  - ".sgb"
+  - ".unf"
+  - ".zip"
+
+ra_labels:
+  - "redump"
+  - "nointro"
+
+ra_patch_checks:
+  - "regions"
+  - "version_no"
+  - "revision"
+  - "multi_disc"
+  - "demo"

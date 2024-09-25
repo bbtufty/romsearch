@@ -58,7 +58,7 @@ def get_short_name(
     """Get short game name from the ROM file naming convention"""
 
     if ".zip" in f:
-        f = f.strip(".zip")
+        f = f.rstrip(".zip")
 
     mod_dir = os.path.dirname(romsearch.__file__)
 

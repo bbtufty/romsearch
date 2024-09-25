@@ -124,7 +124,16 @@ class ROMMover:
                 .get("file_mod_time", 0)
             )
 
-            if rom_dict[rom]["file_mod_time"] == cache_mod_time:
+            # Only update if the cache modification time is different
+            # to the file mod time, and the ROM isn't patched
+            rom_patched = (
+                self.cache.get(self.platform, {})
+                .get(self.game, {})
+                .get(rom, {})
+                .get("patched", False)
+            )
+
+            if rom_dict[rom]["file_mod_time"] == cache_mod_time and not rom_patched:
                 self.logger.info(
                     centred_string(
                         f"No updates for {rom}, skipping",
@@ -212,8 +221,12 @@ class ROMMover:
         if not self.cache[self.platform][self.game]:
             self.cache[self.platform][self.game] = {}
 
+        # Include info about whether the ROM has been patched or not,
+        # and the patch file
         self.cache[self.platform][self.game][file] = {
-            "file_mod_time": rom_dict[file]["file_mod_time"]
+            "file_mod_time": rom_dict[file]["file_mod_time"],
+            "patch_file": rom_dict[file]["patch_file"],
+            "patched": False,
         }
 
     def save_cache(self):

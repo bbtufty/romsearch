@@ -216,7 +216,6 @@ class ConfigWindow(QMainWindow):
 
         self.all_romchooser_options = {
             "use_best_version": self.ui.checkBoxConfigRomChooserUseBestVersion,
-            "allow_multiple_regions": self.ui.checkBoxConfigRomChooserAllowMultipleRegions,
             "filter_regions": self.ui.checkBoxConfigRomChooserFilterRegions,
             "filter_languages": self.ui.checkBoxConfigRomChooserFilterLanguages,
             "dry_run": self.ui.checkBoxConfigRomChooserDryRun,

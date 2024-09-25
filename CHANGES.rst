@@ -14,6 +14,7 @@ Fixes
 DATParser
 ~~~~~~~~~
 
+- Ensure we pick up the right dat file if names are similar
 - Return dat dict directly from ``run``
 
 DupeParser
@@ -25,15 +26,23 @@ ROMChooser
 ~~~~~~~~~~
 
 - Added in scoring if ROM has associated RA achievements
+- Overhauled the ROMChoosing. Is now clearer with filters and then scores
+- Fixed issue with ordering versions for scoring
 
 ROMDownloader
 ~~~~~~~~~~~~~
 
 - Fixed crash if file does not exist on remote
 
+ROMMover
+~~~~~~~~
+
+- Include patch info in cache file
+
 ROMParser
 ~~~~~~~~~
 
+- Add parsing for RetroAchievement-supported ROMs
 - Parse checksums out of dat files
 - Can take dat and dupe dicts directly, to avoid file I/O
 
