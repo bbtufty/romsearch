@@ -19,3 +19,4 @@ the available modules.
   modules/romparser
   modules/romchooser
   modules/rommover
+  modules/romcleaner

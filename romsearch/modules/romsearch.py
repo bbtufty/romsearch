@@ -9,6 +9,7 @@ from .dupeparser import DupeParser
 from .gamefinder import GameFinder
 from .rahasher import RAHasher
 from .romchooser import ROMChooser
+from .romcleaner import ROMCleaner
 from .romdownloader import ROMDownloader
 from .rommover import ROMMover
 from .romparser import ROMParser
@@ -439,6 +440,32 @@ class ROMSearch:
                         discord_push(
                             url=self.discord_url,
                             name="ROMSearch",
+                            fields=fields,
+                        )
+
+            # Finally, clean up anything in the ROM directory that's been deleted
+            cleaner = ROMCleaner(
+                platform=platform,
+                config=self.config,
+                logger=self.logger,
+                log_line_length=log_line_length,
+            )
+            all_roms_deleted = cleaner.run(all_roms_dict)
+
+            # Post these to Discord in chunks of 10
+            if self.discord_url is not None and len(all_roms_deleted) > 0:
+
+                for items_split in split(all_roms_deleted):
+
+                    fields = []
+
+                    field_dict = {"name": platform, "value": "\n".join(items_split)}
+                    fields.append(field_dict)
+
+                    if len(fields) > 0:
+                        discord_push(
+                            url=self.discord_url,
+                            name="ROMCleaner",
                             fields=fields,
                         )
 

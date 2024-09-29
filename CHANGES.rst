@@ -1,3 +1,19 @@
+0.1.0 (Unreleased)
+==================
+
+Features
+--------
+
+- Added ROMCleaner, which will clean out deleted ROMs within the ROM directory
+
+Fixes
+-----
+
+ROMDownloader
+~~~~~~~~~~~~~
+
+- Tidy logging for removed files
+
 0.0.8 (2024-09-25)
 ==================
 

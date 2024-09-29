@@ -522,6 +522,8 @@ class ROMDownloader:
         # we delete it
         all_files = get_tidy_files(os.path.join(str(out_dir), "*"))
 
+        found_matches = []
+
         for f in all_files:
 
             found_match = False
@@ -531,10 +533,19 @@ class ROMDownloader:
                     found_match = True
 
             if not found_match:
-                self.logger.info(
-                    centred_string(f"Removing {f}", total_length=self.log_line_length)
-                )
                 os.remove(os.path.join(str(out_dir), f))
+                found_matches.append(f)
+
+        # Do a nice summary of what we might have removed
+        if len(found_matches) > 0:
+            self.logger.info(f"{'-' * self.log_line_length}")
+            self.logger.info(
+                centred_string(f"Removed files:", total_length=self.log_line_length)
+            )
+            for f in found_matches:
+                self.logger.info(
+                    centred_string(f"{f}", total_length=self.log_line_length)
+                )
 
         return True
 
