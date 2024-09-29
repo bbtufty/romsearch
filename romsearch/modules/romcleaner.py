@@ -1,4 +1,5 @@
 import copy
+import glob
 import os
 import shutil
 
@@ -7,7 +8,6 @@ from ..util import (
     centred_string,
     load_yml,
     setup_logger,
-    unzip_file,
     load_json,
     save_json,
 )
@@ -128,26 +128,49 @@ class ROMCleaner:
 
         full_rom_dir = os.path.join(self.rom_dir, self.platform)
 
-        roms_on_disk = os.listdir(full_rom_dir)
-        roms_in_dict = list(rom_dict.keys())
+        # Find files on disk
+        roms_on_disk = glob.glob(os.path.join(full_rom_dir, "*", "*.*"))
+
+        # Pull out any included ROMs, stripping out the extension
+        roms_in_dict = []
+        for r in rom_dict:
+            included_roms = [
+                os.path.splitext(f)[0]
+                for f in rom_dict[r]
+                if rom_dict[r][f]["excluded"] == False
+            ]
+            roms_in_dict.extend(included_roms)
 
         roms_cleaned = []
 
         for rom_on_disk in roms_on_disk:
-            if rom_on_disk not in roms_in_dict:
 
-                # Remove on disk and in cache
-                shutil.rmtree(os.path.join(full_rom_dir, rom_on_disk))
+            # Pull out a short ROM name, skipping any extensions and parent directories
+            rom_short = os.path.split(rom_on_disk)[-1]
+            rom_short = os.path.splitext(rom_short)[0]
+
+            if rom_short not in roms_in_dict:
+
+                # Delete the file
+                os.remove(rom_on_disk)
+                parent_dir = os.path.split(os.path.dirname(rom_on_disk))[-1]
                 if self.platform in self.cache:
-                    self.cache[self.platform].pop(rom_on_disk, None)
+                    self.cache[self.platform].pop(parent_dir, None)
 
-                roms_cleaned.append(rom_on_disk)
+                roms_cleaned.append(rom_short)
 
                 self.logger.info(
                     centred_string(
-                        f"Removed {rom_on_disk}", total_length=self.log_line_length
+                        f"Removed {rom_short}", total_length=self.log_line_length
                     )
                 )
+
+        # Remove any empty directories
+        all_dirs = os.listdir(full_rom_dir)
+        for d in all_dirs:
+            full_dir = os.path.join(full_rom_dir, d)
+            if not os.listdir(full_dir):
+                shutil.rmtree(full_dir)
 
         return roms_cleaned
 
