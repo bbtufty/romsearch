@@ -31,20 +31,20 @@ classifiers = [
 ]
 
 dependencies = [
-    "colorlog",
-    "discordwebhook",
-    "numpy",
-    "packaging",
-    "pathvalidate",
-    "PySide6",
-    "pyyaml",
-    "xmltodict",
+    "colorlog>=6.8.2",
+    "discordwebhook>=1.0.3",
+    "numpy>=1.26.4,<2.0",
+    "packaging>=24.0",
+    "pathvalidate>=3.2.0",
+    "PySide6>=6.7.0",
+    "pyyaml>=6.0.1",
+    "xmltodict>=0.13.0",
 ]
 
 [project.optional-dependencies]
 docs = [
-    "sphinx-automodapi",
-    "sphinx-rtd-theme",
+    "sphinx-automodapi>=0.17.0",
+    "sphinx-rtd-theme>=2.0.0",
 ]
 
 [project.urls]
@@ -55,8 +55,8 @@ docs = [
 [build-system]
 requires = [
     "setuptools>=43.0.0",
-    "wheel",
-    "setuptools_scm",
+    "wheel>=0.43.0",
+    "setuptools_scm>=8.1.0",
 ]
 
 build-backend = "setuptools.build_meta"

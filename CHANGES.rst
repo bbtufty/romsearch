@@ -14,6 +14,12 @@ ROMDownloader
 
 - Tidy logging for removed files
 
+General
+~~~~~~~
+
+- Include explicit package versions
+- Enable dependabot
+
 0.0.8 (2024-09-25)
 ==================
 
