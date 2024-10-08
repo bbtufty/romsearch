@@ -33,7 +33,7 @@ classifiers = [
 dependencies = [
     "colorlog>=6.8.2",
     "discordwebhook>=1.0.3",
-    "numpy>=1.26.4,<2.0",
+    "numpy>=2.1.2",
     "packaging>=24.0",
     "pathvalidate>=3.2.0",
     "PySide6>=6.7.0",
@@ -44,7 +44,7 @@ dependencies = [
 [project.optional-dependencies]
 docs = [
     "sphinx-automodapi>=0.17.0",
-    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-rtd-theme>=3.0.0",
 ]
 
 [project.urls]

@@ -44,7 +44,7 @@ html_theme_options = {
     "navigation_depth": 4,
     "globaltoc_collapse": False,
     "globaltoc_includehidden": False,
-    "display_version": True,
+    "version_selector": True,
 }
 
 autoclass_content = "both"
