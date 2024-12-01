@@ -13,6 +13,7 @@ Fixes
 DupeParser
 ~~~~~~~~~~
 
+- Return the actual retool dupes, so we can get categories out later
 - Don't overwrite retool priority from parsing dat
 
 ROMCleaner

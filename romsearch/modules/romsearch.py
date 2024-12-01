@@ -199,7 +199,7 @@ class ROMSearch:
                     logger=self.logger,
                     log_line_length=log_line_length,
                 )
-                retool_dict = dupe_parser.run()
+                _, retool_dict = dupe_parser.run()
 
             if self.romsearch_method == "download_then_filter":
                 # Run the rclone sync

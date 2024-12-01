@@ -129,7 +129,7 @@ class DupeParser:
         )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        dupe_dict = self.get_dupe_dict()
+        dupe_dict, retool_dict = self.get_dupe_dict()
 
         # Save out the dupe dict
         out_file = os.path.join(self.dupe_dir, f"{self.platform} (dupes).json")
@@ -137,7 +137,7 @@ class DupeParser:
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        return dupe_dict
+        return dupe_dict, retool_dict
 
     def get_dupe_dict(self):
         """Loop through potentially both the dat files and the retool config file to get out dupes"""
@@ -145,14 +145,15 @@ class DupeParser:
         dupe_dict = {}
 
         # Prefer retool dupes first
+        retool_dict = None
         if self.use_retool:
-            dupe_dict = self.get_retool_dupes(dupe_dict)
+            dupe_dict, retool_dict = self.get_retool_dupes(dupe_dict)
         if self.use_dat:
             dupe_dict = self.get_dat_dupes(dupe_dict)
 
         dupe_dict = dict(sorted(dupe_dict.items()))
 
-        return dupe_dict
+        return dupe_dict, retool_dict
 
     def get_dat_dupes(self, dupe_dict=None):
         """Get dupes from the dat that we've already parsed to JSON"""
@@ -278,7 +279,7 @@ class DupeParser:
             for i, g in enumerate(group_titles):
                 dupe_dict[found_parent_name][g] = {"priority": priorities[i]}
 
-        return dupe_dict
+        return dupe_dict, retool_dupes
 
     def download_retool_dupe(
         self,
