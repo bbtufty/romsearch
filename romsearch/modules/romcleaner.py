@@ -172,7 +172,6 @@ class ROMCleaner:
 
             # If we haven't found anything, clear out the cache
             if not found_rom_in_dict:
-                roms_cleaned.append(rom_short)
 
                 # Just loop through the dictionary
                 found_entry_in_dict = False
@@ -191,7 +190,6 @@ class ROMCleaner:
                             g_i_short = os.path.splitext(g_i)[0]
 
                             if g_i_short == rom_short:
-                                roms_cleaned.append(rom_short)
 
                                 # Also keep info on the dictionary stuff to clean from the cache
                                 if g not in dict_cleaned:
@@ -200,6 +198,7 @@ class ROMCleaner:
 
                                 # Remove from the filesystem
                                 found_entry_in_dict = True
+                                roms_cleaned.append(rom_short)
                                 os.remove(rom_on_disk)
                                 self.logger.info(
                                     centred_string(
