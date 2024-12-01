@@ -232,7 +232,9 @@ class DupeParser:
                     if found_parent_name not in dupe_dict:
                         dupe_dict[found_parent_name] = {}
 
-                    dupe_dict[found_parent_name][clone_short_name] = {"priority": 1}
+                    # Don't overwrite priority if it's already set
+                    if clone_short_name not in dupe_dict[found_parent_name]:
+                        dupe_dict[found_parent_name][clone_short_name] = {"priority": 1}
 
         return dupe_dict
 

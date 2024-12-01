@@ -114,6 +114,7 @@ def remove_rom_dict_entries(
             raise ValueError("remove_type should be one of bool, list")
 
     f_to_exclude = np.unique(f_to_exclude)
+    f_to_exclude = [str(f) for f in f_to_exclude]
     for f in f_to_exclude:
         rom_dict[f]["excluded"] = True
         rom_dict[f]["excluded_reason"].append(key)

@@ -4,3 +4,10 @@ unzip: true
 
 ra_id: 21
 ra_hash_method: "custom"
+
+# For the ROM patcher
+patch_method: "xdelta"
+file_exts:
+  - ".iso"
+patch_file_exts:
+  - ".xdelta"

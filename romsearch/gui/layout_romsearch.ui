@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1094</width>
+    <width>1179</width>
     <height>785</height>
    </rect>
   </property>
@@ -229,7 +229,7 @@
                   <item>
                    <widget class="QLabel" name="labelConfigRAHashDir">
                     <property name="statusTip">
-                     <string>Location for the final, sorted ROM files</string>
+                     <string>Location for the parsed RetroAchievement hashes</string>
                     </property>
                     <property name="text">
                      <string>RA Hash Directory</string>
@@ -253,6 +253,46 @@
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButtonConfigRAHashDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigPatchDir">
+                    <property name="statusTip">
+                     <string>Location for patches</string>
+                    </property>
+                    <property name="text">
+                     <string>Patch Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigPatchDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigPatchDir">
+                      <property name="statusTip">
+                       <string>Location for patches</string>
+                      </property>
+                      <property name="inputMask">
+                       <string/>
+                      </property>
+                      <property name="text">
+                       <string>patches</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigPatchDir">
                       <property name="text">
                        <string>Browse</string>
                       </property>
@@ -598,6 +638,19 @@
                     </property>
                     <property name="checked">
                      <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunRomPatcher">
+                    <property name="statusTip">
+                     <string>Run the ROMPatcher?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run ROMPatcher</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -2097,6 +2150,116 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tabConfigRomPatcher">
+           <attribute name="title">
+            <string>ROMPatcher</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <layout class="QGridLayout" name="gridLayoutConfigRomPatcher">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayoutConfigRomPatcher">
+                <item>
+                 <spacer name="horizontalSpacerConfigRomPatcherLeft">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigRomPatcher">
+                  <item>
+                   <spacer name="verticalSpacerConfigRomPatcherTop">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomPatcherTop">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomPatcherxdelta">
+                    <property name="text">
+                     <string>xdelta path</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigRomPatcherxdelta">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigRomPatcherxdeltaPath">
+                      <property name="placeholderText">
+                       <string>xdelta.exe</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigRomPatcherxdeltaPath">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomPatcherBottom">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomPatcherBottom">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacerConfigRomPatcherRight">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="tabConfigDiscord">
            <attribute name="title">
             <string>Discord</string>
@@ -2435,7 +2598,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1094</width>
+     <width>1179</width>
      <height>33</height>
     </rect>
    </property>
@@ -2527,7 +2690,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigLoggerLevel"/>
   <buttongroup name="radioButtonConfigRomsearchMethod"/>
+  <buttongroup name="radioButtonConfigLoggerLevel"/>
  </buttongroups>
 </ui>

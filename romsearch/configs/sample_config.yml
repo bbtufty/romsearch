@@ -1,11 +1,13 @@
 dirs:
-  raw_dir: 'F:\Emulation\raw'
-  rom_dir: 'F:\Emulation\ROMs'
-  dat_dir: 'F:\Emulation\data\dats'
-  parsed_dat_dir: 'F:\Emulation\data\dats_parsed'
-  dupe_dir: 'F:\Emulation\data\dupes'
-  log_dir: 'F:\Emulation\data\logs'
-  cache_dir: 'F:\Emulation\data\cache'
+  raw_dir: F:/Emulation/raw
+  rom_dir: F:/Emulation/ROMs
+  patch_dir: F:/Emulation/romsearch/patches
+  ra_hash_dir: F:/Emulation/romsearch/ra_hash
+  dat_dir: F:/Emulation/romsearch/dats
+  parsed_dat_dir: F:/Emulation/romsearch/dats_parsed
+  dupe_dir: F:/Emulation/romsearch/dupes
+  cache_dir: F:/Emulation/romsearch/cache
+  log_dir: F:/Emulation/romsearch/logs
 
 platforms:
   - Nintendo - Super Nintendo Entertainment System
@@ -21,23 +23,21 @@ include_games:
     - "Chrono Trigger"
 
 romsearch:
-  method: "filter_then_download"
+  method: filter_then_download
   run_romdownloader: true
+  run_rahasher: true
   run_datparser: true
   run_dupeparser: true
   run_romchooser: true
-  run_rommover: false
+  run_rompatcher: true
+  run_rommover: true
   dry_run: false
 
 romdownloader:
-  dry_run: false
   remote_name: 'rclone_remote'
-  sync_all: false
-
-rahasher:
-  username: "user"
-  api_key: "1234567890abcde"
-  cache_period: 30
+  sync_all: true
+  use_absolute_url: false
+  dry_run: false
 
 dupeparser:
   use_dat: true
@@ -48,17 +48,43 @@ gamefinder:
 
 romparser:
   use_dat: true
+  use_retool: true
+  use_ra_hashes: true
   use_filename: true
 
 romchooser:
-  dry_run: false
   use_best_version: true
   filter_regions: true
   filter_languages: true
-  bool_filters: "all_but_games"
+  dry_run: false
+  dat_filters:
+    - add-ons
+    - applications
+    - audio
+    - bad_dumps
+    - console
+    - bonus_discs
+    - coverdiscs
+    - demos
+    - educational
+    - manuals
+    - multimedia
+    - pirate
+    - preproduction
+    - promotional
+    - unlicensed
+    - video
+
+rahasher:
+  username: "user"
+  api_key: "1234567890abcde"
+  cache_period: 30
+
+rompatcher:
+  xdelta_path: F:/Emulation/xdelta3-3.1.0-x86_64.exe
 
 discord:
   webhook_url: "https://discord.com/api/webhooks/discord_url"
 
 logger:
-  level: debug
+  level: info

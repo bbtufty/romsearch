@@ -27,7 +27,10 @@ def get_all_games(
         get_short_name(f, default_config=default_config, regex_config=regex_config)
         for f in files
     ]
-    games = list(np.unique(games))
+    games = np.unique(games)
+
+    # Ensure these are strings, not numpy strings
+    games = [str(g) for g in games]
 
     return games
 
@@ -157,7 +160,7 @@ class GameFinder:
             for ga in games_dict[g]:
                 self.logger.debug(
                     left_aligned_string(
-                        f"-> Priority {games_dict[g][ga]['priority']}. {ga}",
+                        f"-> Priority {games_dict[g][ga]['priority']}: {ga}",
                         total_length=self.log_line_length,
                     )
                 )
@@ -276,6 +279,7 @@ class GameFinder:
                             found_f = True
 
         game_dict_keys = np.unique(game_dict_keys)
+        game_dict_keys = [str(g) for g in game_dict_keys]
 
         if len(game_dict_keys) == 0:
             game_dict_keys = None

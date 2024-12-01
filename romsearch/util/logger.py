@@ -1,6 +1,7 @@
 import logging
 import math
 import os
+import shutil
 import sys
 from logging.handlers import RotatingFileHandler
 
@@ -48,16 +49,20 @@ def setup_logger(
     # Define the log file path, and sanitize if needs be
     log_file = os.path.join(log_dir, f"{script_name}.log")
 
-    # Check if log file already exists
+    # Check if log file already exists. Copy, then remove to avoid
+    # weird I/O errors
     if os.path.isfile(log_file):
         for i in range(max_logs - 1, 0, -1):
-            old_log = f"{log_dir}/{script_name}.log.{i}"
-            new_log = f"{log_dir}/{script_name}.log.{i + 1}"
+            old_log = os.path.join(f"{log_dir}", f"{script_name}.log.{i}")
+            new_log = os.path.join(f"{log_dir}", f"{script_name}.log.{i + 1}")
             if os.path.exists(old_log):
                 if os.path.exists(new_log):
                     os.remove(new_log)
-                os.rename(old_log, new_log)
-        os.rename(log_file, os.path.join(log_dir, f"{script_name}.log.1"))
+                shutil.copy(old_log, new_log)
+                os.remove(old_log)
+
+        shutil.copy(log_file, os.path.join(log_dir, f"{script_name}.log.1"))
+        os.remove(log_file)
 
     # Create a logger object with the script name
     logger = logging.getLogger(script_name)

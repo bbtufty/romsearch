@@ -1,7 +1,8 @@
 import glob
-import numpy as np
 import os
 import time
+
+import numpy as np
 
 import romsearch
 from .datparser import DATParser
@@ -234,6 +235,7 @@ class ROMSearch:
 
                 all_files = [f"{f}.zip" for f in dat_dict]
                 all_files = np.unique(all_files)
+                all_files = [str(f) for f in all_files]
                 all_files.sort()
 
             else:

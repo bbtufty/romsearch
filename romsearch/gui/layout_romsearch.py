@@ -27,7 +27,7 @@ class Ui_RomSearch(object):
     def setupUi(self, RomSearch):
         if not RomSearch.objectName():
             RomSearch.setObjectName(u"RomSearch")
-        RomSearch.resize(1094, 785)
+        RomSearch.resize(1179, 785)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -182,6 +182,27 @@ class Ui_RomSearch(object):
 
 
         self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigRAHashDir)
+
+        self.labelConfigPatchDir = QLabel(self.tabConfigMain)
+        self.labelConfigPatchDir.setObjectName(u"labelConfigPatchDir")
+
+        self.verticalLayoutConfigRomsearchDirs.addWidget(self.labelConfigPatchDir)
+
+        self.horizontalLayoutConfigPatchDir = QHBoxLayout()
+        self.horizontalLayoutConfigPatchDir.setObjectName(u"horizontalLayoutConfigPatchDir")
+        self.lineEditConfigPatchDir = QLineEdit(self.tabConfigMain)
+        self.lineEditConfigPatchDir.setObjectName(u"lineEditConfigPatchDir")
+
+        self.horizontalLayoutConfigPatchDir.addWidget(self.lineEditConfigPatchDir)
+
+        self.pushButtonConfigPatchDir = QPushButton(self.tabConfigMain)
+        self.pushButtonConfigPatchDir.setObjectName(u"pushButtonConfigPatchDir")
+        self.pushButtonConfigPatchDir.setFlat(False)
+
+        self.horizontalLayoutConfigPatchDir.addWidget(self.pushButtonConfigPatchDir)
+
+
+        self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigPatchDir)
 
         self.labelConfigDatDir = QLabel(self.tabConfigMain)
         self.labelConfigDatDir.setObjectName(u"labelConfigDatDir")
@@ -361,6 +382,12 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRunRomMover.setChecked(True)
 
         self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigRunRomMover)
+
+        self.checkBoxConfigRunRomPatcher = QCheckBox(self.tabConfigMain)
+        self.checkBoxConfigRunRomPatcher.setObjectName(u"checkBoxConfigRunRomPatcher")
+        self.checkBoxConfigRunRomPatcher.setChecked(False)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigRunRomPatcher)
 
         self.verticalSpacerConfigRomsearchModulesMiddle = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1205,6 +1232,76 @@ class Ui_RomSearch(object):
         self.horizontalLayout_11.addLayout(self.gridLayoutConfigRomChooser)
 
         self.tabWidgetConfig.addTab(self.tabConfigRomChooser, "")
+        self.tabConfigRomPatcher = QWidget()
+        self.tabConfigRomPatcher.setObjectName(u"tabConfigRomPatcher")
+        self.verticalLayout_4 = QVBoxLayout(self.tabConfigRomPatcher)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.gridLayoutConfigRomPatcher = QGridLayout()
+        self.gridLayoutConfigRomPatcher.setObjectName(u"gridLayoutConfigRomPatcher")
+        self.horizontalLayoutConfigRomPatcher = QHBoxLayout()
+        self.horizontalLayoutConfigRomPatcher.setObjectName(u"horizontalLayoutConfigRomPatcher")
+        self.horizontalSpacerConfigRomPatcherLeft = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutConfigRomPatcher.addItem(self.horizontalSpacerConfigRomPatcherLeft)
+
+        self.verticalLayoutConfigRomPatcher = QVBoxLayout()
+        self.verticalLayoutConfigRomPatcher.setObjectName(u"verticalLayoutConfigRomPatcher")
+        self.verticalSpacerConfigRomPatcherTop = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRomPatcher.addItem(self.verticalSpacerConfigRomPatcherTop)
+
+        self.lineConfigRomPatcherTop = QFrame(self.tabConfigRomPatcher)
+        self.lineConfigRomPatcherTop.setObjectName(u"lineConfigRomPatcherTop")
+        self.lineConfigRomPatcherTop.setFrameShape(QFrame.Shape.HLine)
+        self.lineConfigRomPatcherTop.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayoutConfigRomPatcher.addWidget(self.lineConfigRomPatcherTop)
+
+        self.labelConfigRomPatcherxdelta = QLabel(self.tabConfigRomPatcher)
+        self.labelConfigRomPatcherxdelta.setObjectName(u"labelConfigRomPatcherxdelta")
+
+        self.verticalLayoutConfigRomPatcher.addWidget(self.labelConfigRomPatcherxdelta)
+
+        self.horizontalLayoutConfigRomPatcherxdelta = QHBoxLayout()
+        self.horizontalLayoutConfigRomPatcherxdelta.setObjectName(u"horizontalLayoutConfigRomPatcherxdelta")
+        self.lineEditConfigRomPatcherxdeltaPath = QLineEdit(self.tabConfigRomPatcher)
+        self.lineEditConfigRomPatcherxdeltaPath.setObjectName(u"lineEditConfigRomPatcherxdeltaPath")
+
+        self.horizontalLayoutConfigRomPatcherxdelta.addWidget(self.lineEditConfigRomPatcherxdeltaPath)
+
+        self.pushButtonConfigRomPatcherxdeltaPath = QPushButton(self.tabConfigRomPatcher)
+        self.pushButtonConfigRomPatcherxdeltaPath.setObjectName(u"pushButtonConfigRomPatcherxdeltaPath")
+
+        self.horizontalLayoutConfigRomPatcherxdelta.addWidget(self.pushButtonConfigRomPatcherxdeltaPath)
+
+
+        self.verticalLayoutConfigRomPatcher.addLayout(self.horizontalLayoutConfigRomPatcherxdelta)
+
+        self.lineConfigRomPatcherBottom = QFrame(self.tabConfigRomPatcher)
+        self.lineConfigRomPatcherBottom.setObjectName(u"lineConfigRomPatcherBottom")
+        self.lineConfigRomPatcherBottom.setFrameShape(QFrame.Shape.HLine)
+        self.lineConfigRomPatcherBottom.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayoutConfigRomPatcher.addWidget(self.lineConfigRomPatcherBottom)
+
+        self.verticalSpacerConfigRomPatcherBottom = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRomPatcher.addItem(self.verticalSpacerConfigRomPatcherBottom)
+
+
+        self.horizontalLayoutConfigRomPatcher.addLayout(self.verticalLayoutConfigRomPatcher)
+
+        self.horizontalSpacerConfigRomPatcherRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutConfigRomPatcher.addItem(self.horizontalSpacerConfigRomPatcherRight)
+
+
+        self.gridLayoutConfigRomPatcher.addLayout(self.horizontalLayoutConfigRomPatcher, 0, 0, 1, 1)
+
+
+        self.verticalLayout_4.addLayout(self.gridLayoutConfigRomPatcher)
+
+        self.tabWidgetConfig.addTab(self.tabConfigRomPatcher, "")
         self.tabConfigDiscord = QWidget()
         self.tabConfigDiscord.setObjectName(u"tabConfigDiscord")
         self.horizontalLayout_8 = QHBoxLayout(self.tabConfigDiscord)
@@ -1384,7 +1481,7 @@ class Ui_RomSearch(object):
         RomSearch.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RomSearch)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1094, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1179, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1483,7 +1580,7 @@ class Ui_RomSearch(object):
         self.lineEditConfigRomDir.setPlaceholderText(QCoreApplication.translate("RomSearch", u"roms", None))
         self.pushButtonConfigRomDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
 #if QT_CONFIG(statustip)
-        self.labelConfigRAHashDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for the final, sorted ROM files", None))
+        self.labelConfigRAHashDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for the parsed RetroAchievement hashes", None))
 #endif // QT_CONFIG(statustip)
         self.labelConfigRAHashDir.setText(QCoreApplication.translate("RomSearch", u"RA Hash Directory", None))
 #if QT_CONFIG(statustip)
@@ -1492,6 +1589,17 @@ class Ui_RomSearch(object):
         self.lineEditConfigRAHashDir.setText(QCoreApplication.translate("RomSearch", u"ra_hash", None))
         self.lineEditConfigRAHashDir.setPlaceholderText(QCoreApplication.translate("RomSearch", u"ra_hash", None))
         self.pushButtonConfigRAHashDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+#if QT_CONFIG(statustip)
+        self.labelConfigPatchDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for patches", None))
+#endif // QT_CONFIG(statustip)
+        self.labelConfigPatchDir.setText(QCoreApplication.translate("RomSearch", u"Patch Directory", None))
+#if QT_CONFIG(statustip)
+        self.lineEditConfigPatchDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for patches", None))
+#endif // QT_CONFIG(statustip)
+        self.lineEditConfigPatchDir.setInputMask("")
+        self.lineEditConfigPatchDir.setText(QCoreApplication.translate("RomSearch", u"patches", None))
+        self.lineEditConfigPatchDir.setPlaceholderText("")
+        self.pushButtonConfigPatchDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
 #if QT_CONFIG(statustip)
         self.labelConfigDatDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for raw .dat files", None))
 #endif // QT_CONFIG(statustip)
@@ -1574,6 +1682,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRunRomMover.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the ROMMover?", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRunRomMover.setText(QCoreApplication.translate("RomSearch", u"Run ROMMover", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRunRomPatcher.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the ROMPatcher?", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRunRomPatcher.setText(QCoreApplication.translate("RomSearch", u"Run ROMPatcher", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigDryRun.setStatusTip(QCoreApplication.translate("RomSearch", u"If checked, will not make any changes to filesystem. Default unchecked", None))
 #endif // QT_CONFIG(statustip)
@@ -1693,6 +1805,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomChooserDatFiltersUnlicensed.setText(QCoreApplication.translate("RomSearch", u"Unlicensed", None))
         self.checkBoxConfigRomChooserDatFiltersVideo.setText(QCoreApplication.translate("RomSearch", u"Video", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomChooser), QCoreApplication.translate("RomSearch", u"ROMChooser", None))
+        self.labelConfigRomPatcherxdelta.setText(QCoreApplication.translate("RomSearch", u"xdelta path", None))
+        self.lineEditConfigRomPatcherxdeltaPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"xdelta.exe", None))
+        self.pushButtonConfigRomPatcherxdeltaPath.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+        self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomPatcher), QCoreApplication.translate("RomSearch", u"ROMPatcher", None))
         self.labelConfigDiscordWebhookUrlTitle.setText(QCoreApplication.translate("RomSearch", u"Webhook URL", None))
         self.labelConfigDiscordWebhookUrlDescription.setText(QCoreApplication.translate("RomSearch", u"URL for Discord webhooks. Must be set for notifications to be sent", None))
         self.lineEditConfigDiscordWebhookUrl.setText("")

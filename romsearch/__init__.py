@@ -13,6 +13,7 @@ from .modules import (
     ROMCleaner,
     ROMMover,
     ROMParser,
+    ROMPatcher,
     ROMSearch,
 )
 
@@ -26,5 +27,6 @@ __all__ = [
     "ROMCleaner",
     "ROMMover",
     "ROMParser",
+    "ROMPatcher",
     "ROMSearch",
 ]

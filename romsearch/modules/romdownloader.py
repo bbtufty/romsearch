@@ -305,6 +305,7 @@ class ROMDownloader:
 
         cmd = (
             f"rclone sync "
+            f"--inplace "
             f"--fast-list "
             f"--delete-after "
             f"--disable-http2 "
@@ -431,6 +432,7 @@ class ROMDownloader:
 
             cmd = (
                 f"rclone copy "
+                f"--inplace "
                 f"--no-traverse "
                 f"--disable-http2 "
                 f"--multi-thread-streams=0 "
