@@ -320,4 +320,4 @@ class ROMMover:
         """Save out the cache file"""
 
         cache = copy.deepcopy(self.cache)
-        save_json(cache, self.cache_file)
+        save_json(cache, self.cache_file, sort_key=self.platform)
