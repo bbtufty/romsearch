@@ -474,6 +474,10 @@ cozmic_collection:
   pattern: "\\(Darius Cozmic Collection\\)"
   group: "modern_version"
 
+disney_afternoon_collection:
+  pattern: "\\(The Disney Afternoon Collection\\)"
+  group: "modern_version"
+
 disney_classic_games:
   pattern: "\\(Disney Classic Games\\)"
   group: "modern_version"
@@ -494,6 +498,10 @@ konami_collector_series:
   pattern: "\\(Konami Collector's Series\\)"
   group: "modern_version"
 
+mega_man_legacy_collection:
+  pattern: "\\(Mega Man Legacy Collection\\)"
+  group: "modern_version"
+
 mega_man_x_legacy:
   pattern: "\\(Mega Man X Legacy Collection\\)"
   group: "modern_version"
@@ -507,7 +515,7 @@ namco_anthology_2:
   group: "modern_version"
 
 namcot_collection:
-  pattern: "\\(Namcot Collection.*?\\)"
+  pattern: "\\s?\\(Namcot Collection.*?\\)"
   group: "modern_version"
 
 namco_museum_archives:
@@ -536,6 +544,10 @@ rockman_123:
 
 seiken_denetsu_collection:
   pattern: "\\(Seiken Densetsu Collection\\)"
+  group: "modern_version"
+
+snk_40th_anniversary:
+  pattern: "\\(SNK 40th Anniversary Collection\\)"
   group: "modern_version"
 
 steam:
@@ -603,12 +615,20 @@ debug_version:
   pattern: "\\(Debug Version\\)"
   group: "demoted_version"
 
+digital:
+  pattern: "\\(Digital\\)"
+  group: "demoted_version"
+
 earlier:
   pattern: "\\(Earlier\\)"
   group: "demoted_version"
 
 early:
   pattern: "\\(Early\\)"
+  group: "demoted_version"
+
+evercade:
+  pattern: "\\(Evercade\\)"
   group: "demoted_version"
 
 famicombox:
@@ -625,6 +645,26 @@ hwang_shinwei:
 
 jncota:
   pattern: "\\(Jncota\\)"
+  group: "demoted_version"
+
+jy_company:
+  pattern: "\\(J\\.Y\\. Company\\)"
+  group: "demoted_version"
+
+kaiser:
+  pattern: "\\(Kaiser\\)"
+  group: "demoted_version"
+
+kickstarter:
+  pattern: "\\(Kickstarter\\)"
+  group: "demoted_version"
+
+kickstarter_evercade:
+  pattern: "\\(Kickstarter\\, Evercade\\)"
+  group: "demoted_version"
+
+kickstarter_version:
+  pattern: "\\(Kickstarter Version\\)"
   group: "demoted_version"
 
 limited_run:
@@ -663,6 +703,10 @@ piko_interactive:
   pattern: "\\(Piko Interactive\\)"
   group: "demote_version"
 
+pixel_heart:
+  pattern: "\\(Pixel Heart\\)"
+  group: "demoted_version"
+
 rerelease:
   pattern: "\\(Rerelease\\)"
   group: "demoted_version"
@@ -671,8 +715,16 @@ reprint:
   pattern: "\\(Reprint\\)"
   group: "demoted_version"
 
+retrozone:
+  pattern: "\\(RetroZone\\)"
+  group: "demoted_version"
+
 shokai_seisanban:
   pattern: "\\(Shokai Seisanban\\)"
+  group: "demoted_version"
+
+whirlwind_manu:
+  pattern: "\\(Whirlwind Manu\\)"
   group: "demoted_version"
 
 # GENERALLY IGNORE
@@ -699,6 +751,9 @@ ntsc:
 pal:
   pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:\\)?| (?=\\())"
   flags: "NOFLAG"
+
+supervision:
+  pattern: "\\(SuperVision\\)"
 
 43_406_pcb:
   pattern: "\\(43-406 PCB\\)"

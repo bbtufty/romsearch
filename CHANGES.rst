@@ -4,19 +4,43 @@
 Features
 --------
 
+- Added ROMPatcher, which patches ROMs if necessary for RetroAchievements
 - Added ROMCleaner, which will clean out deleted ROMs within the ROM directory
 
 Fixes
 -----
+
+DupeParser
+~~~~~~~~~~
+
+- Don't overwrite retool priority from parsing dat
+
+ROMCleaner
+~~~~~~~~~~
+
+- Significantly overhauled to account for various edge cases
 
 ROMDownloader
 ~~~~~~~~~~~~~
 
 - Tidy logging for removed files
 
+ROMMover
+~~~~~~~~
+
+- Check final final exists before moving
+
+ROMParser
+~~~~~~~~~
+
+- Fixed bug where languages could be parsed wrongly
+- Tidied up parsing RA hashes, and will now give up when multiple patch files are found
+
 General
 ~~~~~~~
 
+- Ensure things are kept as strings throughout
+- Included more regex
 - Include explicit package versions
 - Enable dependabot
 

@@ -232,4 +232,5 @@ ra_patch_checks:
   - "version_no"
   - "revision"
   - "multi_disc"
-  - "demo"
+  - "demos"
+  - "preproduction"

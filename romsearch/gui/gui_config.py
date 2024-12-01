@@ -144,6 +144,7 @@ class ConfigWindow(QMainWindow):
         self.all_dirs = {
             "raw_dir": self.ui.lineEditConfigRawDir,
             "rom_dir": self.ui.lineEditConfigRomDir,
+            "patch_dir": self.ui.lineEditConfigPatchDir,
             "ra_hash_dir": self.ui.lineEditConfigRAHashDir,
             "dat_dir": self.ui.lineEditConfigDatDir,
             "parsed_dat_dir": self.ui.lineEditConfigParsedDatDir,
@@ -155,6 +156,7 @@ class ConfigWindow(QMainWindow):
         self.all_dirs_buttons = {
             "raw_dir": self.ui.pushButtonConfigRawDir,
             "rom_dir": self.ui.pushButtonConfigRomDir,
+            "patch_dir": self.ui.pushButtonConfigPatchDir,
             "ra_hash_dir": self.ui.pushButtonConfigRAHashDir,
             "dat_dir": self.ui.pushButtonConfigDatDir,
             "parsed_dat_dir": self.ui.pushButtonConfigParsedDatDir,
@@ -162,11 +164,22 @@ class ConfigWindow(QMainWindow):
             "cache_dir": self.ui.pushButtonConfigCacheDir,
             "log_dir": self.ui.pushButtonConfigLogDir,
         }
-
         # Get the buttons hooked up to the line edits. Because we're looping, lambda can get wonky so use partial
         for b in self.all_dirs_buttons:
             self.all_dirs_buttons[b].clicked.connect(
                 partial(self.set_directory_name, line_edit=self.all_dirs[b])
+            )
+
+        # Do the same for the directories, but for files instead
+        self.all_files = {
+            "xdelta_path": self.ui.lineEditConfigRomPatcherxdeltaPath,
+        }
+        self.all_files_buttons = {
+            "xdelta_path": self.ui.pushButtonConfigRomPatcherxdeltaPath,
+        }
+        for b in self.all_files_buttons:
+            self.all_files_buttons[b].clicked.connect(
+                partial(self.set_file_name, line_edit=self.all_files[b])
             )
 
         self.romdownloader_text_fields = {
@@ -179,16 +192,22 @@ class ConfigWindow(QMainWindow):
             "cache_period": self.ui.lineEditConfigRAHasherCachePeriod,
         }
 
+        self.rompatcher_text_fields = {
+            "xdelta_path": self.ui.lineEditConfigRomPatcherxdeltaPath,
+        }
+
         self.discord_text_fields = {
             "webhook_url": self.ui.lineEditConfigDiscordWebhookUrl,
         }
 
         self.all_romsearch_options = {
             "run_romdownloader": self.ui.checkBoxConfigRunRomDownloader,
+            "run_rahasher": self.ui.checkBoxConfigRunRAHasher,
             "run_datparser": self.ui.checkBoxConfigRunDatParser,
             "run_dupeparser": self.ui.checkBoxConfigRunDupeParser,
             "run_romchooser": self.ui.checkBoxConfigRunRomChooser,
             "run_rommover": self.ui.checkBoxConfigRunRomMover,
+            "run_rompatcher": self.ui.checkBoxConfigRunRomPatcher,
             "dry_run": self.ui.checkBoxConfigDryRun,
         }
 
@@ -409,6 +428,24 @@ class ConfigWindow(QMainWindow):
         if filename != "":
             line_edit.setText(filename)
 
+    def set_file_name(
+        self,
+        line_edit,
+    ):
+        """Make a button set a file name
+
+        Args:
+            line_edit (QLineEdit): The QLineEdit widget to set the text for
+        """
+
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            caption=self.tr("Select file"),
+            dir=os.getcwd(),
+        )
+        if filename != "":
+            line_edit.setText(filename)
+
     def set_lists(self):
         """Set the various lists across the config"""
 
@@ -520,6 +557,7 @@ class ConfigWindow(QMainWindow):
             "dirs": self.all_dirs,
             "romdownloader": self.romdownloader_text_fields,
             "rahasher": self.rahasher_text_fields,
+            "rompatcher": self.rompatcher_text_fields,
             "discord": self.discord_text_fields,
         }
 
@@ -668,6 +706,7 @@ class ConfigWindow(QMainWindow):
         keys = {
             "romdownloader": self.romdownloader_text_fields,
             "rahasher": self.rahasher_text_fields,
+            "rompatcher": self.rompatcher_text_fields,
             "discord": self.discord_text_fields,
         }
         for k in keys:

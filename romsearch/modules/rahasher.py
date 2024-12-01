@@ -136,6 +136,10 @@ class RAHasher:
             run_rahasher = False
 
         if run_rahasher:
+
+            if not os.path.exists(self.ra_hash_dir):
+                os.makedirs(self.ra_hash_dir)
+
             ra_game_info = self.run_rahasher()
 
         return ra_game_info
@@ -173,6 +177,12 @@ class RAHasher:
         diff = cur_time - game_list_modtime
 
         # If we're still in the cache period, don't overwrite
+        self.logger.info(
+            centred_string(
+                f"Last GameList cache {diff.days} days ago",
+                total_length=self.log_line_length,
+            )
+        )
         if diff.days > self.cache_period:
             self.logger.info(
                 centred_string(
@@ -194,6 +204,12 @@ class RAHasher:
         cur_time = datetime.now()
         diff = cur_time - game_info_modtime
 
+        self.logger.info(
+            centred_string(
+                f"Last game info cache {diff.days} days ago",
+                total_length=self.log_line_length,
+            )
+        )
         # If we're still in the cache period, don't overwrite
         if diff.days > self.cache_period:
             self.logger.info(

@@ -19,7 +19,6 @@
    utils
    known_issues
    changelog
-   reference_api
 
 Indices and tables
 ==================

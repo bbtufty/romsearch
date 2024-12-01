@@ -12,6 +12,7 @@ Syntax: ::
     dirs:
       raw_dir: [raw_dir]                # Raw directory to download ROM files using ROMDownloader
       rom_dir: [rom_dir]                # Final output directory for ROMs. Will automatically subdivide by platform
+      patch_dir: [patch_dir]            # Directory for patch files. Will divide up by game
       ra_hash_dir: [ra_hash_dir]        # Directory for parsed RA platform hashes
       dat_dir: [dat_dir]                # Directory to place raw .dat files
       parsed_dat_dir: [parsed_dat_dir]  # Directory to place parsed .dat files, as well as clonelists
@@ -42,6 +43,7 @@ Syntax: ::
       run_datparser: true               # OPTIONAL. Whether to run DATParser. Defaults to true
       run_dupeparser: true              # OPTIONAL. Whether to run DupeParsed. Defaults to true
       run_romchooser: true              # OPTIONAL. Whether to run ROMChooser. Defaults to true
+      run_rompatcher: false             # OPTIONAL. Whether to run ROMPatcher. Defaults to false
       run_rommover: true                # OPTIONAL. Whether to run ROMMover. Defaults to true
       dry_run: false                    # OPTIONAL. Set to true to not make any changes to filesystem. Defaults to false
 
@@ -82,6 +84,9 @@ Syntax: ::
                                         #           include e.g. just games and applications, set to
                                         #           ['games', 'applications']. Defaults to 'all_but_games', which will
                                         #           remove everything except games
+
+    rompatcher:                         # ROMPatcher specific options
+      xdelta_path: [path_to_xdelta]     # OPTIONAL. This is where xdelta is located on your filesystem
 
     discord:                            # OPTIONAL. If defined, supply a webhook URL so that ROMSearch can post Discord
       webhook_url: [webhook_url]        #           notifications

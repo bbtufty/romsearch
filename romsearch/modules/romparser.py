@@ -670,13 +670,21 @@ class ROMParser:
         if len(ra_dict) == 0:
             return has_cheevos, patch_file
 
+        multiple_patch_files_found = False
+
         for m in match_list:
+
+            if multiple_patch_files_found:
+                continue
 
             # Parse filename and get the short name
             m_parsed = self.parse_filename(m, file_dict={})
             m_short = m.split(" (")[0]
 
             for r in ra_dict:
+
+                if multiple_patch_files_found:
+                    continue
 
                 # Match by short names to start
                 if m_short == ra_dict[r]["short_name"]:
@@ -698,15 +706,25 @@ class ROMParser:
                         ]
                     ):
 
-                        has_cheevos = True
-
-                        # FIXME: Here as a catch-all, hopefully won't be a problem
+                        # If we seem to have multiple patch files defined,
+                        # then raise a warning and assume there isn't a patch
                         if patch_file != "":
-                            raise ValueError(
-                                f"Multiple patch files found for {m_short}"
+                            self.logger.warning(
+                                centred_string(
+                                    f"Multiple potential patch files found for {m}",
+                                    total_length=self.log_line_length,
+                                )
                             )
+                            has_cheevos = False
+                            patch_file = None
+                            multiple_patch_files_found = True
 
-                        patch_file = ra_dict[r]["patch_url"]
+                        else:
+                            has_cheevos = True
+                            patch_file = ra_dict[r]["patch_url"]
+
+                        if patch_file is None:
+                            patch_file = ""
 
         if patch_file is None:
             patch_file = ""
@@ -788,7 +806,7 @@ class ROMParser:
                 )
 
             if regex_key not in file_dict:
-                file_dict[regex_key] = dict_default_val
+                file_dict[regex_key] = copy.deepcopy(dict_default_val)
 
             if regex_flags == "NOFLAG":
                 regex_flags = re.NOFLAG

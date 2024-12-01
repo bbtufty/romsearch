@@ -1,8 +1,10 @@
 import copy
+import glob
 import os
 import shutil
 
 import romsearch
+from .rompatcher import ROMPatcher
 from ..util import (
     centred_string,
     load_yml,
@@ -61,6 +63,7 @@ class ROMMover:
             )
         self.logger = logger
 
+        # Pull in directories
         self.raw_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if self.raw_dir is None:
             raise ValueError("raw_dir needs to be defined in config")
@@ -68,6 +71,13 @@ class ROMMover:
         self.rom_dir = self.config.get("dirs", {}).get("rom_dir", None)
         if self.rom_dir is None:
             raise ValueError("rom_dir needs to be defined in config")
+
+        self.run_rompatcher = self.config.get("romsearch", {}).get(
+            "run_rompatcher", False
+        )
+        self.patch_dir = self.config.get("dirs", {}).get("patch_dir", None)
+        if self.patch_dir is None and self.run_rompatcher:
+            raise ValueError("patch_dir needs to be defined in config")
 
         cache_dir = self.config.get("dirs", {}).get("cache_dir", os.getcwd())
         if not os.path.exists(cache_dir):
@@ -124,16 +134,49 @@ class ROMMover:
                 .get("file_mod_time", 0)
             )
 
-            # Only update if the cache modification time is different
-            # to the file mod time, and the ROM isn't patched
+            # Figure out if we're patching the ROM, based on whether it's already been patched
+            # and if there's a patch file
             rom_patched = (
                 self.cache.get(self.platform, {})
                 .get(self.game, {})
                 .get(rom, {})
                 .get("patched", False)
             )
+            patch_url = rom_dict.get(rom, {}).get("patch_file", "")
 
-            if rom_dict[rom]["file_mod_time"] == cache_mod_time and not rom_patched:
+            to_patch_rom = False
+            if not rom_patched and patch_url != "" and self.run_rompatcher:
+                to_patch_rom = True
+
+            # Keep track if we're expecting a patched file
+            expecting_patched_rom = False
+            if patch_url != "" and self.run_rompatcher:
+                expecting_patched_rom = True
+
+            # Skip if the file modification time matches the one in the cache, we're not patching, and the
+            # destination file exists
+            out_dir = os.path.join(self.rom_dir, self.platform, self.game)
+
+            # Loop over here, since the extensions might change
+            out_files = glob.glob(os.path.join(out_dir, "*"))
+
+            final_file_exists = False
+            for o in out_files:
+
+                if final_file_exists:
+                    continue
+
+                o_base = os.path.basename(o)
+                o_short = os.path.splitext(o_base)[0]
+
+                rom_short = os.path.splitext(rom)[0]
+                if expecting_patched_rom:
+                    rom_short += " (ROMPatched)"
+
+                if o_short == rom_short:
+                    final_file_exists = True
+
+            if rom_dict[rom]["file_mod_time"] == cache_mod_time and final_file_exists:
                 self.logger.info(
                     centred_string(
                         f"No updates for {rom}, skipping",
@@ -142,15 +185,55 @@ class ROMMover:
                 )
                 continue
 
+            # If we're patching ROMs, then do that here
+            if to_patch_rom:
+
+                rom_file = os.path.join(self.raw_dir, self.platform, rom)
+
+                patcher = ROMPatcher(
+                    platform=self.platform,
+                    config=self.config,
+                    logger=self.logger,
+                    log_line_length=self.log_line_length,
+                )
+
+                full_rom = patcher.run(
+                    file=rom_file,
+                    patch_url=patch_url,
+                )
+
+                unzip = False
+                patched = True
+
+            else:
+                full_dir = os.path.join(self.raw_dir, self.platform)
+                full_rom = os.path.join(str(full_dir), rom)
+                unzip = copy.deepcopy(self.unzip)
+
+                patched = False
+
+            # Log whether we've patched or not
+            rom_dict[rom]["patched"] = patched
+
             if rom_no == 0:
                 delete_folder = True
             else:
                 delete_folder = False
 
             # Move the main file
-            full_dir = os.path.join(self.raw_dir, self.platform)
-            full_rom = os.path.join(str(full_dir), rom)
-            self.move_file(full_rom, unzip=self.unzip, delete_folder=delete_folder)
+            move_file_success = self.move_file(
+                full_rom, unzip=unzip, delete_folder=delete_folder
+            )
+
+            if not move_file_success:
+                self.logger.warning(
+                    centred_string(
+                        f"{rom} not found in raw directory, skipping",
+                        total_length=self.log_line_length,
+                    )
+                )
+                continue
+
             self.logger.info(
                 centred_string(f"Moved {rom}", total_length=self.log_line_length)
             )
@@ -184,6 +267,10 @@ class ROMMover:
         delete_folder=False,
     ):
         """Move file to directory structure, optionally unzipping"""
+
+        # If the file doesn't exist, crash out
+        if not os.path.exists(zip_file_name):
+            return False
 
         out_dir = os.path.join(self.rom_dir, self.platform, self.game)
 
@@ -226,7 +313,7 @@ class ROMMover:
         self.cache[self.platform][self.game][file] = {
             "file_mod_time": rom_dict[file]["file_mod_time"],
             "patch_file": rom_dict[file]["patch_file"],
-            "patched": False,
+            "patched": rom_dict[file]["patched"],
         }
 
     def save_cache(self):
