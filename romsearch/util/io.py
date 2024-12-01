@@ -65,8 +65,27 @@ def load_json(file):
     return j
 
 
-def save_json(data, out_file):
-    """Save json in a pretty way"""
+def save_json(data,
+              out_file,
+              sort_key=None,
+              ):
+    """Save json in a pretty way
+
+    Args:
+        data (dict): Data to be saved
+        out_file (str): Path to JSON file
+        sort_key (str): Key within each dictionary entry to
+            sort by. Default is None, which will not sort.
+    """
+
+    # Optionally sort this by name
+    if sort_key is not None:
+
+        keys = list(data[sort_key].keys())
+        keys.sort()
+
+        sorted_data = {key: data[sort_key][key] for key in keys}
+        data[sort_key] = sorted_data
 
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(

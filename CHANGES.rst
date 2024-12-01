@@ -39,6 +39,7 @@ ROMParser
 General
 ~~~~~~~
 
+- Sort cache by name
 - Ensure things are kept as strings throughout
 - Included more regex
 - Include explicit package versions
