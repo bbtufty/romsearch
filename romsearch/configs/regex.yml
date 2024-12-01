@@ -195,6 +195,10 @@ dx_pack:
   pattern: "\\(DX Pack\\)"
   group: "improved_version"
 
+ebkore_plus:
+  pattern: "\\(ebKore Plus\\)"
+  group: "improved_version"
+
 edc:
   pattern: "\\(EDC\\)"
   group: "improved_version"
@@ -763,6 +767,9 @@ fw:
 
 u_numbers:
   pattern: "\\(U[CLT][EJUS][BST]-\\d{5}\\)"
+
+p_s_numbers:
+  pattern: "\\s?\\([PS][BCL][EKPU][ADHMNSX]-\\d{5}\\)"
 
 product_ids:
   pattern: "\\((?:A[BDEFNPS]|B[58DFJNPT]|CX|FT|JE|K[AFIKMRZ]|PN|QA|RC|S[KN]|T[ABCJQ]|V[BEJKLMW]|Y[XW])[ABCDEFGHIKJMLNPQSTUVWYZ0-9][DEJPVXYZ]\\)"
