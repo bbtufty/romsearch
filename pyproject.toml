@@ -39,7 +39,7 @@ dependencies = [
     "PySide6 == 6.7.0",
     "pyyaml == 6.0.2",
     "wget == 3.2",
-    "xmltodict == 0.13.0",
+    "xmltodict == 0.14.2",
 ]
 
 [project.optional-dependencies]
