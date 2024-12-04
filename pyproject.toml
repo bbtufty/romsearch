@@ -45,7 +45,7 @@ dependencies = [
 [project.optional-dependencies]
 docs = [
     "sphinx-automodapi == 0.17.0",
-    "sphinx-rtd-theme == 3.0.0",
+    "sphinx-rtd-theme == 3.0.2",
 ]
 
 [project.urls]
