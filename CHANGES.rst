@@ -40,6 +40,7 @@ ROMParser
 General
 ~~~~~~~
 
+- Bump to 0.1.0
 - Point GH Actions at main, rather than master
 - Move to exact version pins for requirements
 - Sort cache by name
