@@ -4,7 +4,7 @@ regions:
   flags: "NOFLAG"
 
 languages:
-  pattern: "\\((([languages])(,\\s?)?)*\\)"
+  pattern: "\\((([languages])((,|\\+)\\s?)?)*\\)"
   type: "list"
   flags: "NOFLAG"
 
@@ -191,6 +191,10 @@ controller_set:
 culture_publishers:
   pattern: "\\(Culture Publishers\\)"
 
+dsi:
+  pattern: "\\(DSI\\)"
+  group: "improved_version"
+
 dx_pack:
   pattern: "\\(DX Pack\\)"
   group: "improved_version"
@@ -317,6 +321,10 @@ txc:
 
 usb_mic_doukonban:
   pattern: "\\(USB Mic Doukonban\\)"
+  group: "improved_version"
+
+vivendi:
+  pattern: "\\(Vivendi\\)"
   group: "improved_version"
 
 # BUDGET EDITIONS
@@ -502,6 +510,10 @@ konami_collector_series:
   pattern: "\\(Konami Collector's Series\\)"
   group: "modern_version"
 
+mega_man_battle_network_legacy_collection:
+  pattern: "\\(Mega Man Battle Network Legacy Collection\\)"
+  group: "modern_version"
+
 mega_man_legacy_collection:
   pattern: "\\(Mega Man Legacy Collection\\)"
   group: "modern_version"
@@ -528,6 +540,10 @@ namco_museum_archives:
 
 ninja_jajamaru_retro:
   pattern: "\\(Ninja JaJaMaru Retro Collection\\)"
+  group: "modern_version"
+
+pokemon_box:
+  pattern: "\\(Pokemon Box\\)"
   group: "modern_version"
 
 qubyte_classic:
