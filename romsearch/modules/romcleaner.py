@@ -189,6 +189,9 @@ class ROMCleaner:
 
                             g_i_short = os.path.splitext(g_i)[0]
 
+                            if "(ROMPatched)" in rom_short:
+                                g_i_short += " (ROMPatched)"
+
                             if g_i_short == rom_short:
 
                                 # Also keep info on the dictionary stuff to clean from the cache
