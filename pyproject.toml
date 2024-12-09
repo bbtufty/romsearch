@@ -33,7 +33,7 @@ classifiers = [
 dependencies = [
     "colorlog == 6.9.0",
     "discordwebhook == 1.0.3",
-    "numpy == 2.1.3",
+    "numpy == 2.2.0",
     "packaging == 24.2",
     "pathvalidate == 3.2.1",
     "PySide6 == 6.8.1",
