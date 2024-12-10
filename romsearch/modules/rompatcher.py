@@ -1,7 +1,10 @@
+from urllib import parse as urlparse
+
 import glob
 import os
+import re
 import shutil
-
+import subprocess
 import wget
 
 import romsearch
@@ -15,6 +18,7 @@ from ..util import (
 
 ALLOWED_PATCH_METHODS = [
     "xdelta",
+    "rompatcher.js",
 ]
 
 
@@ -154,6 +158,7 @@ class ROMPatcher:
         # Now we have everything we need to patch this ROM
         patched_file = self.patch_rom(
             unpatched_file=unpatched_file,
+            patch_dir=patch_dir,
             patch_file=patch_file,
         )
 
@@ -203,7 +208,8 @@ class ROMPatcher:
             )
         )
 
-        patch_file = wget.download(patch_url, out=patch_dir)
+        # Since the URL can already have the % in, unquote before passing to wget
+        patch_file = wget.download(urlparse.unquote(patch_url), out=patch_dir)
         if patch_file.endswith(".zip"):
             unzip_file(patch_file, patch_dir)
 
@@ -223,12 +229,17 @@ class ROMPatcher:
 
         return patch_file
 
-    def patch_rom(self, unpatched_file, patch_file):
+    def patch_rom(self,
+                  unpatched_file,
+                  patch_file,
+                  patch_dir,
+                  ):
         """Patch a ROM
 
         Args:
             unpatched_file (str): ROM file to patch
             patch_file (str): Patch file to patch
+            patch_dir (str): Patch directory
         """
 
         # Get the method we're using to patch things
@@ -249,6 +260,17 @@ class ROMPatcher:
                 unpatched_file=unpatched_file,
                 patch_file=patch_file,
                 out_file=patched_file,
+            )
+        elif patch_method == "rompatcher.js":
+
+            rompatcher_js_file = f"{unpatch_file_split[0]} (patched){unpatch_file_split[1]}"
+
+            self.rompatcher_js_patch(
+                unpatched_file=unpatched_file,
+                patch_file=patch_file,
+                rompatcher_js_file=rompatcher_js_file,
+                out_file=patched_file,
+                patch_dir=patch_dir,
             )
         else:
             raise ValueError(
@@ -314,5 +336,95 @@ class ROMPatcher:
         )
 
         os.system(cmd)
+
+        return True
+
+    def rompatcher_js_patch(
+        self,
+        unpatched_file,
+        patch_file,
+        rompatcher_js_file,
+        out_file,
+        patch_dir,
+    ):
+        """Patch using RomPatcher.js
+
+        Args:
+            unpatched_file (str): ROM file to patch
+            patch_file (str): Patch file to patch
+            rompatcher_js_file (str): Filename that RomPatcher.js will output
+            out_file (str): Path for output file
+            patch_dir (str): Patch directory
+        """
+
+        rompatcher_js_path = self.config.get("rompatcher", {}).get("rompatcher_js_path", None)
+
+        if rompatcher_js_path is None:
+            raise ValueError("Path to RomPatcher.js needs to be defined in user config")
+
+        if not os.path.exists(rompatcher_js_path):
+            raise ValueError("RomPatcher.js path not found")
+
+        cmd = f'node {rompatcher_js_path} patch "{unpatched_file}" "{patch_file}"'
+
+        self.logger.info(
+            centred_string(
+                f"Patching file with RomPatcher.js:",
+                total_length=self.log_line_length,
+            )
+        )
+        self.logger.info(
+            left_aligned_string(
+                f"-> Unpatched file: {os.path.basename(unpatched_file)}",
+                total_length=self.log_line_length,
+            )
+        )
+        self.logger.info(
+            left_aligned_string(
+                f"-> Patch file: {os.path.basename(patch_file)}",
+                total_length=self.log_line_length,
+            )
+        )
+
+        self.logger.info(
+            left_aligned_string(
+                f"-> RomPatcher.js file: {os.path.basename(rompatcher_js_file)}",
+                total_length=self.log_line_length,
+            )
+        )
+
+        # Change to patch directory so file ends up in a sensible spot
+        orig_dir = os.getcwd()
+        os.chdir(patch_dir)
+
+        with subprocess.Popen(
+                cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+        ) as process:
+            for line in process.stdout:
+
+                # Replace any potential tabs in the line, strip whitespace and skip newline at the end
+                line = re.sub("\s+", " ", line[:-1])
+                line = line.lstrip().rstrip()
+
+                if len(line) == 0:
+                    continue
+
+                # Log each line of the output using the provided logger
+                self.logger.info(
+                    centred_string(line, total_length=self.log_line_length)
+                )
+
+        # Return to working directory
+        os.chdir(orig_dir)
+
+        self.logger.info(
+            left_aligned_string(
+                f"-> Renaming file to: {os.path.basename(out_file)}",
+                total_length=self.log_line_length,
+            )
+        )
+
+        shutil.copy(rompatcher_js_file, out_file)
+        os.remove(rompatcher_js_file)
 
         return True

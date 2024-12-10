@@ -82,6 +82,7 @@ rahasher:
 
 rompatcher:
   xdelta_path: F:/Emulation/xdelta3-3.1.0-x86_64.exe
+  rompatcher_js_path: F:\Emulation\RomPatcher.js\index.js
 
 discord:
   webhook_url: "https://discord.com/api/webhooks/discord_url"

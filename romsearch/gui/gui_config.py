@@ -173,9 +173,11 @@ class ConfigWindow(QMainWindow):
         # Do the same for the directories, but for files instead
         self.all_files = {
             "xdelta_path": self.ui.lineEditConfigRomPatcherxdeltaPath,
+            "rompatcher_js_path": self.ui.lineEditConfigRomPatcherRomPatcherjsPath,
         }
         self.all_files_buttons = {
             "xdelta_path": self.ui.pushButtonConfigRomPatcherxdeltaPath,
+            "rompatcher_js_path": self.ui.pushButtonConfigRomPatcherRomPatcherjsPath,
         }
         for b in self.all_files_buttons:
             self.all_files_buttons[b].clicked.connect(
@@ -194,6 +196,7 @@ class ConfigWindow(QMainWindow):
 
         self.rompatcher_text_fields = {
             "xdelta_path": self.ui.lineEditConfigRomPatcherxdeltaPath,
+            "rompatcher_js_path": self.ui.lineEditConfigRomPatcherRomPatcherjsPath,
         }
 
         self.discord_text_fields = {

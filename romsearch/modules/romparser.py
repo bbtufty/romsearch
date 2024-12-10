@@ -63,6 +63,59 @@ def get_pattern_val(regex, tag, regex_type, pattern_mappings=None):
 
     return pattern_val
 
+def is_ra_subset(name):
+    """Check if a name is a RetroAchievements subset
+
+    Args:
+        name (str): Name to check
+    """
+
+    match_pattern = "\\[Subset.*\\]"
+
+    match = find_pattern(match_pattern, name)
+    is_subset = False
+    if match is not None:
+        is_subset = True
+
+    return is_subset
+
+def check_match(i, j, checks_passed=None):
+    """Check if two bools/strings/lists match
+
+    For lists, we simply check if there's any subset that matches
+
+    Args:
+        i: Input 1
+        j: Input 2
+        checks_passed: If not None, will inherit this as initial start.
+            Else, will default to True
+    """
+
+    if checks_passed is None:
+        checks_passed = True
+    if not isinstance(checks_passed, bool):
+        raise ValueError("checks_passed should be a boolean value")
+
+    # If we have a bool or string, then they should match
+    if isinstance(i, bool) or isinstance(i, str):
+        if not i == j:
+            checks_passed = False
+
+    # If a list, then check there's at least some overlap
+    elif isinstance(i, list):
+        s_i = set(i)
+        s_j = set(j)
+        s_k = s_i.intersection(s_j)
+
+        if len(s_k) == 0:
+            checks_passed = False
+
+    else:
+        t = type(i)
+        raise ValueError(f"Do not know how to check against type {t}")
+
+    return checks_passed
+
 
 class ROMParser:
 
@@ -564,6 +617,10 @@ class ROMParser:
         for r in self.ra_hashes:
             for h in self.ra_hashes[r]["Hashes"]:
 
+                # If the RA list is a subset, then skip
+                if is_ra_subset(r):
+                    continue
+
                 # Since these should be exact matches, skip those that have
                 # patches
                 if h["PatchUrl"] is not None:
@@ -637,6 +694,10 @@ class ROMParser:
         for r in self.ra_hashes:
             for h in self.ra_hashes[r]["Hashes"]:
 
+                # If the RA list is a subset, then skip
+                if is_ra_subset(r):
+                    continue
+
                 # Are we looking for patch URLs or not?
                 if want_patched_files:
                     if h["PatchUrl"] is None:
@@ -699,12 +760,37 @@ class ROMParser:
                             )
 
                     # Now, make sure all the useful checks pass
-                    if all(
-                        [
-                            m_parsed[check] == r_parsed[check]
-                            for check in self.ra_patch_checks
-                        ]
-                    ):
+                    ra_checks_passed = True
+                    for check in self.ra_patch_checks:
+
+                        # If we've already failed, then just skip
+                        if not ra_checks_passed:
+                            continue
+
+                        ra_checks_passed = check_match(m_parsed[check],
+                                                       r_parsed[check],
+                                                       checks_passed=ra_checks_passed,
+                                                       )
+
+                        # After this first pass, also see if any of the regex checks are grouped,
+                        # and double-check the sublevel below. This is because we could have e.g.
+                        # mismatched modern types (like a GameCube version vs a Wii U Virtual Console
+                        # version), which inevitably won't match hashes
+                        if ra_checks_passed:
+                            if check not in self.regex_config:
+                                for r_c in self.regex_config:
+
+                                    if not ra_checks_passed:
+                                        continue
+
+                                    r_c_group = self.regex_config[r_c].get("group", None)
+                                    if r_c_group == check:
+                                        ra_checks_passed = check_match(m_parsed[r_c],
+                                                                       r_parsed[r_c],
+                                                                       checks_passed=ra_checks_passed,
+                                                                       )
+
+                    if ra_checks_passed:
 
                         # If we seem to have multiple patch files defined,
                         # then raise a warning and assume there isn't a patch

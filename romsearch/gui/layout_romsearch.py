@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'layout_romsearch.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.0
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -1277,6 +1277,26 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomPatcher.addLayout(self.horizontalLayoutConfigRomPatcherxdelta)
 
+        self.labelConfigRomPatcherRomPatcherjs = QLabel(self.tabConfigRomPatcher)
+        self.labelConfigRomPatcherRomPatcherjs.setObjectName(u"labelConfigRomPatcherRomPatcherjs")
+
+        self.verticalLayoutConfigRomPatcher.addWidget(self.labelConfigRomPatcherRomPatcherjs)
+
+        self.horizontalLayoutConfigRomPatcherRomPatcherjs = QHBoxLayout()
+        self.horizontalLayoutConfigRomPatcherRomPatcherjs.setObjectName(u"horizontalLayoutConfigRomPatcherRomPatcherjs")
+        self.lineEditConfigRomPatcherRomPatcherjsPath = QLineEdit(self.tabConfigRomPatcher)
+        self.lineEditConfigRomPatcherRomPatcherjsPath.setObjectName(u"lineEditConfigRomPatcherRomPatcherjsPath")
+
+        self.horizontalLayoutConfigRomPatcherRomPatcherjs.addWidget(self.lineEditConfigRomPatcherRomPatcherjsPath)
+
+        self.pushButtonConfigRomPatcherRomPatcherjsPath = QPushButton(self.tabConfigRomPatcher)
+        self.pushButtonConfigRomPatcherRomPatcherjsPath.setObjectName(u"pushButtonConfigRomPatcherRomPatcherjsPath")
+
+        self.horizontalLayoutConfigRomPatcherRomPatcherjs.addWidget(self.pushButtonConfigRomPatcherRomPatcherjsPath)
+
+
+        self.verticalLayoutConfigRomPatcher.addLayout(self.horizontalLayoutConfigRomPatcherRomPatcherjs)
+
         self.lineConfigRomPatcherBottom = QFrame(self.tabConfigRomPatcher)
         self.lineConfigRomPatcherBottom.setObjectName(u"lineConfigRomPatcherBottom")
         self.lineConfigRomPatcherBottom.setFrameShape(QFrame.Shape.HLine)
@@ -1808,6 +1828,9 @@ class Ui_RomSearch(object):
         self.labelConfigRomPatcherxdelta.setText(QCoreApplication.translate("RomSearch", u"xdelta path", None))
         self.lineEditConfigRomPatcherxdeltaPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"xdelta.exe", None))
         self.pushButtonConfigRomPatcherxdeltaPath.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+        self.labelConfigRomPatcherRomPatcherjs.setText(QCoreApplication.translate("RomSearch", u"RomPatcher.js path", None))
+        self.lineEditConfigRomPatcherRomPatcherjsPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"index.js", None))
+        self.pushButtonConfigRomPatcherRomPatcherjsPath.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomPatcher), QCoreApplication.translate("RomSearch", u"ROMPatcher", None))
         self.labelConfigDiscordWebhookUrlTitle.setText(QCoreApplication.translate("RomSearch", u"Webhook URL", None))
         self.labelConfigDiscordWebhookUrlDescription.setText(QCoreApplication.translate("RomSearch", u"URL for Discord webhooks. Must be set for notifications to be sent", None))

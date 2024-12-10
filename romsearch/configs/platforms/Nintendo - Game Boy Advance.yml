@@ -1,0 +1,13 @@
+group: "No-Intro"
+dir: "/No-Intro/Nintendo - Game Boy Advance/"
+unzip: false
+
+ra_id: 5
+ra_hash_method: "md5"
+
+# For the ROM patcher
+patch_method: "rompatcher.js"
+file_exts:
+  - ".gba"
+patch_file_exts:
+  - ".bps"

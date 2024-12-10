@@ -22,21 +22,25 @@ ROMSearch offers the ability to:
 * Moving files to a structured location, including potentially additional files that may be needed
 * Discord integration so users can see the results of runs in a simple, clean way
 
-To get started, see the [documentation](https://romsearch.readthedocs.io/en/latest/).
+To get started, see the [documentation](https://romsearch.readthedocs.io/en/latest/). For known issues and workarounds, 
+see the [known issues](https://romsearch.readthedocs.io/en/latest/known_issues.html).
 
 Currently, ROMSearch is in early development, and so many features may be added over time. At the moment, ROMSearch
 works for the following consoles:
 
-* Nintendo
+* Nintendo (Handheld)
    * Game Boy
    * Game Boy Color
+   * Game Boy Advance
+* Nintendo (Home)
    * Nintendo Entertainment System
    * Super Nintendo Entertainment System
    * GameCube
-* Sony
+* Sony (Handheld)
+   * PlayStation Portable
+* Sony (Home)
    * PlayStation
    * PlayStation 2
-   * PlayStation Portable
 
 but be aware there may be quirks that will only become apparent over time. We encourage users to open
 [issues](https://github.com/bbtufty/romsearch/issues) as and where they find them.

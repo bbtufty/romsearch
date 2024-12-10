@@ -1,3 +1,38 @@
+0.1.1 (Unreleased)
+==================
+
+Features
+--------
+
+- Added Game Boy Advance
+- ROMPatcher now supports RomPatcher.js
+
+Fixes
+-----
+
+ROMCleaner
+~~~~~~~~~~
+
+- Ensure we clear patched files out of cache
+
+ROMParser
+~~~~~~~~~
+
+- ROMParser will now filter out RetroAchievements subsets, since they're hacks
+- When checking for RAPatch matches, if the check is a list will simply check there's something in the list subset
+
+ROMPatcher
+~~~~~~~~~~
+
+- Unquote patch URL before downloading
+
+General
+~~~~~~~
+
+- Added known issue for long filenames
+- RAPatch checks now includes modern/improved/demoted versions
+- Language parsing can now handle languages formatted like "En+De" (and test updated)
+
 0.1.0 (2024-12-04)
 ==================
 

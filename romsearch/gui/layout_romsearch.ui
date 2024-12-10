@@ -2220,6 +2220,31 @@
                    </layout>
                   </item>
                   <item>
+                   <widget class="QLabel" name="labelConfigRomPatcherRomPatcherjs">
+                    <property name="text">
+                     <string>RomPatcher.js path</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigRomPatcherRomPatcherjs">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigRomPatcherRomPatcherjsPath">
+                      <property name="placeholderText">
+                       <string>index.js</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigRomPatcherRomPatcherjsPath">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
                    <widget class="Line" name="lineConfigRomPatcherBottom">
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
