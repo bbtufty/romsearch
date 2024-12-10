@@ -15,11 +15,11 @@ Syntax: ::
     ra_id: [id]                       # OPTIONAL. The RetroAchievements console ID, from their API_GetConsoleIDs
     ra_hash_method: ["md5", "custom"] # OPTIONAL. The RetroAchievements hash method. Supports "md5" and "custom"
 
-    patch_method: ["xdelta"]          # OPTIONAL: Method for patching ROMs. Supports "xdelta", "rompatcher.js"
-    file_exts:                        # OPTIONAL: Potential file extensions. ROMPatcher uses this to figure
-       - [ext]                        #           out the file to patch
-    patch_file_exts:                  # OPTIONAL: Potential file extensions. ROMPatcher uses this to figure
-       - [ext]                        #           out the patch file
+    patch_method: ["xdelta", "rompatcher_js"]  # OPTIONAL: Method for patching ROMs. Supports "xdelta", "rompatcher_js"
+    file_exts:                                 # OPTIONAL: Potential file extensions. ROMPatcher uses this to figure
+       - [ext]                                 #           out the file to patch
+    patch_file_exts:                           # OPTIONAL: Potential file extensions. ROMPatcher uses this to figure
+       - [ext]                                 #           out the patch file
 
 Nintendo - Game Boy
 ===================
@@ -31,17 +31,37 @@ Nintendo - Game Boy Color
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Game Boy Color.yml
 
+Nintendo - Game Boy Advance
+===========================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Game Boy Advance.yml
+
 Nintendo - GameCube
 ===================
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - GameCube.yml
+
+Nintendo - Nintendo Entertainment System
+========================================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Nintendo Entertainment System.yml
 
 Nintendo - Super Nintendo Entertainment System
 ==============================================
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Super Nintendo Entertainment System.yml
 
+Sony - PlayStation Portable
+===========================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Sony - PlayStation Portable.yml
+
 Sony - PlayStation
 ==================
 
 .. literalinclude:: ../../romsearch/configs/platforms/Sony - PlayStation.yml
+
+Sony - PlayStation 2
+====================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Sony - PlayStation 2.yml

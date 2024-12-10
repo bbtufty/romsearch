@@ -1,6 +1,6 @@
 from romsearch import ROMParser
 
-TEST_NAME = "Example Game (USA) (En,De,Fr)"
+TEST_NAME = "Example Game (USA) (En,De,Fr,Es+It)"
 
 
 def test_romparser_regions():
@@ -23,7 +23,7 @@ def test_romparser_regions():
 def test_romparser_languages():
     """Put a filename into ROMParser and check it returns the right languages"""
 
-    expected_languages = ["English", "French", "German"]
+    expected_languages = ["English", "French", "German", "Italian", "Spanish"]
 
     test_case = {TEST_NAME: {"priority": 1}}
 

@@ -85,8 +85,9 @@ Syntax: ::
                                         #           ['games', 'applications']. Defaults to 'all_but_games', which will
                                         #           remove everything except games
 
-    rompatcher:                         # ROMPatcher specific options
-      xdelta_path: [path_to_xdelta]     # OPTIONAL. This is where xdelta is located on your filesystem
+    rompatcher:                                # ROMPatcher specific options
+      xdelta_path: [path_to_xdelta]            # OPTIONAL. This is where xdelta is located on your filesystem
+      rompatcher_js_path: [path_to_rompatcher] # OPTIONAL. This is where RomPatcher.js is located on your filesystem
 
     discord:                            # OPTIONAL. If defined, supply a webhook URL so that ROMSearch can post Discord
       webhook_url: [webhook_url]        #           notifications
