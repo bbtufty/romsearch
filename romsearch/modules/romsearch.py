@@ -51,7 +51,6 @@ class ROMSearch:
         TODO:
             - More granular control over compilations
             - Better handling of clones and dupes
-            - Include items removed from cache in ROMCleaner Discord notifications
         """
 
         if config_file is None and config is None:
@@ -470,24 +469,25 @@ class ROMSearch:
                 logger=self.logger,
                 log_line_length=log_line_length,
             )
-            all_roms_deleted = cleaner.run(all_roms_dict)
+            cleaned = cleaner.run(all_roms_dict)
 
             # Post these to Discord in chunks of 10
-            if self.discord_url is not None and len(all_roms_deleted) > 0:
+            for c in cleaned:
+                if self.discord_url is not None and len(cleaned[c]) > 0:
 
-                for items_split in split(all_roms_deleted):
+                    for items_split in split(cleaned[c]):
 
-                    fields = []
+                        fields = []
 
-                    field_dict = {"name": platform, "value": "\n".join(items_split)}
-                    fields.append(field_dict)
+                        field_dict = {"name": platform, "value": "\n".join(items_split)}
+                        fields.append(field_dict)
 
-                    if len(fields) > 0:
-                        discord_push(
-                            url=self.discord_url,
-                            name="ROMCleaner",
-                            fields=fields,
-                        )
+                        if len(fields) > 0:
+                            discord_push(
+                                url=self.discord_url,
+                                name=f"ROMCleaner [{c}]",
+                                fields=fields,
+                            )
 
             self.logger.info(f"{log_line_sep * log_line_length}")
             self.logger.info(

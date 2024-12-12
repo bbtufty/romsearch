@@ -19,6 +19,7 @@ ROMChooser
 ROMCleaner
 ~~~~~~~~~~
 
+- Include cleaned cache in the Discord outputs
 - Ensure we clear patched files out of cache
 
 ROMParser

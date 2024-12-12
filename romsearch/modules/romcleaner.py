@@ -109,12 +109,17 @@ class ROMCleaner:
         )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        roms_cleaned = self.clean_roms(rom_dict)
+        roms_cleaned, cache_cleaned = self.clean_roms(rom_dict)
         self.save_cache()
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        return roms_cleaned
+        # Join these up into a dictionary
+        cleaned = {"ROMs": roms_cleaned,
+                   "Cache": cache_cleaned,
+                   }
+
+        return cleaned
 
     def clean_roms(
         self,
@@ -153,6 +158,7 @@ class ROMCleaner:
                 roms_in_dict[rom_name] = {"full_name": f}
 
         roms_cleaned = []
+        cache_cleaned = []
         dict_cleaned = {}
 
         for rom_on_disk in roms_on_disk:
@@ -249,8 +255,9 @@ class ROMCleaner:
                         d_is_to_remove.append(d_i)
 
                 for d_i_to_remove in d_is_to_remove:
-                    self.cache[self.platform][d].pop(d_i_to_remove, None)
 
+                    cache_cleaned.append(d_i_to_remove)
+                    self.cache[self.platform][d].pop(d_i_to_remove, None)
                     self.logger.info(
                         centred_string(
                             f"Removed {d_i_to_remove} from cache",
@@ -264,8 +271,9 @@ class ROMCleaner:
         # Clear out any empty cache items
         if self.platform in self.cache:
             for d in cache_items_to_pop:
-                self.cache[self.platform].pop(d, None)
 
+                cache_cleaned.append(d)
+                self.cache[self.platform].pop(d, None)
                 self.logger.info(
                     centred_string(
                         f"Removed {d} from cache", total_length=self.log_line_length
@@ -279,7 +287,7 @@ class ROMCleaner:
             if not os.listdir(full_dir):
                 shutil.rmtree(full_dir)
 
-        return roms_cleaned
+        return roms_cleaned, cache_cleaned
 
     def save_cache(self):
         """Save out the cache file"""
