@@ -226,16 +226,19 @@ class DupeParser:
                     if parent_game_name == clone_short_name:
                         continue
 
-                    found_parent_name = get_parent_name(
+                    found_parent_names = get_parent_name(
                         game_name=parent_game_name,
                         dupe_dict=dupe_dict,
                     )
-                    if found_parent_name not in dupe_dict:
-                        dupe_dict[found_parent_name] = {}
+                    for found_parent_name in found_parent_names:
+                        if found_parent_name not in dupe_dict:
+                            dupe_dict[found_parent_name] = {}
 
-                    # Don't overwrite priority if it's already set
-                    if clone_short_name not in dupe_dict[found_parent_name]:
-                        dupe_dict[found_parent_name][clone_short_name] = {"priority": 1}
+                        # Don't overwrite priority if it's already set
+                        if clone_short_name not in dupe_dict[found_parent_name]:
+                            dupe_dict[found_parent_name][clone_short_name] = {
+                                "priority": 1
+                            }
 
         return dupe_dict
 
@@ -248,36 +251,56 @@ class DupeParser:
         retool_dupes = self.get_retool_dupe_dict()
         for retool_dupe in retool_dupes:
 
-            # If we don't have titles within the dupe dict, skip
-            if "titles" not in retool_dupe:
+            # If we don't have titles or compilations within the dupe dict, skip
+            if "titles" not in retool_dupe and "compilations" not in retool_dupe:
                 continue
 
+            # Get group and parent name
             group = retool_dupe["group"]
-            group_titles = [
-                get_short_name(
-                    f["searchTerm"],
-                    default_config=self.default_config,
-                    regex_config=self.regex_config,
-                )
-                for f in retool_dupe["titles"]
-            ]
-            priorities = [f.get("priority", 1) for f in retool_dupe["titles"]]
-
             group_parsed = get_short_name(
                 group,
                 default_config=self.default_config,
                 regex_config=self.regex_config,
             )
-
-            found_parent_name = get_parent_name(
+            found_parent_names = get_parent_name(
                 game_name=group_parsed,
                 dupe_dict=dupe_dict,
             )
-            if found_parent_name not in dupe_dict:
-                dupe_dict[found_parent_name] = {}
 
-            for i, g in enumerate(group_titles):
-                dupe_dict[found_parent_name][g] = {"priority": priorities[i]}
+            # Pull out individual titles
+            if "titles" in retool_dupe:
+
+                for found_parent_name in found_parent_names:
+
+                    if found_parent_name not in dupe_dict:
+                        dupe_dict[found_parent_name] = {}
+
+                    for title in retool_dupe["titles"]:
+                        title_g = title["searchTerm"]
+                        priority = title.get("priority", 1)
+
+                        dupe_dict[found_parent_name][title_g] = {
+                            "priority": priority,
+                        }
+
+            # Next, check for compilations. If we have them, pull them out and potentially the title position
+            if "compilations" in retool_dupe:
+
+                for found_parent_name in found_parent_names:
+
+                    if found_parent_name not in dupe_dict:
+                        dupe_dict[found_parent_name] = {}
+
+                    for compilation in retool_dupe["compilations"]:
+                        comp_g = compilation["searchTerm"]
+                        title_pos = compilation.get("titlePosition", None)
+                        priority = compilation.get("priority", 1)
+
+                        dupe_dict[found_parent_name][comp_g] = {
+                            "is_compilation": True,
+                            "priority": priority,
+                            "title_pos": title_pos,
+                        }
 
         return dupe_dict, retool_dupes
 

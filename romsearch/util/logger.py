@@ -38,7 +38,7 @@ def setup_logger(
     else:
         log_dir = os.path.join(log_dir, script_name, *additional_dir)
 
-    if log_level not in ["debug", "info", "critical"]:
+    if log_level not in ["debug", "info", "warning", "critical"]:
         log_level = "info"
         print(f"Invalid log level '{log_level}', defaulting to 'info'")
 
@@ -74,6 +74,8 @@ def setup_logger(
         logger.setLevel(logging.DEBUG)
     elif log_level == "INFO":
         logger.setLevel(logging.INFO)
+    elif log_level == "WARNING":
+        logger.setLevel(logging.WARNING)
     elif log_level == "CRITICAL":
         logger.setLevel(logging.CRITICAL)
     else:

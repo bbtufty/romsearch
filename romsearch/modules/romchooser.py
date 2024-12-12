@@ -131,7 +131,7 @@ def add_versioned_score(files, rom_dict, key):
         rom_dict[f][key] = get_sanitized_version(rom_dict[f][key])
 
     versions = [version.parse(rom_dict[f][key]) for f in files]
-    versions_sorted = sorted(versions)
+    versions_sorted = np.unique(sorted(versions))
 
     file_scores_version = np.zeros(len(files))
     for i, v in enumerate(versions_sorted):
@@ -199,6 +199,34 @@ def filter_by_list(
         if key not in rom_dict[e]["excluded_reason"]:
             rom_dict[e]["excluded"] = True
             rom_dict[e]["excluded_reason"].append(f"{key}_preference")
+
+    return rom_dict
+
+
+def filter_compilations(
+    rom_dict,
+):
+    """Filter out compilations if we have them
+
+    Args:
+        rom_dict (dict): Dictionary of ROMs
+    """
+
+    compilations = []
+    non_compilations = []
+
+    for r in rom_dict:
+        if not rom_dict[r]["excluded"]:
+            if rom_dict[r].get("is_compilation", False):
+                compilations.append(r)
+            else:
+                non_compilations.append(r)
+
+    # Only remove compilations if we have singular titles
+    if len(non_compilations) > 0:
+        for comp in compilations:
+            rom_dict[comp]["excluded"] = True
+            rom_dict[comp]["excluded_reason"].append("is_compilation")
 
     return rom_dict
 
@@ -434,6 +462,16 @@ class ROMChooser:
                 list_preferences=self.region_preferences,
             )
 
+        # If we have a split between singular titles and compilations, sort that out here
+        self.logger.debug(
+            left_aligned_string(
+                f"Potentially filtering compilations", total_length=self.log_line_length
+            )
+        )
+        rom_dict = filter_compilations(
+            rom_dict,
+        )
+
         # Remove versions we potentially don't want around
         if self.use_best_version:
             self.logger.debug(
@@ -537,19 +575,20 @@ class ROMChooser:
         """Get the best ROM(s) from a list, using a scoring system"""
 
         # Positive scores
-        improved_version_score = 1
-        version_score = 1e2
-        revision_score = 1e4
-        budget_edition_score = 1e6
-        language_score = 1e8
-        region_score = 1e10
-        cheevo_score = 1e12
+        improved_version_score = 1e2
+        version_score = 1e4
+        revision_score = 1e6
+        budget_edition_score = 1e8
+        language_score = 1e10
+        region_score = 1e12
+        cheevo_score = 1e14
 
         # Negative scores
-        demoted_version_score = -1
-        alternate_version_score = -1
-        modern_version_score = -1e2
-        priority_score = -1e4
+        compilation_score = -1
+        demoted_version_score = -1e2
+        alternate_version_score = -1e2
+        modern_version_score = -1e4
+        priority_score = -1e6
 
         file_scores = np.zeros(len(files))
 
@@ -597,6 +636,11 @@ class ROMChooser:
 
         # Negative scores
 
+        # Compilation score
+        file_scores += compilation_score * np.array(
+            [rom_dict[f].get("is_compilation", False) for f in files]
+        )
+
         # Demoted version
         file_scores += demoted_version_score * np.array(
             [int(rom_dict[f]["demoted_version"]) for f in files]
@@ -612,7 +656,7 @@ class ROMChooser:
             [int(rom_dict[f]["modern_version"]) for f in files]
         )
 
-        # Priority scoring. We subtract 1 so that the highest priority has no changed
+        # Priority scoring. We subtract 1 so that the highest priority has no change
         file_scores += priority_score * (
             np.array([int(rom_dict[f]["priority"]) for f in files]) - 1
         )

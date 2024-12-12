@@ -1,4 +1,5 @@
 import copy
+import numpy as np
 import os
 import time
 from datetime import datetime
@@ -20,7 +21,14 @@ def get_parent_name(
     game_name,
     dupe_dict,
 ):
-    """Get the parent name recursively searching through a dupe dict"""
+    """Get the parent name(s) recursively searching through a dupe dict
+
+    Because we can have compilations, find all cases where things match up
+
+    Args:
+        game_name (str): game name to find parents for
+        dupe_dict (dict): dupe dict to search through
+    """
 
     # We do this by lowercase checking
     reg_dupes = [g for g in dupe_dict]
@@ -31,33 +39,34 @@ def get_parent_name(
 
     found_dupe = False
 
-    found_parent_name = None
+    found_parent_names = []
 
     # First, just check the dupes
     if game_name.lower() in all_dupes:
-        found_idx = all_dupes.index(game_name.lower())
-        found_parent_name = reg_dupes[found_idx]
+        found_idx = np.where(np.asarray(all_dupes) == game_name.lower())[0]
+        found_parent_names = [reg_dupes[i] for i in found_idx]
 
         found_dupe = True
 
     # Check all the clones within the dupes
     else:
         for i, clone in enumerate(all_clones):
-            if found_dupe:
-                continue
 
             clone = [c.lower() for c in clone]
             if game_name.lower() in clone:
-                found_parent_name = reg_dupes[i]
+                found_parent_names.append(reg_dupes[i])
                 found_dupe = True
 
     if not found_dupe:
-        found_parent_name = copy.deepcopy(game_name)
+        found_parent_names = copy.deepcopy(game_name)
 
-    if found_parent_name is None:
+    if found_parent_names is None:
         raise ValueError("Could not find a parent name!")
 
-    return found_parent_name
+    if not isinstance(found_parent_names, list):
+        found_parent_names = [found_parent_names]
+
+    return found_parent_names
 
 
 def get_file_time(

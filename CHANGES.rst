@@ -4,11 +4,17 @@
 Features
 --------
 
+- Includes initial support for ``retool`` compilations
 - Added Game Boy Advance
 - ROMPatcher now supports RomPatcher.js
 
 Fixes
 -----
+
+ROMChooser
+~~~~~~~~~~
+
+- Fixed bug where versions weren't parsed correctly
 
 ROMCleaner
 ~~~~~~~~~~

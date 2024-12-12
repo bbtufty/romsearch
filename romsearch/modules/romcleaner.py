@@ -9,7 +9,8 @@ from ..util import (
     load_yml,
     setup_logger,
     load_json,
-    save_json, )
+    save_json,
+)
 
 
 class ROMCleaner:
@@ -205,7 +206,8 @@ class ROMCleaner:
                                 os.remove(rom_on_disk)
                                 self.logger.info(
                                     centred_string(
-                                        f"Removed {rom_short} from disk", total_length=self.log_line_length
+                                        f"Removed {rom_short} from disk",
+                                        total_length=self.log_line_length,
                                     )
                                 )
 
@@ -251,7 +253,8 @@ class ROMCleaner:
 
                     self.logger.info(
                         centred_string(
-                            f"Removed {d_i_to_remove} from cache", total_length=self.log_line_length
+                            f"Removed {d_i_to_remove} from cache",
+                            total_length=self.log_line_length,
                         )
                     )
 
