@@ -47,6 +47,11 @@ class ROMSearch:
             config (dict, optional): configuration dictionary. Defaults to None.
             default_config (dict, optional): default configuration dictionary. Defaults to None.
             regex_config (dict, optional): regex configuration dictionary. Defaults to None.
+
+        TODO:
+            - More granular control over compilations
+            - Better handling of clones and dupes
+            - Include items removed from cache in ROMCleaner Discord notifications
         """
 
         if config_file is None and config is None:
@@ -189,6 +194,7 @@ class ROMSearch:
                 dat_dict = dat_parser.run()
 
             # Get dupes here, if we're doing that
+            dupe_dict = None
             retool_dict = None
             if self.run_dupeparser:
                 dupe_parser = DupeParser(
@@ -199,7 +205,7 @@ class ROMSearch:
                     logger=self.logger,
                     log_line_length=log_line_length,
                 )
-                _, retool_dict = dupe_parser.run()
+                dupe_dict, retool_dict = dupe_parser.run()
 
             if self.romsearch_method == "download_then_filter":
                 # Run the rclone sync
@@ -262,6 +268,7 @@ class ROMSearch:
             finder = GameFinder(
                 platform=platform,
                 config=self.config,
+                dupe_dict=dupe_dict,
                 default_config=self.default_config,
                 regex_config=self.regex_config,
                 logger=self.logger,
@@ -287,25 +294,36 @@ class ROMSearch:
 
             for i, game in enumerate(all_games):
 
-                # Parse by the short name, include the priority in there as well
                 rom_files = {}
 
-                games_lower = [g.lower() for g in all_games[game]]
-                priorities = [all_games[game][g]["priority"] for g in all_games[game]]
+                # We check by a lowercase version of the short name
                 for f in all_file_dict:
-                    file_short_name_lower = all_file_dict[f]["short_name"].lower()
-                    if file_short_name_lower in games_lower:
-                        games_idx = games_lower.index(file_short_name_lower)
-                        rom_files[f] = {
-                            "priority": priorities[games_idx],
-                        }
+                    f_lower = all_file_dict[f]["short_name"].lower()
+                    for g in all_games[game]:
 
-                        if all_file_dict[f]["matched"]:
-                            raise ValueError(
-                                f"{f} has already been matched! This should not happen"
+                        g_lower = g.lower()
+
+                        if f_lower == g_lower:
+
+                            # Update the dictionary as appropriate
+                            if f not in rom_files:
+                                rom_files[f] = {}
+                            rom_files[f].update(all_games[game][g])
+
+                            # If we're duplicating a match, and it's not part of a compilation, freak out
+                            is_compilation = all_games[game][g].get(
+                                "is_compilation", False
                             )
+                            if all_file_dict[f]["matched"] and not is_compilation:
+                                self.logger.warning(
+                                    centred_string(
+                                        f"{f} has already been matched! "
+                                        f"This should not generally happen",
+                                        total_length=log_line_length,
+                                    )
+                                )
 
-                        all_file_dict[f]["matched"] = True
+                            all_file_dict[f]["matched"] = True
 
                 parse = ROMParser(
                     platform=platform,

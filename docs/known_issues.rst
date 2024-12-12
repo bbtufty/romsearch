@@ -11,8 +11,10 @@ Known Issues
   For example, having an include of "Crash Bandicoot" for the PS1 will also grab "Crash Bash" and
   "CTR - Crash Team Racing" since at least one of their duplicates starts with "Crash Bandicoot".
 
-* Currently, the code is not aware of ``retool``'s supersets or compilations array.
+* Currently, the code is not aware of ``retool``'s supersets array, and only handles compilations to a very limited
+  degree.
 
 * Occasionally, multiple ROMs will be found with the same priority.
 
-  * This will be improved with more regex flags in future releases
+* Dupes occasionally behave oddly, as clones in dats can be specific to a ROM and not an overall game name. This will be
+  improved in a future release

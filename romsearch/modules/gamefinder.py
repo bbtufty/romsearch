@@ -15,6 +15,8 @@ from ..util import (
     load_json,
 )
 
+DUPE_DEFAULT = {"is_compilation": False, "priority": 1, "title_pos": None}
+
 
 def get_all_games(
     files,
@@ -35,12 +37,22 @@ def get_all_games(
     return games
 
 
-def get_priority(dupe_dict, parent_name, game_name):
-    """Get priority from a dupe dictionary"""
+def get_dupe_entry(
+    dupe_dict,
+    parent_name,
+    game_name,
+):
+    """Get dupe entry from a dupe dictionary
+
+    Args:
+        dupe_dict (dict): dupe dictionary
+        parent_name (str): parent game name
+        game_name (str): game name
+    """
 
     # First case: parent name doesn't exist in the dupe dict
     if parent_name not in dupe_dict:
-        return 1
+        return DUPE_DEFAULT
 
     # Second case: it does (potentially can be lowercase)
     dupes = [dupe.lower() for dupe in dupe_dict[parent_name]]
@@ -48,12 +60,13 @@ def get_priority(dupe_dict, parent_name, game_name):
 
     if game_name.lower() in dupes:
         found_parent_idx = dupes.index(game_name.lower())
-        priority = dupe_dict[parent_name][reg_dupes[found_parent_idx]]["priority"]
 
-        return priority
+        dupe_entry = dupe_dict[parent_name][reg_dupes[found_parent_idx]]
 
-    # Otherwise, just return 1
-    return 1
+        return dupe_entry
+
+    # Otherwise, return defaults
+    return DUPE_DEFAULT
 
 
 class GameFinder:
@@ -63,6 +76,7 @@ class GameFinder:
         platform,
         config_file=None,
         config=None,
+        dupe_dict=None,
         default_config=None,
         regex_config=None,
         logger=None,
@@ -78,6 +92,7 @@ class GameFinder:
             platform (str): Platform name
             config_file (str, optional): Path to config file. Defaults to None.
             config (dict, optional): Configuration dictionary. Defaults to None.
+            dupe_dict (dict, optional): Dupe dictionary. Defaults to None.
             default_config (dict, optional): Default configuration dictionary. Defaults to None.
             regex_config (dict, optional): Dictionary of regex config. Defaults to None.
             logger (logging.Logger, optional): Logger instance. Defaults to None.
@@ -126,6 +141,7 @@ class GameFinder:
         self.regex_config = regex_config
 
         # Info for dupes
+        self.dupe_dict = dupe_dict
         self.dupe_dir = config.get("dirs", {}).get("dupe_dir", None)
         self.filter_dupes = config.get("gamefinder", {}).get("filter_dupes", True)
 
@@ -289,45 +305,66 @@ class GameFinder:
     def get_filter_dupes(self, games):
         """Parse down a list of files based on an input dupe list"""
 
-        if self.dupe_dir is None:
-            raise ValueError("dupe_dir must be specified if filtering dupes")
-
-        dupe_file = os.path.join(self.dupe_dir, f"{self.platform} (dupes).json")
-        if not os.path.exists(dupe_file):
-            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(
-                centred_string("No dupe files found", total_length=self.log_line_length)
+        if self.dupe_dict is None and self.dupe_dir is None:
+            raise ValueError(
+                "dupe_dict or dupe_dir must be specified if filtering dupes"
             )
-            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            return None
+
+        if self.dupe_dict is None:
+            dupe_file = os.path.join(self.dupe_dir, f"{self.platform} (dupes).json")
+            if not os.path.exists(dupe_file):
+                self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+                self.logger.warning(
+                    centred_string(
+                        "No dupe files found", total_length=self.log_line_length
+                    )
+                )
+                self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
+                return None
+            self.dupe_dict = load_json(dupe_file)
 
         game_dict = {}
 
-        dupes = load_json(dupe_file)
-
-        # Loop over games, and the dupes dictionary. Also pull out priority
+        # Loop over games, and the dupes dictionary. Also pull out various other important info
         for g in games:
 
-            found_parent_name = get_parent_name(
+            # Because we have compilations, these can be lists
+            found_parent_names = get_parent_name(
                 game_name=g,
-                dupe_dict=dupes,
+                dupe_dict=self.dupe_dict,
             )
 
-            found_parent_name_lower = found_parent_name.lower()
-            game_dict_keys = [key for key in game_dict.keys()]
-            game_dict_keys_lower = [key.lower() for key in game_dict.keys()]
+            for found_parent_name in found_parent_names:
 
-            if found_parent_name_lower not in game_dict_keys_lower:
-                game_dict[found_parent_name] = {}
-                final_parent_name = copy.deepcopy(found_parent_name)
-            else:
-                final_parent_idx = game_dict_keys_lower.index(found_parent_name_lower)
-                final_parent_name = game_dict_keys[final_parent_idx]
+                found_parent_name_lower = found_parent_name.lower()
+                game_dict_keys = [key for key in game_dict.keys()]
+                game_dict_keys_lower = [key.lower() for key in game_dict.keys()]
 
-            priority = get_priority(
-                dupe_dict=dupes, parent_name=found_parent_name, game_name=g
-            )
+                if found_parent_name_lower not in game_dict_keys_lower:
+                    game_dict[found_parent_name] = {}
+                    final_parent_name = copy.deepcopy(found_parent_name)
+                else:
+                    final_parent_idx = game_dict_keys_lower.index(
+                        found_parent_name_lower
+                    )
+                    final_parent_name = game_dict_keys[final_parent_idx]
 
-            game_dict[final_parent_name][g] = {"priority": priority}
+                dupe_entry = get_dupe_entry(
+                    dupe_dict=self.dupe_dict,
+                    parent_name=found_parent_name,
+                    game_name=g,
+                )
+
+                # We want to make sure we also don't duplicate on the names being upper/lowercase
+                g_names = [g_dict for g_dict in game_dict[final_parent_name]]
+                g_names_lower = [g_name.lower() for g_name in g_names]
+                if g.lower() in g_names_lower:
+                    g_idx = g_names_lower.index(g.lower())
+                    g = g_names[g_idx]
+
+                if g not in game_dict[final_parent_name]:
+                    game_dict[final_parent_name][g] = {}
+
+                game_dict[final_parent_name][g].update(dupe_entry)
 
         return game_dict

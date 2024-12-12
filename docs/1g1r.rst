@@ -38,6 +38,18 @@ There are also some demotions that go on. The priority is (from most to least de
 * Alternate versions
 * Demoted versions (e.g. arcade versions)
 
+Compilations
+------------
+
+Compilation ROMs are handled somewhat differently. If a ROM is marked as part of a compilation via ``retool``, then
+these will be added to each game in the compilation. We then proceed as normal, and after filtering based on
+regions/languages, if there are still potential single-game ROMs then the compilation will be removed from that
+particular game. Otherwise, we will keep the compilations. Any compilations are then scored as above to choose
+a "best" version. This does potentially mean that these compilations can appear as the best choice for multiple games,
+but this is unlikely given the pretty stringent criteria for these compilations ROMs to be chosen.
+
+More options for handling compilations will be included in future releases.
+
 End result
 ----------
 

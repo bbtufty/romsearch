@@ -15,6 +15,9 @@ from ..util import (
 )
 
 DICT_DEFAULT_VALS = {"bool": False, "str": "", "list": []}
+USE_TITLE_POS = [
+    "languages",
+]
 
 
 def find_pattern(regex, search_str, group_number=0):
@@ -30,13 +33,33 @@ def find_pattern(regex, search_str, group_number=0):
     return regex_search_str
 
 
-def get_pattern_val(regex, tag, regex_type, pattern_mappings=None):
-    """Get values out from a regex pattern, optionally mapping back to something more readable for lists"""
+def get_pattern_val(
+    regex,
+    tag,
+    regex_type,
+    pattern_mappings=None,
+    title_pos=None,
+    use_title_pos=False,
+):
+    """Get values out from a regex pattern, optionally mapping back to something more readable for lists
+
+    Args:
+        regex: Regex pattern
+        tag: Found tag
+        regex_type: Regex pattern type. Can be str, bool, list
+        pattern_mappings: Mapping from regex pattern to more readable values
+        title_pos: Position of title for compilations. Defaults to None
+        use_title_pos: Use title_pos? Defaults to False
+    """
 
     pattern_string = find_pattern(regex, tag)
 
     if pattern_string is not None:
         pattern_string = pattern_string.strip("()")
+
+        # Split out to the specific languages, but only if they're marked correctly
+        if title_pos is not None and use_title_pos and "+" in pattern_string:
+            pattern_string = pattern_string.split("+")[title_pos - 1]
 
         if regex_type == "bool":
             pattern_val = True
@@ -63,6 +86,7 @@ def get_pattern_val(regex, tag, regex_type, pattern_mappings=None):
 
     return pattern_val
 
+
 def is_ra_subset(name):
     """Check if a name is a RetroAchievements subset
 
@@ -78,6 +102,7 @@ def is_ra_subset(name):
         is_subset = True
 
     return is_subset
+
 
 def check_match(i, j, checks_passed=None):
     """Check if two bools/strings/lists match
@@ -261,7 +286,7 @@ class ROMParser:
     ):
         """Run the ROM parser"""
 
-        game_dict = {}
+        game_dict = copy.deepcopy(files)
 
         self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
         self.logger.debug(
@@ -272,23 +297,38 @@ class ROMParser:
         self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
 
         for f in files:
-            game_dict[f] = self.parse_file(f)
 
-            # Include the priority
-            game_dict[f]["priority"] = files[f]["priority"]
+            # # Get the potential title position out for compilations
+            title_pos = files[f].get("title_pos", None)
+
+            f_parsed = self.parse_file(
+                f,
+                title_pos=title_pos,
+            )
+            game_dict[f].update(f_parsed)
 
         return game_dict
 
     def parse_file(
         self,
         f,
+        title_pos=None,
     ):
-        """Parse useful info out of a specific file"""
+        """Parse useful info out of a specific file
+
+        Args:
+            f (str): file name
+            title_pos (int, optional): Title position for compilations. Defaults to None.
+        """
 
         file_dict = {}
 
         if self.use_filename:
-            file_dict = self.parse_filename(f, file_dict)
+            file_dict = self.parse_filename(
+                f,
+                title_pos=title_pos,
+                file_dict=file_dict,
+            )
 
         if self.use_retool:
             file_dict = self.parse_retool(f, file_dict)
@@ -767,10 +807,11 @@ class ROMParser:
                         if not ra_checks_passed:
                             continue
 
-                        ra_checks_passed = check_match(m_parsed[check],
-                                                       r_parsed[check],
-                                                       checks_passed=ra_checks_passed,
-                                                       )
+                        ra_checks_passed = check_match(
+                            m_parsed[check],
+                            r_parsed[check],
+                            checks_passed=ra_checks_passed,
+                        )
 
                         # After this first pass, also see if any of the regex checks are grouped,
                         # and double-check the sublevel below. This is because we could have e.g.
@@ -783,12 +824,15 @@ class ROMParser:
                                     if not ra_checks_passed:
                                         continue
 
-                                    r_c_group = self.regex_config[r_c].get("group", None)
+                                    r_c_group = self.regex_config[r_c].get(
+                                        "group", None
+                                    )
                                     if r_c_group == check:
-                                        ra_checks_passed = check_match(m_parsed[r_c],
-                                                                       r_parsed[r_c],
-                                                                       checks_passed=ra_checks_passed,
-                                                                       )
+                                        ra_checks_passed = check_match(
+                                            m_parsed[r_c],
+                                            r_parsed[r_c],
+                                            checks_passed=ra_checks_passed,
+                                        )
 
                     if ra_checks_passed:
 
@@ -865,8 +909,20 @@ class ROMParser:
 
         return file_dict
 
-    def parse_filename(self, f, file_dict=None):
-        """Parse info out of filename"""
+    def parse_filename(
+        self,
+        f,
+        title_pos=None,
+        file_dict=None,
+    ):
+        """Parse info out of filename
+
+        Args:
+            f (str): filename
+            title_pos (int): Title position for compilations. Defaults to None
+            file_dict (dict): Existing file dictionary. Defaults to None, which
+                will create an empty one
+        """
 
         if file_dict is None:
             file_dict = {}
@@ -875,6 +931,11 @@ class ROMParser:
         tags = [f"({x}" for x in f.rstrip(".zip").split(" (")][1:]
 
         for regex_key in self.regex_config:
+
+            # Are we potentially using the title position?
+            use_title_pos = False
+            if regex_key in USE_TITLE_POS:
+                use_title_pos = True
 
             regex_type = self.regex_config[regex_key].get("type", "bool")
             search_tags = self.regex_config[regex_key].get("search_tags", True)
@@ -933,6 +994,8 @@ class ROMParser:
                         tag,
                         regex_type,
                         pattern_mappings=pattern_mappings,
+                        title_pos=title_pos,
+                        use_title_pos=use_title_pos,
                     )
                     if pattern_string is not None:
 
@@ -945,7 +1008,12 @@ class ROMParser:
                         found_tag = True
             else:
                 pattern_string = get_pattern_val(
-                    regex, f, regex_type, pattern_mappings=pattern_mappings
+                    regex,
+                    f,
+                    regex_type,
+                    pattern_mappings=pattern_mappings,
+                    title_pos=title_pos,
+                    use_title_pos=use_title_pos,
                 )
                 if pattern_string is not None:
                     file_dict[regex_key] = pattern_string

@@ -675,6 +675,10 @@ kaiser:
   pattern: "\\(Kaiser\\)"
   group: "demoted_version"
 
+ka_sheng:
+  pattern: "\\(Ka Sheng\\)"
+  group: "demoted_version"
+
 kickstarter:
   pattern: "\\(Kickstarter\\)"
   group: "demoted_version"
@@ -769,7 +773,7 @@ ntsc:
   flags: "NOFLAG"
 
 pal:
-  pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:\\)?| (?=\\())"
+  pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:(?!-)\\)?| (?=\\())"
   flags: "NOFLAG"
 
 supervision:

@@ -229,11 +229,12 @@ class ROMPatcher:
 
         return patch_file
 
-    def patch_rom(self,
-                  unpatched_file,
-                  patch_file,
-                  patch_dir,
-                  ):
+    def patch_rom(
+        self,
+        unpatched_file,
+        patch_file,
+        patch_dir,
+    ):
         """Patch a ROM
 
         Args:
@@ -263,7 +264,9 @@ class ROMPatcher:
             )
         elif patch_method == "rompatcher.js":
 
-            rompatcher_js_file = f"{unpatch_file_split[0]} (patched){unpatch_file_split[1]}"
+            rompatcher_js_file = (
+                f"{unpatch_file_split[0]} (patched){unpatch_file_split[1]}"
+            )
 
             self.rompatcher_js_patch(
                 unpatched_file=unpatched_file,
@@ -357,7 +360,9 @@ class ROMPatcher:
             patch_dir (str): Patch directory
         """
 
-        rompatcher_js_path = self.config.get("rompatcher", {}).get("rompatcher_js_path", None)
+        rompatcher_js_path = self.config.get("rompatcher", {}).get(
+            "rompatcher_js_path", None
+        )
 
         if rompatcher_js_path is None:
             raise ValueError("Path to RomPatcher.js needs to be defined in user config")
@@ -398,7 +403,7 @@ class ROMPatcher:
         os.chdir(patch_dir)
 
         with subprocess.Popen(
-                cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
         ) as process:
             for line in process.stdout:
 
