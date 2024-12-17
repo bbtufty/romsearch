@@ -2,6 +2,7 @@ from .datparser import DATParser
 from .dupeparser import DupeParser
 from .gamefinder import GameFinder
 from .rahasher import RAHasher
+from .romassociator import ROMAssociator
 from .romchooser import ROMChooser
 from .romcleaner import ROMCleaner
 from .romdownloader import ROMDownloader
@@ -15,6 +16,7 @@ __all__ = [
     "DupeParser",
     "GameFinder",
     "RAHasher",
+    "ROMAssociator",
     "ROMChooser",
     "ROMCleaner",
     "ROMDownloader",

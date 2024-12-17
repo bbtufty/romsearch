@@ -15,7 +15,12 @@ from ..util import (
     load_json,
 )
 
-DUPE_DEFAULT = {"is_compilation": False, "priority": 1, "title_pos": None}
+DUPE_DEFAULT = {
+    "is_compilation": False,
+    "priority": 1,
+    "title_pos": None,
+    "filters": None,
+}
 
 
 def get_all_games(
@@ -23,7 +28,13 @@ def get_all_games(
     default_config=None,
     regex_config=None,
 ):
-    """Get all unique game names from a list of game files."""
+    """Get a list of short game names.
+
+    Args:
+        files: List of files to parse
+        default_config: Default config to use
+        regex_config: Regex settings to use
+    """
 
     games = [
         get_short_name(f, default_config=default_config, regex_config=regex_config)
@@ -192,6 +203,14 @@ class GameFinder:
         self,
         files,
     ):
+        """Get a game dictionary out.
+
+        From a list of files, parse out dupes, apply includes and excludes,
+        and return a game dictionary.
+
+        Args:
+            files (list): List of files to associate
+        """
 
         games = get_all_games(
             files,
@@ -212,7 +231,9 @@ class GameFinder:
 
             for game in games:
                 game_dict[game] = {
-                    "priority": 1,
+                    game: {
+                        "priority": 1,
+                    }
                 }
 
         # Remove any excluded files
@@ -239,7 +260,6 @@ class GameFinder:
                     filtered_game_dict[g] = game_dict[g]
 
                 game_dict = copy.deepcopy(filtered_game_dict)
-
         return game_dict
 
     def get_game_matches(
@@ -247,7 +267,7 @@ class GameFinder:
         game_dict,
         games_to_match,
     ):
-        """Get files that match an input dictionary (so as to properly handle dupes
+        """Get files that match an input dictionary (to properly handle dupes)
 
         Args:
             - game_dict (dict): Dictionary of games to match against
@@ -328,43 +348,89 @@ class GameFinder:
         # Loop over games, and the dupes dictionary. Also pull out various other important info
         for g in games:
 
-            # Because we have compilations, these can be lists
-            found_parent_names = get_parent_name(
-                game_name=g,
-                dupe_dict=self.dupe_dict,
+            # Look at the short names
+            game_dict = self.filter_by_short_name(
+                game=g,
+                game_dict=game_dict,
             )
 
-            for found_parent_name in found_parent_names:
+        return game_dict
 
-                found_parent_name_lower = found_parent_name.lower()
-                game_dict_keys = [key for key in game_dict.keys()]
-                game_dict_keys_lower = [key.lower() for key in game_dict.keys()]
+    def filter_by_short_name(
+        self,
+        game,
+        game_dict=None,
+    ):
+        """Add entries to game dict based on short name
 
-                if found_parent_name_lower not in game_dict_keys_lower:
-                    game_dict[found_parent_name] = {}
-                    final_parent_name = copy.deepcopy(found_parent_name)
-                else:
-                    final_parent_idx = game_dict_keys_lower.index(
-                        found_parent_name_lower
-                    )
-                    final_parent_name = game_dict_keys[final_parent_idx]
+        Will find possible parents, then add those to the game dict
 
-                dupe_entry = get_dupe_entry(
-                    dupe_dict=self.dupe_dict,
-                    parent_name=found_parent_name,
-                    game_name=g,
-                )
+        Args:
+            game (str): Short game name
+            game_dict (dict): Dictionary of games to match against. Defaults
+                to None, which will create an empty dict
+        """
 
-                # We want to make sure we also don't duplicate on the names being upper/lowercase
-                g_names = [g_dict for g_dict in game_dict[final_parent_name]]
-                g_names_lower = [g_name.lower() for g_name in g_names]
-                if g.lower() in g_names_lower:
-                    g_idx = g_names_lower.index(g.lower())
-                    g = g_names[g_idx]
+        if game_dict is None:
+            game_dict = {}
 
-                if g not in game_dict[final_parent_name]:
-                    game_dict[final_parent_name][g] = {}
+        found_parent_names = get_parent_name(
+            game_name=game,
+            dupe_dict=self.dupe_dict,
+        )
 
-                game_dict[final_parent_name][g].update(dupe_entry)
+        for found_parent_name in found_parent_names:
+
+            game_dict = self.add_dupe_entry_to_game_dict(
+                game,
+                game_dict=game_dict,
+                parent_name=found_parent_name,
+            )
+
+        return game_dict
+
+    def add_dupe_entry_to_game_dict(
+        self,
+        game,
+        game_dict,
+        parent_name,
+    ):
+        """Add a dupe entry to the game dict
+
+        Args:
+            game (str): Game name
+            game_dict (dict): Dictionary of games. Defaults
+                to None, which will create an empty dict
+            parent_name (str): Parent name for the game
+        """
+
+        parent_name_lower = parent_name.lower()
+        game_dict_keys = [key for key in game_dict.keys()]
+        game_dict_keys_lower = [key.lower() for key in game_dict.keys()]
+
+        if parent_name_lower not in game_dict_keys_lower:
+            game_dict[parent_name] = {}
+            final_parent_name = copy.deepcopy(parent_name)
+        else:
+            final_parent_idx = game_dict_keys_lower.index(parent_name_lower)
+            final_parent_name = game_dict_keys[final_parent_idx]
+
+        dupe_entry = get_dupe_entry(
+            dupe_dict=self.dupe_dict,
+            parent_name=parent_name,
+            game_name=game,
+        )
+
+        # We want to make sure we also don't duplicate on the names being upper/lowercase
+        g_names = [g_dict for g_dict in game_dict[final_parent_name]]
+        g_names_lower = [g_name.lower() for g_name in g_names]
+        if game.lower() in g_names_lower:
+            g_idx = g_names_lower.index(game.lower())
+            game = g_names[g_idx]
+
+        if game not in game_dict[final_parent_name]:
+            game_dict[final_parent_name][game] = {}
+
+        game_dict[final_parent_name][game].update(dupe_entry)
 
         return game_dict

@@ -16,6 +16,7 @@ the available modules.
   modules/datparser
   modules/dupeparser
   modules/gamefinder
+  modules/romassociator
   modules/romparser
   modules/romchooser
   modules/rommover

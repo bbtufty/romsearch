@@ -166,6 +166,7 @@ homebrew:
 pirate:
   pattern: "\\(Pirate\\)"
   group: "pirate"
+  include_in_short_name: true
 
 unl:
   pattern: "\\(Unl\\)"

@@ -62,7 +62,6 @@ Syntax: ::
                                         # suggests caching this aggressively. Defaults to 30
 
     dupeparser:                         # DupeParser specific options
-      use_dat: true                     # OPTIONAL. Whether to use .dat files or not. Defaults to true
       use_retool: true                  # OPTIONAL. Whether to use retool clonelists or not. Defaults to true
 
     gamefinder:                         # GameFinder specific options

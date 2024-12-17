@@ -4,12 +4,24 @@
 Features
 --------
 
+- Initial support for ``retool`` filters
+- Added ROMAssociator, which simplifies the association of ROM files to games
 - Includes initial support for ``retool`` compilations
 - Added Game Boy Advance
 - ROMPatcher now supports RomPatcher.js
 
 Fixes
 -----
+
+DupeParser
+~~~~~~~~~~
+
+- Removed dat parsing, as this can cause issues. Now rely on ``retool`` filters
+
+RAHasher
+~~~~~~~~
+
+- Increase sleep time to 0.2s to avoid API errors
 
 ROMChooser
 ~~~~~~~~~~

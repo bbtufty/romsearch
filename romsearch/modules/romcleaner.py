@@ -115,9 +115,10 @@ class ROMCleaner:
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         # Join these up into a dictionary
-        cleaned = {"ROMs": roms_cleaned,
-                   "Cache": cache_cleaned,
-                   }
+        cleaned = {
+            "ROMs": roms_cleaned,
+            "Cache": cache_cleaned,
+        }
 
         return cleaned
 

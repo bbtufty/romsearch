@@ -1460,19 +1460,6 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="checkBoxConfigDupeParserUseDat">
-                  <property name="statusTip">
-                   <string>Whether to use the dat file to figure out dupes. Default checked</string>
-                  </property>
-                  <property name="text">
-                   <string>Use .dat</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <widget class="QCheckBox" name="checkBoxConfigDupeParserUseRetool">
                   <property name="statusTip">
                    <string>Whether to use the retool clonelist to figure out dupes. Default checked</string>
@@ -2715,7 +2702,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigRomsearchMethod"/>
   <buttongroup name="radioButtonConfigLoggerLevel"/>
+  <buttongroup name="radioButtonConfigRomsearchMethod"/>
  </buttongroups>
 </ui>

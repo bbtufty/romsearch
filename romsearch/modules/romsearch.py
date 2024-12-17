@@ -9,6 +9,7 @@ from .datparser import DATParser
 from .dupeparser import DupeParser
 from .gamefinder import GameFinder
 from .rahasher import RAHasher
+from .romassociator import ROMAssociator
 from .romchooser import ROMChooser
 from .romcleaner import ROMCleaner
 from .romdownloader import ROMDownloader
@@ -50,7 +51,6 @@ class ROMSearch:
 
         TODO:
             - More granular control over compilations
-            - Better handling of clones and dupes
         """
 
         if config_file is None and config is None:
@@ -291,38 +291,28 @@ class ROMSearch:
             all_roms_moved = []
             all_roms_dict = {}
 
-            for i, game in enumerate(all_games):
+            # Associate files to games
+            associator = ROMAssociator(
+                platform=platform,
+                dat=dat_dict,
+                retool=retool_dict,
+                ra_hashes=ra_hash_dict,
+                config=self.config,
+                platform_config=platform_config,
+                regex_config=self.regex_config,
+                default_config=self.default_config,
+                logger=self.logger,
+                log_line_length=log_line_length,
+            )
 
-                rom_files = {}
+            associations = associator.run(
+                files=all_file_dict,
+                games=all_games,
+            )
 
-                # We check by a lowercase version of the short name
-                for f in all_file_dict:
-                    f_lower = all_file_dict[f]["short_name"].lower()
-                    for g in all_games[game]:
+            for game in associations:
 
-                        g_lower = g.lower()
-
-                        if f_lower == g_lower:
-
-                            # Update the dictionary as appropriate
-                            if f not in rom_files:
-                                rom_files[f] = {}
-                            rom_files[f].update(all_games[game][g])
-
-                            # If we're duplicating a match, and it's not part of a compilation, freak out
-                            is_compilation = all_games[game][g].get(
-                                "is_compilation", False
-                            )
-                            if all_file_dict[f]["matched"] and not is_compilation:
-                                self.logger.warning(
-                                    centred_string(
-                                        f"{f} has already been matched! "
-                                        f"This should not generally happen",
-                                        total_length=log_line_length,
-                                    )
-                                )
-
-                            all_file_dict[f]["matched"] = True
+                rom_files = associations[game]
 
                 parse = ROMParser(
                     platform=platform,
@@ -357,18 +347,6 @@ class ROMSearch:
 
                 # Save to a big dictionary, since we'll move all at once
                 all_roms_dict[game] = rom_dict
-
-            self.logger.debug(f"{log_line_sep * log_line_length}")
-            self.logger.debug(
-                centred_string("Unmatched files:", total_length=log_line_length)
-            )
-            self.logger.debug(f"{'-' * log_line_length}")
-            for f in all_file_dict:
-                if not all_file_dict[f]["matched"]:
-                    self.logger.debug(
-                        centred_string(f"{f}", total_length=log_line_length)
-                    )
-            self.logger.debug(f"{log_line_sep * log_line_length}")
 
             if self.dry_run:
                 self.logger.info(f"{log_line_sep * log_line_length}")

@@ -20,6 +20,7 @@ def split(full_list, chunk_size=10):
 def get_parent_name(
     game_name,
     dupe_dict,
+    return_if_not_found=False,
 ):
     """Get the parent name(s) recursively searching through a dupe dict
 
@@ -28,6 +29,8 @@ def get_parent_name(
     Args:
         game_name (str): game name to find parents for
         dupe_dict (dict): dupe dict to search through
+        return_if_not_found (bool, optional): If we don't find a dupe, return a None.
+            Defaults to False.
     """
 
     # We do this by lowercase checking
@@ -58,7 +61,11 @@ def get_parent_name(
                 found_dupe = True
 
     if not found_dupe:
-        found_parent_names = copy.deepcopy(game_name)
+
+        if return_if_not_found:
+            return None
+        else:
+            found_parent_names = copy.deepcopy(game_name)
 
     if found_parent_names is None:
         raise ValueError("Could not find a parent name!")

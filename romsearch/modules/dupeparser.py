@@ -72,12 +72,12 @@ class DupeParser:
             )
         self.logger = logger
 
-        self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
+        # self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
         self.use_retool = self.config.get("dupeparser", {}).get("use_retool", True)
 
         self.parsed_dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
-        if self.use_dat and self.parsed_dat_dir is None:
-            raise ValueError("Must specify parsed_dat_dir if using dat files")
+        if self.use_retool and self.parsed_dat_dir is None:
+            raise ValueError("Must specify parsed_dat_dir if using retool files")
 
         self.dupe_dir = self.config.get("dirs", {}).get("dupe_dir", None)
         if self.dupe_dir is None:
@@ -140,16 +140,16 @@ class DupeParser:
         return dupe_dict, retool_dict
 
     def get_dupe_dict(self):
-        """Loop through potentially both the dat files and the retool config file to get out dupes"""
+        """Loop through potentially the retool file to get out dupes"""
 
         dupe_dict = {}
 
-        # Prefer retool dupes first
+        # Retool dupes
         retool_dict = None
         if self.use_retool:
             dupe_dict, retool_dict = self.get_retool_dupes(dupe_dict)
-        if self.use_dat:
-            dupe_dict = self.get_dat_dupes(dupe_dict)
+        # if self.use_dat:
+        #     dupe_dict = self.get_dat_dupes(dupe_dict)
 
         dupe_dict = dict(sorted(dupe_dict.items()))
 
@@ -278,9 +278,11 @@ class DupeParser:
                     for title in retool_dupe["titles"]:
                         title_g = title["searchTerm"]
                         priority = title.get("priority", 1)
+                        filters = title.get("filters", None)
 
                         dupe_dict[found_parent_name][title_g] = {
                             "priority": priority,
+                            "filters": filters,
                         }
 
             # Next, check for compilations. If we have them, pull them out and potentially the title position
@@ -295,11 +297,13 @@ class DupeParser:
                         comp_g = compilation["searchTerm"]
                         title_pos = compilation.get("titlePosition", None)
                         priority = compilation.get("priority", 1)
+                        filters = compilation.get("filters", None)
 
                         dupe_dict[found_parent_name][comp_g] = {
                             "is_compilation": True,
                             "priority": priority,
                             "title_pos": title_pos,
+                            "filters": filters,
                         }
 
         return dupe_dict, retool_dupes
