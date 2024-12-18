@@ -1,6 +1,5 @@
+import copy
 import os
-
-import numpy as np
 import requests
 
 import romsearch
@@ -8,8 +7,6 @@ from ..util import (
     centred_string,
     setup_logger,
     load_yml,
-    get_parent_name,
-    get_short_name,
     load_json,
     save_json,
 )
@@ -72,12 +69,12 @@ class DupeParser:
             )
         self.logger = logger
 
-        self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
+        # self.use_dat = self.config.get("dupeparser", {}).get("use_dat", True)
         self.use_retool = self.config.get("dupeparser", {}).get("use_retool", True)
 
         self.parsed_dat_dir = self.config.get("dirs", {}).get("parsed_dat_dir", None)
-        if self.use_dat and self.parsed_dat_dir is None:
-            raise ValueError("Must specify parsed_dat_dir if using dat files")
+        if self.use_retool and self.parsed_dat_dir is None:
+            raise ValueError("Must specify parsed_dat_dir if using retool files")
 
         self.dupe_dir = self.config.get("dirs", {}).get("dupe_dir", None)
         if self.dupe_dir is None:
@@ -140,107 +137,18 @@ class DupeParser:
         return dupe_dict, retool_dict
 
     def get_dupe_dict(self):
-        """Loop through potentially both the dat files and the retool config file to get out dupes"""
+        """Loop through potentially the retool file to get out dupes"""
 
         dupe_dict = {}
 
-        # Prefer retool dupes first
+        # Retool dupes
         retool_dict = None
         if self.use_retool:
             dupe_dict, retool_dict = self.get_retool_dupes(dupe_dict)
-        if self.use_dat:
-            dupe_dict = self.get_dat_dupes(dupe_dict)
 
         dupe_dict = dict(sorted(dupe_dict.items()))
 
         return dupe_dict, retool_dict
-
-    def get_dat_dupes(self, dupe_dict=None):
-        """Get dupes from the dat that we've already parsed to JSON"""
-
-        if dupe_dict is None:
-            dupe_dict = {}
-
-        json_dat = os.path.join(
-            self.parsed_dat_dir, f"{self.platform} (dat parsed).json"
-        )
-        if not os.path.exists(json_dat):
-            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            self.logger.warning(
-                centred_string(
-                    f"No dat file found for {self.platform}",
-                    total_length=self.log_line_length,
-                )
-            )
-            self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
-            return None
-
-        self.logger.info(
-            centred_string(
-                f"Using parsed dat file {json_dat}", total_length=self.log_line_length
-            )
-        )
-
-        dat_dict = load_json(json_dat)
-
-        all_keys = list(dat_dict.keys())
-
-        for clone_name in dat_dict:
-            for id_clone_key in ID_CLONE_KEYS:
-                if id_clone_key in dat_dict[clone_name]:
-                    clone_key = dat_dict[clone_name][id_clone_key]
-
-                    # If it's an ID, find that ID
-                    if id_clone_key == "cloneofid":
-
-                        # Sometimes, IDs are missing from the dat so just move on
-                        try:
-                            dat_idx = np.where(
-                                [dat_dict[key]["id"] == clone_key for key in dat_dict]
-                            )[0][0]
-                        except IndexError:
-                            continue
-                        parent_entry = dat_dict[all_keys[dat_idx]]
-                        parent_name = parent_entry["name"]
-
-                    elif id_clone_key == "cloneof":
-                        # TODO
-                        raise NotImplemented("Only current implemented for cloneofid")
-                    else:
-                        raise ValueError(f"Only know how to parse {ID_CLONE_KEYS}")
-
-                    # Get short names here
-                    # parent_game_name = get_game_name(parent_name)
-                    parent_game_name = get_short_name(
-                        parent_name,
-                        default_config=self.default_config,
-                        regex_config=self.regex_config,
-                    )
-                    clone_short_name = get_short_name(
-                        clone_name,
-                        default_config=self.default_config,
-                        regex_config=self.regex_config,
-                    )
-
-                    # If the names are the same, just skip
-                    if parent_game_name == clone_short_name:
-                        continue
-
-                    found_parent_names = get_parent_name(
-                        game_name=parent_game_name,
-                        dupe_dict=dupe_dict,
-                    )
-                    for found_parent_name in found_parent_names:
-                        if found_parent_name not in dupe_dict:
-                            dupe_dict[found_parent_name] = {}
-
-                        # Don't overwrite priority if it's already set
-                        if clone_short_name not in dupe_dict[found_parent_name]:
-                            dupe_dict[found_parent_name][clone_short_name] = {
-                                "priority": 1
-                            }
-
-        return dupe_dict
 
     def get_retool_dupes(self, dupe_dict=None):
         """Get dupes from the retool curated list"""
@@ -255,52 +163,58 @@ class DupeParser:
             if "titles" not in retool_dupe and "compilations" not in retool_dupe:
                 continue
 
-            # Get group and parent name
+            # Get group name
             group = retool_dupe["group"]
-            group_parsed = get_short_name(
-                group,
-                default_config=self.default_config,
-                regex_config=self.regex_config,
-            )
-            found_parent_names = get_parent_name(
-                game_name=group_parsed,
-                dupe_dict=dupe_dict,
-            )
+
+            # Ensure we've not mismatched upper/lowercase
+            group_lower = group.lower()
+            dupe_dict_keys = [key for key in dupe_dict.keys()]
+            dupe_dict_keys_lower = [key.lower() for key in dupe_dict.keys()]
+
+            if group_lower not in dupe_dict_keys_lower:
+                final_group = copy.deepcopy(group)
+            else:
+                final_group_idx = dupe_dict_keys_lower.index(group_lower)
+                final_group = dupe_dict_keys[final_group_idx]
 
             # Pull out individual titles
             if "titles" in retool_dupe:
 
-                for found_parent_name in found_parent_names:
+                if final_group not in dupe_dict:
+                    dupe_dict[final_group] = {}
 
-                    if found_parent_name not in dupe_dict:
-                        dupe_dict[found_parent_name] = {}
+                for title in retool_dupe["titles"]:
+                    title_g = title["searchTerm"]
+                    name_type = title.get("nameType", None)
+                    priority = title.get("priority", 1)
+                    filters = title.get("filters", None)
 
-                    for title in retool_dupe["titles"]:
-                        title_g = title["searchTerm"]
-                        priority = title.get("priority", 1)
-
-                        dupe_dict[found_parent_name][title_g] = {
-                            "priority": priority,
-                        }
+                    dupe_dict[group][title_g] = {
+                        "name_type": name_type,
+                        "priority": priority,
+                        "filters": filters,
+                    }
 
             # Next, check for compilations. If we have them, pull them out and potentially the title position
             if "compilations" in retool_dupe:
 
-                for found_parent_name in found_parent_names:
+                if final_group not in dupe_dict:
+                    dupe_dict[final_group] = {}
 
-                    if found_parent_name not in dupe_dict:
-                        dupe_dict[found_parent_name] = {}
+                for compilation in retool_dupe["compilations"]:
+                    comp_g = compilation["searchTerm"]
+                    name_type = compilation.get("nameType", None)
+                    title_pos = compilation.get("titlePosition", None)
+                    priority = compilation.get("priority", 1)
+                    filters = compilation.get("filters", None)
 
-                    for compilation in retool_dupe["compilations"]:
-                        comp_g = compilation["searchTerm"]
-                        title_pos = compilation.get("titlePosition", None)
-                        priority = compilation.get("priority", 1)
-
-                        dupe_dict[found_parent_name][comp_g] = {
-                            "is_compilation": True,
-                            "priority": priority,
-                            "title_pos": title_pos,
-                        }
+                    dupe_dict[group][comp_g] = {
+                        "name_type": name_type,
+                        "is_compilation": True,
+                        "priority": priority,
+                        "title_pos": title_pos,
+                        "filters": filters,
+                    }
 
         return dupe_dict, retool_dupes
 

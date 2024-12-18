@@ -40,7 +40,6 @@ romdownloader:
   dry_run: false
 
 dupeparser:
-  use_dat: true
   use_retool: true
 
 gamefinder:

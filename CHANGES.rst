@@ -4,12 +4,25 @@
 Features
 --------
 
+- GameFinder has been significantly overhauled
+- Normalise games with disc names in them
+- Initial support for ``retool`` filters
 - Includes initial support for ``retool`` compilations
 - Added Game Boy Advance
 - ROMPatcher now supports RomPatcher.js
 
 Fixes
 -----
+
+DupeParser
+~~~~~~~~~~
+
+- Removed dat parsing, as this can cause issues. Now rely on ``retool`` filters
+
+RAHasher
+~~~~~~~~
+
+- Increase sleep time to 0.5s to avoid API errors
 
 ROMChooser
 ~~~~~~~~~~
@@ -39,6 +52,8 @@ General
 - Added known issue for long filenames
 - RAPatch checks now includes modern/improved/demoted versions
 - Language parsing can now handle languages formatted like "En+De" (and test updated)
+- Updated regex
+- Updated dev scripts
 
 0.1.0 (2024-12-04)
 ==================

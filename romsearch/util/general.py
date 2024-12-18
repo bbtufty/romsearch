@@ -1,6 +1,6 @@
 import copy
-import numpy as np
 import os
+import re
 import time
 from datetime import datetime
 
@@ -17,56 +17,83 @@ def split(full_list, chunk_size=10):
         yield full_list[i : i + chunk_size]
 
 
-def get_parent_name(
-    game_name,
-    dupe_dict,
+def match_retool_search_terms(
+    full_name,
+    search_term,
+    short_name=None,
+    region_free_name=None,
+    match_type=None,
 ):
-    """Get the parent name(s) recursively searching through a dupe dict
-
-    Because we can have compilations, find all cases where things match up
+    """Match a name against a search term, given retool's matching rules
 
     Args:
-        game_name (str): game name to find parents for
-        dupe_dict (dict): dupe dict to search through
+        full_name (str): Full name for the ROM
+        search_term (str): Search term to match against
+        short_name (str): Short name to match against. Defaults to None,
+            which inherits the full name
+        region_free_name (str): Region free name to match against. Defaults to None,
+            which inherits the full name
+        match_type (str): Type of matching. Defaults to None,
+            which will match against short name
     """
 
-    # We do this by lowercase checking
-    reg_dupes = [g for g in dupe_dict]
-    all_dupes = [g.lower() for g in dupe_dict]
+    match_found = False
 
-    # Pull out all the clones so we can check that way as well
-    all_clones = [list(dupe_dict[key].keys()) for key in dupe_dict]
+    # Assign default short/region-free names if not supplied
+    if short_name is None:
+        short_name = copy.deepcopy(full_name)
+    if region_free_name is None:
+        region_free_name = copy.deepcopy(full_name)
 
-    found_dupe = False
+    # If none, match against lowercased short name
+    if match_type is None:
+        if short_name.lower() == search_term.lower():
+            match_found = True
 
-    found_parent_names = []
+    # If full, match against lowercase full name
+    elif match_type == "full":
+        if full_name.lower() == search_term.lower():
+            match_found = True
 
-    # First, just check the dupes
-    if game_name.lower() in all_dupes:
-        found_idx = np.where(np.asarray(all_dupes) == game_name.lower())[0]
-        found_parent_names = [reg_dupes[i] for i in found_idx]
+    # If region-free, match against lowercased region-free name
+    elif match_type == "regionFree":
+        if region_free_name.lower() == search_term.lower():
+            match_found = True
 
-        found_dupe = True
+    # If regex, match against full name
+    elif match_type == "regex":
+        match = re.search(search_term, full_name)
 
-    # Check all the clones within the dupes
+        if match is not None:
+            match_found = True
+
     else:
-        for i, clone in enumerate(all_clones):
+        raise ValueError(f"Unsure how to deal with name type {match_type}")
 
-            clone = [c.lower() for c in clone]
-            if game_name.lower() in clone:
-                found_parent_names.append(reg_dupes[i])
-                found_dupe = True
+    return match_found
 
-    if not found_dupe:
-        found_parent_names = copy.deepcopy(game_name)
 
-    if found_parent_names is None:
-        raise ValueError("Could not find a parent name!")
+def normalize_name(
+    f,
+    disc_rename=None,
+):
+    """Normalize a name to standard form
 
-    if not isinstance(found_parent_names, list):
-        found_parent_names = [found_parent_names]
+    Currently, just normalizes the disc name
 
-    return found_parent_names
+    Args:
+        f (str): Name to normalize
+        disc_rename (dict, optional): Disc rename mappings. Defaults to None.
+    """
+
+    f_norm = copy.deepcopy(f)
+
+    if disc_rename is not None:
+        for k, v in disc_rename.items():
+            if k in f_norm:
+                f_norm = f_norm.replace(k, v)
+
+    return f_norm
 
 
 def get_file_time(

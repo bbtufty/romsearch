@@ -261,13 +261,13 @@ class RAHasher:
     def format_game_list(
         self,
         in_file,
-        sleep_time=0.1,
+        sleep_time=0.5,
     ):
         """Format the GameList neatly
 
         Args:
             in_file (str): Input GameList file
-            sleep_time (float): Sleep time for API queries. Defaults to 0.1
+            sleep_time (float): Sleep time for API queries. Defaults to 0.5
         """
 
         data = load_json(in_file)

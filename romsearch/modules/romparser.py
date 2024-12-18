@@ -11,7 +11,7 @@ from ..util import (
     get_file_time,
     load_yml,
     load_json,
-    get_game_name,
+    match_retool_search_terms,
 )
 
 DICT_DEFAULT_VALS = {"bool": False, "str": "", "list": []}
@@ -302,7 +302,8 @@ class ROMParser:
             title_pos = files[f].get("title_pos", None)
 
             f_parsed = self.parse_file(
-                f,
+                f=f,
+                file_dict=files[f],
                 title_pos=title_pos,
             )
             game_dict[f].update(f_parsed)
@@ -311,42 +312,53 @@ class ROMParser:
 
     def parse_file(
         self,
-        f,
+        f=None,
+        file_dict=None,
         title_pos=None,
     ):
         """Parse useful info out of a specific file
 
         Args:
-            f (str): file name
+            f (str): Filename. Will only use this if something more suitable isn't found
+            file_dict (dict): Dictionary of file properties
             title_pos (int, optional): Title position for compilations. Defaults to None.
         """
 
-        file_dict = {}
+        if file_dict is None:
+            file_dict = {}
 
         if self.use_filename:
             file_dict = self.parse_filename(
-                f,
-                title_pos=title_pos,
+                f=f,
                 file_dict=file_dict,
+                title_pos=title_pos,
             )
 
         if self.use_retool:
-            file_dict = self.parse_retool(f, file_dict)
+            file_dict = self.parse_retool(file_dict=file_dict)
 
         if self.use_dat:
-            file_dict = self.parse_dat(f, file_dict)
+            file_dict = self.parse_dat(
+                f=f,
+                file_dict=file_dict,
+            )
 
         file_dict["has_cheevos"] = False
         file_dict["patch_file"] = ""
 
         if self.use_ra_hashes:
-            file_dict = self.parse_ra_hashes(f, file_dict)
+            file_dict = self.parse_ra_hashes(
+                f=f,
+                file_dict=file_dict,
+            )
 
         # Any last minute finalisations
         self.finalise_file_dict(file_dict)
 
         # File modification time
-        full_file_path = os.path.join(self.raw_dir, self.platform, f)
+        full_file_path = os.path.join(
+            self.raw_dir, self.platform, file_dict.get("original_name", f)
+        )
         file_time = get_file_time(
             full_file_path,
             datetime_format=self.default_config["datetime_format"],
@@ -359,7 +371,9 @@ class ROMParser:
         # Track the various tags we can have
         true_tags = []
         false_tags = []
+        none_tags = []
         str_tags = {}
+        int_tags = {}
         list_tags = {}
 
         for key in file_dict:
@@ -372,6 +386,10 @@ class ROMParser:
                 str_tags[key] = file_dict[key]
             elif isinstance(file_dict[key], list):
                 list_tags[key] = file_dict[key]
+            elif isinstance(file_dict[key], int):
+                int_tags[key] = file_dict[key]
+            elif file_dict[key] is None:
+                none_tags.append(key)
             else:
                 raise ValueError(
                     f"{file_dict[key]} is not something I know how to parse"
@@ -404,6 +422,18 @@ class ROMParser:
                 )
             )
 
+        # Log the list tags
+        self.logger.debug(
+            left_aligned_string(f"Number tags:", total_length=self.log_line_length)
+        )
+        for tag in int_tags:
+            self.logger.debug(
+                left_aligned_string(
+                    f"-> {tag}: {int_tags[tag]}",
+                    total_length=self.log_line_length,
+                )
+            )
+
         # Log the True bool tags
         self.logger.debug(
             left_aligned_string(f"Tagged:", total_length=self.log_line_length)
@@ -422,11 +452,20 @@ class ROMParser:
                 left_aligned_string(f"-> {tag}", total_length=self.log_line_length)
             )
 
+        # Log any None tags
+        self.logger.debug(
+            left_aligned_string(f"None:", total_length=self.log_line_length)
+        )
+        for tag in none_tags:
+            self.logger.debug(
+                left_aligned_string(f"-> {tag}", total_length=self.log_line_length)
+            )
+
         self.logger.debug(f"{'-' * self.log_line_length}")
 
         return file_dict
 
-    def parse_retool(self, f, file_dict=None):
+    def parse_retool(self, file_dict=None):
         """Parse info out of the retool file"""
 
         if file_dict is None:
@@ -443,9 +482,6 @@ class ROMParser:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             return file_dict
 
-        # Pull out the game name
-        game_name = get_game_name(f)
-
         # Loop over the variants, see if we get a match
         found_cat = False
         for retool_dict in self.retool:
@@ -457,25 +493,47 @@ class ROMParser:
             if "titles" not in retool_dict:
                 continue
 
-            retool_variants = [f["searchTerm"].lower() for f in retool_dict["titles"]]
+            # Match properly given search terms
+            full_name = copy.deepcopy(file_dict["full_name"])
+            short_name = copy.deepcopy(file_dict["short_name"])
+            region_free_name = copy.deepcopy(file_dict["region_free_name"])
 
-            if game_name.lower() in retool_variants:
+            for t in retool_dict["titles"]:
+                search_term = t["searchTerm"]
+                match_type = t.get("nameType", None)
 
-                found_cat = True
+                found_retool_variant = match_retool_search_terms(
+                    full_name=full_name,
+                    search_term=search_term,
+                    short_name=short_name,
+                    region_free_name=region_free_name,
+                    match_type=match_type,
+                )
 
-                # If we have categories, set these to True
-                retool_cats = retool_dict.get("categories", [])
-                for retool_cat in retool_cats:
-                    file_cat = retool_cat.lower().replace(" ", "_")
-                    file_dict[file_cat] = True
+                if found_retool_variant:
+                    retool_cats = retool_dict.get("categories", [])
+                    for retool_cat in retool_cats:
+                        file_cat = retool_cat.lower().replace(" ", "_")
+                        file_dict[file_cat] = True
 
         return file_dict
 
-    def parse_dat(self, f, file_dict=None):
-        """Parse info out of the dat file"""
+    def parse_dat(
+        self,
+        f=None,
+        file_dict=None,
+    ):
+        """Parse info out of the dat file
+
+        Args:
+            f (str): Fallback filename
+            file_dict (dict): Dictionary of file info
+        """
 
         if file_dict is None:
             file_dict = {}
+
+        f = copy.deepcopy(file_dict.get("original_name", f))
 
         if self.dat is None:
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
@@ -532,12 +590,18 @@ class ROMParser:
 
         return file_dict
 
-    def parse_ra_hashes(self, f, file_dict=None):
+    def parse_ra_hashes(
+        self,
+        f=None,
+        file_dict=None,
+    ):
         """See if we can find ROMs that support RetroAchievements"""
 
         # If we don't have a dictionary already, then we can't
         if file_dict is None:
             file_dict = {}
+
+        f = copy.deepcopy(file_dict.get("original_name", f))
 
         if self.hash_method is None:
             self.logger.warning(
@@ -779,7 +843,7 @@ class ROMParser:
                 continue
 
             # Parse filename and get the short name
-            m_parsed = self.parse_filename(m, file_dict={})
+            m_parsed = self.parse_filename(f=m)
             m_short = m.split(" (")[0]
 
             for r in ra_dict:
@@ -790,7 +854,7 @@ class ROMParser:
                 # Match by short names to start
                 if m_short == ra_dict[r]["short_name"]:
 
-                    r_parsed = self.parse_filename(ra_dict[r]["name"], file_dict={})
+                    r_parsed = self.parse_filename(f=ra_dict[r]["name"])
 
                     # Force some version info in here, if the RA name doesn't have it
                     if r_parsed["version_no"] == "" and m_parsed["version_no"] != "":
@@ -911,14 +975,15 @@ class ROMParser:
 
     def parse_filename(
         self,
-        f,
-        title_pos=None,
+        f=None,
         file_dict=None,
+        title_pos=None,
     ):
         """Parse info out of filename
 
         Args:
-            f (str): filename
+            f (str): filename. Defaults to None, which will pull the original
+                name out of the dict
             title_pos (int): Title position for compilations. Defaults to None
             file_dict (dict): Existing file dictionary. Defaults to None, which
                 will create an empty one
@@ -926,6 +991,15 @@ class ROMParser:
 
         if file_dict is None:
             file_dict = {}
+
+        if "full_name" not in file_dict and f is None:
+            raise ValueError(
+                "Either f needs to be defined, or full_name needs to be in the file dictionary"
+            )
+
+        if f is None:
+            # Pull the filename out, which is the full name
+            f = copy.deepcopy(file_dict["full_name"])
 
         # Split file into tags
         tags = [f"({x}" for x in f.rstrip(".zip").split(" (")][1:]

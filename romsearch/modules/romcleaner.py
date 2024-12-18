@@ -1,5 +1,6 @@
 import copy
 import glob
+import numpy as np
 import os
 import shutil
 
@@ -115,9 +116,10 @@ class ROMCleaner:
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         # Join these up into a dictionary
-        cleaned = {"ROMs": roms_cleaned,
-                   "Cache": cache_cleaned,
-                   }
+        cleaned = {
+            "ROMs": roms_cleaned,
+            "Cache": cache_cleaned,
+        }
 
         return cleaned
 
@@ -164,8 +166,8 @@ class ROMCleaner:
         for rom_on_disk in roms_on_disk:
 
             # Pull out a short ROM name, skipping any extensions and parent directories
-            rom_short = os.path.split(rom_on_disk)[-1]
-            rom_short = os.path.splitext(rom_short)[0]
+            rom_base = os.path.split(rom_on_disk)[-1]
+            rom_short = os.path.splitext(rom_base)[0]
 
             # Loop over, see if we can find the ROM
             found_rom_in_dict = False
@@ -208,11 +210,11 @@ class ROMCleaner:
 
                                 # Remove from the filesystem
                                 found_entry_in_dict = True
-                                roms_cleaned.append(rom_short)
+                                roms_cleaned.append(rom_base)
                                 os.remove(rom_on_disk)
                                 self.logger.info(
                                     centred_string(
-                                        f"Removed {rom_short} from disk",
+                                        f"Removed {rom_base} from disk",
                                         total_length=self.log_line_length,
                                     )
                                 )
@@ -286,6 +288,13 @@ class ROMCleaner:
             full_dir = os.path.join(full_rom_dir, d)
             if not os.listdir(full_dir):
                 shutil.rmtree(full_dir)
+
+        # Because there can be some duplicates, remove here
+        roms_cleaned = np.unique(roms_cleaned)
+        roms_cleaned = [str(f) for f in roms_cleaned]
+
+        cache_cleaned = np.unique(cache_cleaned)
+        cache_cleaned = [str(f) for f in cache_cleaned]
 
         return roms_cleaned, cache_cleaned
 

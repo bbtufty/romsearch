@@ -848,12 +848,6 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigDupeParserMiddle.addWidget(self.lineConfigDupeParserUseDatTop)
 
-        self.checkBoxConfigDupeParserUseDat = QCheckBox(self.tabConfigDupeParser)
-        self.checkBoxConfigDupeParserUseDat.setObjectName(u"checkBoxConfigDupeParserUseDat")
-        self.checkBoxConfigDupeParserUseDat.setChecked(True)
-
-        self.verticalLayoutConfigDupeParserMiddle.addWidget(self.checkBoxConfigDupeParserUseDat)
-
         self.checkBoxConfigDupeParserUseRetool = QCheckBox(self.tabConfigDupeParser)
         self.checkBoxConfigDupeParserUseRetool.setObjectName(u"checkBoxConfigDupeParserUseRetool")
         self.checkBoxConfigDupeParserUseRetool.setChecked(True)
@@ -1758,10 +1752,6 @@ class Ui_RomSearch(object):
         self.lineEditConfigRAHasherCachePeriod.setText(QCoreApplication.translate("RomSearch", u"30", None))
         self.lineEditConfigRAHasherCachePeriod.setPlaceholderText(QCoreApplication.translate("RomSearch", u"30", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRAHasher), QCoreApplication.translate("RomSearch", u"RAHasher", None))
-#if QT_CONFIG(statustip)
-        self.checkBoxConfigDupeParserUseDat.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the dat file to figure out dupes. Default checked", None))
-#endif // QT_CONFIG(statustip)
-        self.checkBoxConfigDupeParserUseDat.setText(QCoreApplication.translate("RomSearch", u"Use .dat", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigDupeParserUseRetool.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to use the retool clonelist to figure out dupes. Default checked", None))
 #endif // QT_CONFIG(statustip)
