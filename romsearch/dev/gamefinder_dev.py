@@ -3,7 +3,14 @@ import os
 
 import romsearch
 from romsearch import GameFinder
-from ..util import get_short_name, load_json, load_yml
+from ..util import (
+    get_short_name,
+    load_json,
+    load_yml,
+    get_directory_name,
+    normalize_name,
+    get_region_free_name,
+)
 
 
 def check_regex_parsing(dat_filename):
@@ -32,14 +39,29 @@ def check_regex_parsing(dat_filename):
     # Parse all the names in the dat file
     all_file_dict = {}
     for f in all_files:
-        short_name = get_short_name(
+
+        dir_name = get_directory_name(f)
+        full_name = normalize_name(
             f,
+            disc_rename=default_config["disc_rename"],
+        )
+        short_name = get_short_name(
+            full_name,
+            regex_config=regex_config,
+            default_config=default_config,
+        )
+        region_free_name = get_region_free_name(
+            full_name,
             regex_config=regex_config,
             default_config=default_config,
         )
 
         all_file_dict[f] = {
+            "original_name": f,
+            "dir_name": dir_name,
+            "full_name": full_name,
             "short_name": short_name,
+            "region_free_name": region_free_name,
             "matched": False,
         }
 

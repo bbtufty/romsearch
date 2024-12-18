@@ -35,7 +35,6 @@ romdownloader:
   sync_all: false
 
 dupeparser:
-  use_dat: true
   use_retool: true
 
 gamefinder:

@@ -21,7 +21,10 @@ from ..util import (
     discord_push,
     split,
     get_short_name,
+    get_region_free_name,
+    normalize_name,
     get_file_time,
+    get_directory_name,
 )
 
 ALLOWED_ROMSEARCH_METHODS = [
@@ -50,7 +53,6 @@ class ROMSearch:
 
         TODO:
             - More granular control over compilations
-            - Better handling of clones and dupes
         """
 
         if config_file is None and config is None:
@@ -252,14 +254,29 @@ class ROMSearch:
             # Parse this into a dictionary with some useful info for each file
             all_file_dict = {}
             for f in all_files:
-                short_name = get_short_name(
+
+                dir_name = get_directory_name(f)
+                full_name = normalize_name(
                     f,
+                    disc_rename=self.default_config["disc_rename"],
+                )
+                short_name = get_short_name(
+                    full_name,
+                    regex_config=self.regex_config,
+                    default_config=self.default_config,
+                )
+                region_free_name = get_region_free_name(
+                    full_name,
                     regex_config=self.regex_config,
                     default_config=self.default_config,
                 )
 
                 all_file_dict[f] = {
+                    "original_name": f,
+                    "dir_name": dir_name,
+                    "full_name": full_name,
                     "short_name": short_name,
+                    "region_free_name": region_free_name,
                     "matched": False,
                 }
 
@@ -279,7 +296,7 @@ class ROMSearch:
             self.logger.info(f"{log_line_sep * log_line_length}")
             self.logger.info(
                 centred_string(
-                    f"Searching through {len(all_games)} game(s):",
+                    f"Finding ROMs for {len(all_games)} game(s):",
                     total_length=log_line_length,
                 )
             )
@@ -291,38 +308,9 @@ class ROMSearch:
             all_roms_moved = []
             all_roms_dict = {}
 
-            for i, game in enumerate(all_games):
+            for game in all_games:
 
-                rom_files = {}
-
-                # We check by a lowercase version of the short name
-                for f in all_file_dict:
-                    f_lower = all_file_dict[f]["short_name"].lower()
-                    for g in all_games[game]:
-
-                        g_lower = g.lower()
-
-                        if f_lower == g_lower:
-
-                            # Update the dictionary as appropriate
-                            if f not in rom_files:
-                                rom_files[f] = {}
-                            rom_files[f].update(all_games[game][g])
-
-                            # If we're duplicating a match, and it's not part of a compilation, freak out
-                            is_compilation = all_games[game][g].get(
-                                "is_compilation", False
-                            )
-                            if all_file_dict[f]["matched"] and not is_compilation:
-                                self.logger.warning(
-                                    centred_string(
-                                        f"{f} has already been matched! "
-                                        f"This should not generally happen",
-                                        total_length=log_line_length,
-                                    )
-                                )
-
-                            all_file_dict[f]["matched"] = True
+                rom_files = all_games[game]
 
                 parse = ROMParser(
                     platform=platform,
@@ -357,18 +345,6 @@ class ROMSearch:
 
                 # Save to a big dictionary, since we'll move all at once
                 all_roms_dict[game] = rom_dict
-
-            self.logger.debug(f"{log_line_sep * log_line_length}")
-            self.logger.debug(
-                centred_string("Unmatched files:", total_length=log_line_length)
-            )
-            self.logger.debug(f"{'-' * log_line_length}")
-            for f in all_file_dict:
-                if not all_file_dict[f]["matched"]:
-                    self.logger.debug(
-                        centred_string(f"{f}", total_length=log_line_length)
-                    )
-            self.logger.debug(f"{log_line_sep * log_line_length}")
 
             if self.dry_run:
                 self.logger.info(f"{log_line_sep * log_line_length}")

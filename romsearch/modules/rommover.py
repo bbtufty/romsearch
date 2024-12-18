@@ -127,6 +127,9 @@ class ROMMover:
 
         for rom_no, rom in enumerate(rom_dict):
 
+            # Pull out a clean directory name
+            dir_name = str(copy.deepcopy(rom_dict[rom]["dir_name"]))
+
             cache_mod_time = (
                 self.cache.get(self.platform, {})
                 .get(self.game, {})
@@ -155,7 +158,7 @@ class ROMMover:
 
             # Skip if the file modification time matches the one in the cache, we're not patching, and the
             # destination file exists
-            out_dir = os.path.join(self.rom_dir, self.platform, self.game)
+            out_dir = os.path.join(self.rom_dir, self.platform, dir_name)
 
             # Loop over here, since the extensions might change
             out_files = glob.glob(os.path.join(out_dir, "*"))
@@ -215,15 +218,9 @@ class ROMMover:
             # Log whether we've patched or not
             rom_dict[rom]["patched"] = patched
 
-            if rom_no == 0:
-                delete_folder = True
-            else:
-                delete_folder = False
-
-            # Move the main file
-            move_file_success = self.move_file(
-                full_rom, unzip=unzip, delete_folder=delete_folder
-            )
+            # Move the main file. Don't delete folders as the game and the out directory
+            # don't necessarily match
+            move_file_success = self.move_file(full_rom, out_dir=out_dir, unzip=unzip)
 
             if not move_file_success:
                 self.logger.warning(
@@ -263,6 +260,7 @@ class ROMMover:
     def move_file(
         self,
         zip_file_name,
+        out_dir=None,
         unzip=False,
         delete_folder=False,
     ):
@@ -272,7 +270,9 @@ class ROMMover:
         if not os.path.exists(zip_file_name):
             return False
 
-        out_dir = os.path.join(self.rom_dir, self.platform, self.game)
+        # If we don't have an output directory, set one from the game name
+        if out_dir is None:
+            out_dir = os.path.join(self.rom_dir, self.platform, self.game)
 
         if delete_folder and os.path.exists(out_dir):
             shutil.rmtree(out_dir)

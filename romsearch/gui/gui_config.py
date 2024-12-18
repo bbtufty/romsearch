@@ -221,7 +221,7 @@ class ConfigWindow(QMainWindow):
         }
 
         self.all_dupeparser_options = {
-            "use_dat": self.ui.checkBoxConfigDupeParserUseDat,
+            # "use_dat": self.ui.checkBoxConfigDupeParserUseDat,
             "use_retool": self.ui.checkBoxConfigDupeParserUseRetool,
         }
 

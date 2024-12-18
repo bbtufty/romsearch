@@ -42,10 +42,13 @@ def get_bracketed_file_pattern(
     return pattern
 
 
-def get_game_name(f):
-    """Get game name, which is just everything up to the first bracket"""
+def get_directory_name(f):
+    """Get the output directory name, which is just everything up to the first bracket"""
 
-    f = re.findall("^.*?(?=\\s\\()", f)[0]
+    # Only change things if there is indeed a bracket hidden in there
+    f_find = re.findall("^.*?(?=\\s\\()", f)
+    if len(f_find) > 0:
+        f = f_find[0]
 
     return f
 
@@ -107,3 +110,34 @@ def get_short_name(
         f = re.sub(pattern=pattern, repl="", string=f, flags=regex_flags)
 
     return f
+
+
+def get_region_free_name(
+    f,
+    regex_config=None,
+    default_config=None,
+):
+    """Get region-free game name from the ROM file naming convention"""
+
+    if ".zip" in f:
+        f = f.rstrip(".zip")
+
+    mod_dir = os.path.dirname(romsearch.__file__)
+
+    if default_config is None:
+        default_file = os.path.join(mod_dir, "configs", "defaults.yml")
+        default_config = load_yml(default_file)
+
+    if regex_config is None:
+        regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+        regex_config = load_yml(regex_file)
+
+    # We only care about regions and languages here
+    regex_config = {
+        "regions": regex_config["regions"],
+        "languages": regex_config["languages"],
+    }
+
+    region_free_name = get_short_name(f, regex_config, default_config)
+
+    return region_free_name

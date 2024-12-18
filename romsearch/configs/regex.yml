@@ -10,6 +10,7 @@ languages:
 
 multi_disc:
   pattern: "\\((Dis[ck]|Seite)[-\\s][0-9A-Z]\\)"
+  include_in_short_name: true
 
 date:
   pattern: "\\s?\\((?:\\d{8}|\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|\\d{2}-\\d{2}-\\d{2}|\\d{4}-\\d{2}-\\d{2}T\\d{6}|~?\\d{4}-(?:\\d{2}|xx)-xx|(?:January|February|March|April|May|June|July|August|September|October|November|December),\\s?\\d{4})\\)"
@@ -466,6 +467,10 @@ collection_of_mana:
   pattern: "\\(Collection of Mana\\)"
   group: "modern_version"
 
+collection_of_saga:
+  pattern: "\\(Collection of SaGa\\)"
+  group: "modern_version"
+
 columbus_circle:
   pattern: "\\(Columbus Circle\\)"
   group: "modern_version"
@@ -753,6 +758,15 @@ whirlwind_manu:
 
 # GENERALLY IGNORE
 
+l_tags:
+  pattern: "\\s?\\(L[ABCDEFGH]\\d{2,2}\\)"
+
+knv_st_tags:
+  pattern: "\\s?\\([KNV][ST]-\\d{3,4}[A-Z]?\\)"
+
+jy_tags:
+  pattern: "\\s?\\(JY-?\\d{3,3}\\)"
+
 60_pin_cart:
   pattern: "\\(60 pin cart\\)"
 
@@ -773,7 +787,7 @@ ntsc:
   flags: "NOFLAG"
 
 pal:
-  pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:(?!-)\\)?| (?=\\())"
+  pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:\\)?| (?=\\())"
   flags: "NOFLAG"
 
 supervision:
