@@ -1,4 +1,4 @@
-0.1.1 (Unreleased)
+0.1.1 (2024-12-18)
 ==================
 
 Features
@@ -49,6 +49,7 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Bump to 0.1.1
 - Added known issue for long filenames
 - RAPatch checks now includes modern/improved/demoted versions
 - Language parsing can now handle languages formatted like "En+De" (and test updated)
