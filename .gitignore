@@ -161,3 +161,4 @@ cython_debug/
 
 # ROMSearch user-generated files
 saved_config.json
+*.log.*

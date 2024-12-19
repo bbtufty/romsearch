@@ -23,9 +23,11 @@ def test_romparser_regions():
 def test_romparser_languages():
     """Put a filename into ROMParser and check it returns the right languages"""
 
-    expected_languages = ["English", "French", "German", "Italian", "Spanish"]
+    expected_languages = ["English", "French", "German", "Spanish"]
 
-    test_case = {TEST_NAME: {"priority": 1}}
+    test_case = {TEST_NAME: {"priority": 1,
+                             "title_pos": 1}
+                 }
 
     rp = ROMParser(
         config_file="test_config.yml",
