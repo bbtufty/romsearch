@@ -1,11 +1,19 @@
 url: "https://raw.githubusercontent.com/unexpectedpanda/retool-clonelists-metadata/main/clonelists"
 
+# Nintendo Handhelds
 Nintendo - Game Boy: "Nintendo - Game Boy (No-Intro).json"
 Nintendo - Game Boy Color: "Nintendo - Game Boy Color (No-Intro).json"
 Nintendo - Game Boy Advance: "Nintendo - Game Boy Advance (No-Intro).json"
-Nintendo - GameCube: "Nintendo - GameCube (Redump).json"
+
+# Nintendo Home Consoles
 Nintendo - Nintendo Entertainment System: "Nintendo - Nintendo Entertainment System (No-Intro).json"
 Nintendo - Super Nintendo Entertainment System: "Nintendo - Super Nintendo Entertainment System (No-Intro).json"
+Nintendo - Nintendo 64: "Nintendo - Nintendo 64 (No-Intro).json"
+Nintendo - GameCube: "Nintendo - GameCube (Redump).json"
+
+# Sony Handhelds
+Sony - PlayStation Portable: "Sony - PlayStation Portable (Redump).json"
+
+# Sony Home Consoles
 Sony - PlayStation: "Sony - PlayStation (Redump).json"
 Sony - PlayStation 2: "Sony - PlayStation 2 (Redump).json"
-Sony - PlayStation Portable: "Sony - PlayStation Portable (Redump).json"

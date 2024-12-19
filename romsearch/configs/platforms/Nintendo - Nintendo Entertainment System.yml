@@ -2,5 +2,6 @@ group: "No-Intro"
 dir: "/No-Intro/Nintendo - Nintendo Entertainment System (Headered)/"
 unzip: false
 
+# RetroAchievements
 ra_id: 7
 ra_hash_method: "custom"

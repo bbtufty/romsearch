@@ -35,6 +35,7 @@ works for the following consoles:
 * Nintendo (Home)
    * Nintendo Entertainment System
    * Super Nintendo Entertainment System
+   * Nintendo 64
    * GameCube
 * Sony (Handheld)
    * PlayStation Portable

@@ -2,5 +2,6 @@ group: "No-Intro"
 dir: "/No-Intro/Nintendo - Game Boy Color/"
 unzip: false
 
+# RetroAchievements
 ra_id: 6
 ra_hash_method: "md5"

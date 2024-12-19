@@ -46,9 +46,10 @@ has the capability for:
 
 * Nintendo (Home)
 
+  * Nintendo Entertainment System
+  * Super Nintendo Entertainment System
+  * Nintendo 64
   * GameCube
-  * Nintendo - Nintendo Entertainment System
-  * Nintendo - Super Nintendo Entertainment System
 
 * Sony (Handheld)
 

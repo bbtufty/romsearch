@@ -12,3 +12,6 @@ Nintendo - Nintendo Entertainment System:
 
 Nintendo - Super Nintendo Entertainment System:
   file_mapping: "Nintendo - Super Nintendo Entertainment System (*)"
+
+Nintendo - Nintendo 64:
+  file_mapping: "Nintendo - Nintendo 64 (BigEndian) (*)"

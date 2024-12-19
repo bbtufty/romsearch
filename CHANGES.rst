@@ -1,12 +1,23 @@
 0.1.2 (Unreleased)
 ==================
 
+Features
+--------
+
+- Added N64
+
 Fixes
 -----
+
+ROMParser
+~~~~~~~~~
+
+- Ensure MD5 hash is lowercase from RetroAchievements
 
 General
 ~~~~~~~
 
+- Updated regex
 - Add more tests
 
 0.1.1 (2024-12-18)

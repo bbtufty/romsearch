@@ -4,5 +4,6 @@ unzip: true
 additional_dirs:
   SBI: "/Redump/Sony - PlayStation - SBI Subchannels/"
 
+# RetroAchievements
 ra_id: 12
 ra_hash_method: "custom"

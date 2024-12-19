@@ -296,6 +296,10 @@ sgb_enhanced_gb_compatible:
   pattern: "\\(SGB Enhanced, GB Compatible\\)"
   group: "improved_version"
 
+shindou_edition:
+  pattern: "\\(Shindou Edition\\)"
+  group: "improved_version"
+
 subor_keyboard:
   pattern: "\\(Subor Keyboard\\)"
   group: "improved_version"
@@ -700,6 +704,10 @@ limited_run:
   pattern: "\\(Limited Run Games\\)"
   group: "demoted_version"
 
+lodgenet:
+  pattern: "\\(LodgeNet\\)"
+  group: "demoted_version"
+
 mb91:
   pattern: "\\(MB-91\\)"
   group: "demoted_version"
@@ -789,6 +797,12 @@ ntsc:
 pal:
   pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:\\)?| (?=\\())"
   flags: "NOFLAG"
+
+presence_of_mind:
+  pattern: "\\(Presence of Mind \\'98\\)"
+
+summer64:
+  pattern: "\\(Summer64\\)"
 
 supervision:
   pattern: "\\(SuperVision\\)"
