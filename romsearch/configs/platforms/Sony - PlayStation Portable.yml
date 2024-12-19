@@ -2,5 +2,6 @@ group: "Redump"
 dir: "/Redump/Sony - PlayStation Portable/"
 unzip: true
 
+# RetroAchievements
 ra_id: 41
 ra_hash_method: "custom"

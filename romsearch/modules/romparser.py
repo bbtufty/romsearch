@@ -734,10 +734,15 @@ class ROMParser:
                 if any([l not in self.ra_labels for l in h["Labels"]]):
                     continue
 
-                # Use the md5 as the unique key, and then name as the thing we'll match to
-                md5 = copy.deepcopy(h["MD5"])
+                # Use the md5 as the unique key, and then name as the thing we'll match to.
+                # Ensure we lowercase the hash, just to be sure
+                md5 = copy.deepcopy(h["MD5"].lower())
                 name = copy.deepcopy(h[key])
                 name = name.strip()
+
+                # Ensure we also lowercase the hash here, if we need to
+                if key in ["MD5"]:
+                    name = name.lower()
 
                 # If we're dealing with names, there might
                 # be file extensions to strip

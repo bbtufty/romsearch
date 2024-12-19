@@ -2,10 +2,11 @@ group: "Redump"
 dir: "/Redump/Sony - PlayStation 2/"
 unzip: true
 
+# RetroAchievements
 ra_id: 21
 ra_hash_method: "custom"
 
-# For the ROM patcher
+# ROMPatcher
 patch_method: "xdelta"
 file_exts:
   - ".iso"

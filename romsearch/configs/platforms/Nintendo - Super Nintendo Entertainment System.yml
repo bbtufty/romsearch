@@ -2,5 +2,6 @@ group: "No-Intro"
 dir: "/No-Intro/Nintendo - Super Nintendo Entertainment System/"
 unzip: false
 
+# RetroAchievements
 ra_id: 3
 ra_hash_method: "custom"
