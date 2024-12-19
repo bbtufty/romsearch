@@ -5,3 +5,10 @@ unzip: false
 # RetroAchievements
 ra_id: 3
 ra_hash_method: "custom"
+
+# ROMPatcher
+patch_method: "rompatcher.js"
+file_exts:
+  - ".sfc"
+patch_file_exts:
+  - ".bps"

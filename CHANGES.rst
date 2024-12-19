@@ -17,6 +17,7 @@ ROMParser
 General
 ~~~~~~~
 
+- Add ROMPatch method to (most) other consoles
 - Updated regex
 - Add more tests
 
