@@ -4,19 +4,29 @@
 Features
 --------
 
+- Support for supersets
 - Added N64
 
 Fixes
 -----
 
+ROMCleaner
+~~~~~~~~~~
+
+- Significant cleanup to be more robust
+
 ROMParser
 ~~~~~~~~~
 
+- Handle English-friendly tags
+- Significant cleanup in handling RetroAchievement hashes
 - Ensure MD5 hash is lowercase from RetroAchievements
 
 General
 ~~~~~~~
 
+- Move clonelist from unexpectedpanda to Daeymon
+- Updated RA name extensions
 - Add ROMPatch method to (most) other consoles
 - Updated regex
 - Add more tests
