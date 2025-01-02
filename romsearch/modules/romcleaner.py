@@ -11,6 +11,7 @@ from ..util import (
     setup_logger,
     load_json,
     save_json,
+    get_directory_name,
 )
 
 
@@ -138,13 +139,15 @@ class ROMCleaner:
         # Find files on disk
         roms_on_disk = glob.glob(os.path.join(full_rom_dir, "*", "*.*"))
 
-        # Pull out any included ROMs, stripping out the extension
-        roms_in_dict = {}
+        # Pull out any included ROMs, stripping out the extension since that *may*
+        # change
+        roms_in_dict = []
         for r in rom_dict:
 
             for f in rom_dict[r]:
                 if rom_dict[r][f]["excluded"]:
                     continue
+
                 rom_name = os.path.splitext(f)[0]
 
                 # We need to include if things have been patched. Pull that from the cache
@@ -157,7 +160,16 @@ class ROMCleaner:
                 if patched:
                     rom_name += " (ROMPatched)"
 
-                roms_in_dict[rom_name] = {"full_name": f}
+                rom_dir = rom_dict[r][f]["dir_name"]
+
+                # Catch the edge case where the directory name can end with
+                # a period (e.g. Super Smash Bros.)
+                if rom_dir.endswith("."):
+                    rom_dir = rom_dir[:-1]
+
+                rom_name_w_dir = os.path.join(rom_dir, rom_name)
+
+                roms_in_dict.append(rom_name_w_dir)
 
         roms_cleaned = []
         cache_cleaned = []
@@ -176,7 +188,7 @@ class ROMCleaner:
                 if found_rom_in_dict:
                     continue
 
-                if r == rom_short:
+                if str(r) in rom_on_disk:
                     found_rom_in_dict = True
 
             # If we haven't found anything, clear out the cache
@@ -191,6 +203,15 @@ class ROMCleaner:
                         if found_entry_in_dict:
                             continue
 
+                        # Because these can have disc names or whatever in, parse
+                        # to a dir name
+                        g_short = get_directory_name(g)
+
+                        # Catch the edge case where the directory name can end with
+                        # a period (e.g. Super Smash Bros.)
+                        if g_short.endswith("."):
+                            g_short = g_short[:-1]
+
                         for g_i in self.cache[self.platform][g]:
 
                             if found_entry_in_dict:
@@ -201,7 +222,10 @@ class ROMCleaner:
                             if "(ROMPatched)" in rom_short:
                                 g_i_short += " (ROMPatched)"
 
-                            if g_i_short == rom_short:
+                            # Get this as a name we'd expect on disk
+                            g_i_on_disk = os.path.join(g_short, g_i_short)
+
+                            if str(g_i_on_disk) in rom_on_disk:
 
                                 # Also keep info on the dictionary stuff to clean from the cache
                                 if g not in dict_cleaned:
@@ -234,6 +258,16 @@ class ROMCleaner:
             for d in self.cache[self.platform]:
 
                 d_is_to_remove = []
+
+                # Because these can have disc names or whatever in, parse
+                # to a dir name
+                d_short = get_directory_name(d)
+
+                # Catch the edge case where the directory name can end with
+                # a period (e.g. Super Smash Bros.)
+                if d_short.endswith("."):
+                    d_short = d_short[:-1]
+
                 for d_i in self.cache[self.platform][d]:
                     found_d_i_on_disk = False
 
@@ -243,14 +277,15 @@ class ROMCleaner:
                     if self.cache[self.platform][d][d_i]["patched"]:
                         d_i_short += " (ROMPatched)"
 
+                    # Get this as a names we'd expect on disk
+                    d_i_on_disk = os.path.join(d_short, d_i_short)
+
                     for r in roms_on_disk:
 
                         if found_d_i_on_disk:
                             continue
 
-                        r_base = os.path.basename(r)
-                        r_short = os.path.splitext(r_base)[0]
-                        if r_short == d_i_short:
+                        if str(d_i_on_disk) in r:
                             found_d_i_on_disk = True
 
                     if not found_d_i_on_disk:

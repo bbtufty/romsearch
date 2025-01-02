@@ -581,7 +581,8 @@ class ROMChooser:
         budget_edition_score = 1e8
         language_score = 1e10
         region_score = 1e12
-        cheevo_score = 1e14
+        superset_score = 1e14
+        cheevo_score = 1e16
 
         # Negative scores
         compilation_score = -1
@@ -628,6 +629,11 @@ class ROMChooser:
             score_key="regions",
         )
         file_scores += region_score * (1 + (region_score_to_add - 1) / 100)
+
+        # Superset score
+        file_scores += superset_score * np.array(
+            [rom_dict[f].get("is_superset", False) for f in files]
+        )
 
         # Achievement hashes
         file_scores += cheevo_score * np.array(

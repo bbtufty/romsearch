@@ -262,12 +262,16 @@ ra_file_exts:
   - ".iso"
   - ".fds"
   - ".gb"
+  - ".gba"
   - ".gbc"
+  - ".ndd"
   - ".nds"
   - ".nes"
   - ".sfc"
   - ".sgb"
   - ".unf"
+  - ".z64"
+  - ".Z64"
   - ".zip"
 
 ra_labels:

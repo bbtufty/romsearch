@@ -295,8 +295,17 @@ class ROMMover:
 
         return True
 
-    def cache_update(self, file, rom_dict):
-        """Update the cache with new file data"""
+    def cache_update(
+        self,
+        file,
+        rom_dict,
+    ):
+        """Update the cache with new file data
+
+        Args:
+            file: File to save to cache
+            rom_dict: Dictionary of ROM properties
+        """
 
         if self.platform not in self.cache:
             self.cache[self.platform] = {}
