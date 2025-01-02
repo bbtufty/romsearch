@@ -12,6 +12,7 @@ from ..util import (
     load_yml,
     load_json,
     match_retool_search_terms,
+    get_short_name,
 )
 
 DICT_DEFAULT_VALS = {"bool": False, "str": "", "list": []}
@@ -140,6 +141,23 @@ def check_match(i, j, checks_passed=None):
         raise ValueError(f"Do not know how to check against type {t}")
 
     return checks_passed
+
+
+def set_english_friendly(
+    file_dict,
+):
+    """Set English as a language if English-friendly is flagged"""
+
+    # Only change things if we're flagged
+    is_english_friendly = file_dict.get("english_friendly", False)
+
+    if not is_english_friendly:
+        return file_dict
+
+    if "English" not in file_dict["languages"]:
+        file_dict["languages"].append("English")
+
+    return file_dict
 
 
 class ROMParser:
@@ -297,7 +315,6 @@ class ROMParser:
         self.logger.debug(f"{self.log_line_sep * self.log_line_length}")
 
         for f in files:
-
             # # Get the potential title position out for compilations
             title_pos = files[f].get("title_pos", None)
 
@@ -348,7 +365,6 @@ class ROMParser:
 
         if self.use_ra_hashes:
             file_dict = self.parse_ra_hashes(
-                f=f,
                 file_dict=file_dict,
             )
 
@@ -592,16 +608,17 @@ class ROMParser:
 
     def parse_ra_hashes(
         self,
-        f=None,
         file_dict=None,
     ):
-        """See if we can find ROMs that support RetroAchievements"""
+        """See if we can find ROMs that support RetroAchievements
 
-        # If we don't have a dictionary already, then we can't
+        Note that this requires a bunch of parsing to have already occurred
+        """
+
+        # If we don't have a dictionary already, then this won't work
         if file_dict is None:
             file_dict = {}
-
-        f = copy.deepcopy(file_dict.get("original_name", f))
+            return file_dict
 
         if self.hash_method is None:
             self.logger.warning(
@@ -612,13 +629,12 @@ class ROMParser:
             )
             return file_dict
 
-        file_dict = self.match_hashes(f, file_dict)
+        file_dict = self.match_hashes(file_dict)
 
         return file_dict
 
     def match_hashes(
         self,
-        f,
         file_dict,
     ):
         """Get whether ROM has cheevos by various potential hash methods
@@ -631,13 +647,7 @@ class ROMParser:
         has_cheevos = False
         patch_file = ""
 
-        if self.hash_method == "md5":
-            match_list = file_dict.get("md5", [])
-
-        elif self.hash_method == "custom":
-            match_list = [f.rstrip(".zip")]
-
-        else:
+        if self.hash_method not in ["md5", "custom"]:
             self.logger.warning(
                 centred_string(
                     f"Cannot currently handle {self.hash_method} hash method",
@@ -646,9 +656,12 @@ class ROMParser:
             )
             return has_cheevos, patch_file
 
+        ra_dict = self.get_ra_dict()
+
         # Get the potential RA match by name (this won't include potentially patched ROMs)
         has_cheevos, patch_file = self.get_ra_match(
-            match_list=match_list,
+            file_dict=file_dict,
+            ra_dict=ra_dict,
         )
 
         # If we've found something, stop here
@@ -661,7 +674,7 @@ class ROMParser:
         # via parsing the names
         if self.hash_method == "custom":
             has_cheevos, patch_file = self.get_parsed_match(
-                match_list=match_list, want_patched_files=False
+                file_dict=file_dict, ra_dict=ra_dict, want_patched_files=False
             )
             if has_cheevos:
                 file_dict["has_cheevos"] = has_cheevos
@@ -670,9 +683,8 @@ class ROMParser:
 
         # If we still haven't, now look through files to see if we just need
         # a patch (i.e. the hash will change, but we have the file)
-        match_list = [f]
         has_cheevos, patch_file = self.get_parsed_match(
-            match_list=match_list,
+            file_dict=file_dict,
         )
 
         file_dict["has_cheevos"] = has_cheevos
@@ -680,31 +692,84 @@ class ROMParser:
 
         return file_dict
 
-    def get_ra_match(
+    def get_ra_dict(
         self,
-        match_list=None,
     ):
-        """Match a file to RetroAchievements supported files
-
-        Args:
-            match_list (list): List of potential match patterns. Defaults to an empty list
-        """
-
-        has_cheevos = False
-        patch_file = ""
-
-        # Set up a list of potential matches
-        if match_list is None:
-            match_list = []
-        # If we've got nothing, don't waste time
-        if len(match_list) == 0:
-            return has_cheevos, patch_file
+        """Get a big dictionary of RA hashes with useful info"""
 
         # Pull out the particular key we need
         if self.hash_method == "md5":
             key = "MD5"
         elif self.hash_method == "custom":
             key = "Name"
+        else:
+            raise ValueError(f"Cannot currently handle {self.hash_method} hash method")
+
+        # Because of inconsistencies between naming schemes, just pull a huge dictionary out here rather than try
+        # to be clever
+        ra_dict = {}
+
+        for r in self.ra_hashes:
+            for h in self.ra_hashes[r]["Hashes"]:
+
+                # If the RA list is a subset, then skip
+                if is_ra_subset(r):
+                    continue
+
+                # Use the md5 as the unique key, and then name as the thing we'll match to.
+                # Ensure we lowercase the hash, just to be sure
+                md5 = copy.deepcopy(h["MD5"].lower())
+                id_name = copy.deepcopy(h[key])
+                id_name = id_name.strip()
+
+                # Also just pull out the ROM name, since we need that later
+                rom_name = copy.deepcopy(h["Name"])
+                rom_name = rom_name.strip()
+
+                # Ensure we also lowercase the hash here, if we need to
+                if key in ["MD5"]:
+                    id_name = id_name.lower()
+
+                # If we're dealing with names, there might
+                # be file extensions to strip
+                if key in ["Name"]:
+                    for ext in self.ra_file_exts:
+                        if id_name.endswith(ext):
+                            id_name = id_name.rstrip(ext)
+
+                # FIXME: Here as a catch-all, hopefully won't be a problem
+                if md5 in ra_dict:
+                    raise ValueError(f"Hash {md5} multiply defined")
+
+                ra_dict[md5] = {
+                    "name": id_name,
+                    "full_name": rom_name,
+                    "dir_name": rom_name.split(" (")[0],
+                    "patch_url": h["PatchUrl"],
+                }
+
+        return ra_dict
+
+    def get_ra_match(
+        self,
+        file_dict,
+        ra_dict=None,
+    ):
+        """Match a file to RetroAchievements supported files
+
+        Args:
+            file_dict (dict): Dictionary of ROM descriptions
+            ra_dict (dict): Dictionary of RA hashes
+        """
+
+        has_cheevos = False
+        patch_file = ""
+
+        # Pull out the particular key we need
+        if self.hash_method == "md5":
+            match_list = file_dict.get("md5", [])
+        elif self.hash_method == "custom":
+            match_list = [file_dict["original_name"].rstrip(".zip")]
         else:
             self.logger.warning(
                 centred_string(
@@ -714,51 +779,12 @@ class ROMParser:
             )
             return has_cheevos, patch_file
 
-        # Because of inconsistencies between naming schemes, just pull a huge dictionary out here rather than try
-        # to be clever
-        ra_dict = {}
+        # If we've got nothing, don't waste time
+        if len(match_list) == 0:
+            return has_cheevos, patch_file
 
-        for r in self.ra_hashes:
-            for h in self.ra_hashes[r]["Hashes"]:
-
-                # If the RA list is a subset, then skip
-                if is_ra_subset(r):
-                    continue
-
-                # Since these should be exact matches, skip those that have
-                # patches
-                if h["PatchUrl"] is not None:
-                    continue
-
-                # Also mark anything that's not pure No-Intro/Redump labelled
-                if any([l not in self.ra_labels for l in h["Labels"]]):
-                    continue
-
-                # Use the md5 as the unique key, and then name as the thing we'll match to.
-                # Ensure we lowercase the hash, just to be sure
-                md5 = copy.deepcopy(h["MD5"].lower())
-                name = copy.deepcopy(h[key])
-                name = name.strip()
-
-                # Ensure we also lowercase the hash here, if we need to
-                if key in ["MD5"]:
-                    name = name.lower()
-
-                # If we're dealing with names, there might
-                # be file extensions to strip
-                if key in ["Name"]:
-                    for ext in self.ra_file_exts:
-                        if name.endswith(ext):
-                            name = name.rstrip(ext)
-
-                # FIXME: Here as a catch-all, hopefully won't be a problem
-                if md5 in ra_dict:
-                    raise ValueError(f"Hash {md5} multiply defined")
-
-                ra_dict[md5] = {
-                    "name": name,
-                    "patch_file": h["PatchUrl"],
-                }
+        if ra_dict is None:
+            ra_dict = self.get_ra_dict()
 
         # Again, if there's nothing here just return
         if len(ra_dict) == 0:
@@ -768,7 +794,7 @@ class ROMParser:
             for r in ra_dict:
                 if m == ra_dict[r]["name"]:
                     has_cheevos = True
-                    patch_file = ra_dict[r]["patch_file"]
+                    patch_file = ra_dict[r]["patch_url"]
 
         if patch_file is None:
             patch_file = ""
@@ -777,64 +803,23 @@ class ROMParser:
 
     def get_parsed_match(
         self,
-        match_list=None,
+        file_dict,
+        ra_dict=None,
         want_patched_files=True,
     ):
-        """Match a file to RetroAchievements supported files that need patches
+        """Match a file to RetroAchievements supported files that potentially need patches
 
         Args:
-            match_list (list): List of potential match patterns. Defaults to an empty list
+            file_dict (dict): Dictionary of ROM descriptions
+            ra_dict (dict): Dictionary of RA hashes
             want_patched_files (bool): Whether we're looking for hashes with patches or not. Defaults to True
         """
 
         has_cheevos = False
         patch_file = ""
 
-        # Set up a list of potential matches
-        if match_list is None:
-            match_list = []
-        # If we've got nothing, don't waste time
-        if len(match_list) == 0:
-            return has_cheevos, patch_file
-
-        # Because of inconsistencies between naming schemes, just pull a huge dictionary out here rather than try
-        # to be clever
-        ra_dict = {}
-        for r in self.ra_hashes:
-            for h in self.ra_hashes[r]["Hashes"]:
-
-                # If the RA list is a subset, then skip
-                if is_ra_subset(r):
-                    continue
-
-                # Are we looking for patch URLs or not?
-                if want_patched_files:
-                    if h["PatchUrl"] is None:
-                        continue
-                else:
-                    if h["PatchUrl"] is not None:
-                        continue
-
-                # Use the md5 as the unique key, and then name as the thing we'll match to
-                md5 = copy.deepcopy(h["MD5"])
-                name = copy.deepcopy(h["Name"])
-                name = name.strip()
-
-                # There might be file extensions to strip
-                for ext in self.ra_file_exts:
-                    if name.endswith(ext):
-                        name = name.rstrip(ext)
-
-                # FIXME: Here as a catch-all, hopefully won't be a problem
-                if md5 in ra_dict:
-                    raise ValueError(f"Hash {md5} multiply defined")
-
-                # Pull out the name before the first bracket to match later
-                ra_dict[md5] = {
-                    "name": name,
-                    "short_name": name.split(" (")[0],
-                    "patch_url": h["PatchUrl"],
-                }
+        if ra_dict is None:
+            ra_dict = self.get_ra_dict()
 
         # Again, if there's nothing here just return
         if len(ra_dict) == 0:
@@ -842,88 +827,90 @@ class ROMParser:
 
         multiple_patch_files_found = False
 
-        for m in match_list:
+        for r in ra_dict:
+
+            # If we want patch files, and we don't have them, skip
+            if want_patched_files and ra_dict[r]["patch_url"] is None:
+                continue
 
             if multiple_patch_files_found:
                 continue
 
-            # Parse filename and get the short name
-            m_parsed = self.parse_filename(f=m)
-            m_short = m.split(" (")[0]
+            # Start by ensuring the names up to first bracket at least match
+            if file_dict["dir_name"] == ra_dict[r]["dir_name"]:
 
-            for r in ra_dict:
+                r_parsed = self.parse_filename(f=ra_dict[r]["full_name"])
 
-                if multiple_patch_files_found:
+                # If we're a superset, then ensure the short names also match, since
+                # we need to be more stringent
+                is_superset = file_dict.get("is_superset", False)
+                ra_dict_short_name = get_short_name(
+                    ra_dict[r]["full_name"],
+                    regex_config=self.regex_config,
+                    default_config=self.default_config,
+                )
+                if is_superset and not file_dict["short_name"] == ra_dict_short_name:
                     continue
 
-                # Match by short names to start
-                if m_short == ra_dict[r]["short_name"]:
+                # Force some version info in here, if the RA name doesn't have it
+                if r_parsed["version_no"] == "" and file_dict["version_no"] != "":
+                    if Version(file_dict["version_no"]) == Version("1"):
+                        r_parsed["version_no"] = copy.deepcopy(file_dict["version_no"])
 
-                    r_parsed = self.parse_filename(f=ra_dict[r]["name"])
+                # Now, make sure all the useful checks pass
+                ra_checks_passed = True
+                for check in self.ra_patch_checks:
 
-                    # Force some version info in here, if the RA name doesn't have it
-                    if r_parsed["version_no"] == "" and m_parsed["version_no"] != "":
-                        if Version(m_parsed["version_no"]) == Version("1"):
-                            r_parsed["version_no"] = copy.deepcopy(
-                                m_parsed["version_no"]
-                            )
+                    # If we've already failed, then just skip
+                    if not ra_checks_passed:
+                        continue
 
-                    # Now, make sure all the useful checks pass
-                    ra_checks_passed = True
-                    for check in self.ra_patch_checks:
+                    ra_checks_passed = check_match(
+                        file_dict[check],
+                        r_parsed[check],
+                        checks_passed=ra_checks_passed,
+                    )
 
-                        # If we've already failed, then just skip
-                        if not ra_checks_passed:
-                            continue
-
-                        ra_checks_passed = check_match(
-                            m_parsed[check],
-                            r_parsed[check],
-                            checks_passed=ra_checks_passed,
-                        )
-
-                        # After this first pass, also see if any of the regex checks are grouped,
-                        # and double-check the sublevel below. This is because we could have e.g.
-                        # mismatched modern types (like a GameCube version vs a Wii U Virtual Console
-                        # version), which inevitably won't match hashes
-                        if ra_checks_passed:
-                            if check not in self.regex_config:
-                                for r_c in self.regex_config:
-
-                                    if not ra_checks_passed:
-                                        continue
-
-                                    r_c_group = self.regex_config[r_c].get(
-                                        "group", None
-                                    )
-                                    if r_c_group == check:
-                                        ra_checks_passed = check_match(
-                                            m_parsed[r_c],
-                                            r_parsed[r_c],
-                                            checks_passed=ra_checks_passed,
-                                        )
-
+                    # After this first pass, also see if any of the regex checks are grouped,
+                    # and double-check the sublevel below. This is because we could have e.g.
+                    # mismatched modern types (like a GameCube version vs a Wii U Virtual Console
+                    # version), which inevitably won't match hashes
                     if ra_checks_passed:
+                        if check not in self.regex_config:
+                            for r_c in self.regex_config:
 
-                        # If we seem to have multiple patch files defined,
-                        # then raise a warning and assume there isn't a patch
-                        if patch_file != "":
-                            self.logger.warning(
-                                centred_string(
-                                    f"Multiple potential patch files found for {m}",
-                                    total_length=self.log_line_length,
-                                )
+                                if not ra_checks_passed:
+                                    continue
+
+                                r_c_group = self.regex_config[r_c].get("group", None)
+                                if r_c_group == check:
+                                    ra_checks_passed = check_match(
+                                        file_dict[r_c],
+                                        r_parsed[r_c],
+                                        checks_passed=ra_checks_passed,
+                                    )
+
+                if ra_checks_passed:
+
+                    # If we seem to have multiple patch files defined,
+                    # then raise a warning and assume there isn't a patch
+                    if patch_file != "":
+                        self.logger.warning(
+                            centred_string(
+                                f"Multiple potential patch files found for {file_dict['original_name']}",
+                                total_length=self.log_line_length,
                             )
-                            has_cheevos = False
-                            patch_file = None
-                            multiple_patch_files_found = True
+                        )
+                        has_cheevos = False
+                        patch_file = None
+                        multiple_patch_files_found = True
 
-                        else:
-                            has_cheevos = True
-                            patch_file = ra_dict[r]["patch_url"]
+                    else:
+                        has_cheevos = True
+                        patch_file = ra_dict[r]["patch_url"]
 
-                        if patch_file is None:
-                            patch_file = ""
+                    if patch_file is None:
+                        patch_file = ""
 
         if patch_file is None:
             patch_file = ""
@@ -938,6 +925,7 @@ class ROMParser:
 
         file_dict = self.set_game_category(file_dict)
         file_dict = self.set_implicit_languages(file_dict)
+        file_dict = set_english_friendly(file_dict)
 
         return file_dict
 

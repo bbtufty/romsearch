@@ -50,6 +50,16 @@ but this is unlikely given the pretty stringent criteria for these compilations 
 
 More options for handling compilations will be included in future releases.
 
+Supersets
+---------
+
+``retool`` also has support for supersets (see
+`their superset page <https://unexpectedpanda.github.io/retool/contribute-clone-lists-variants-supersets/>`_).
+We handle them somewhat differently. Firstly, supersets will be filtered out if the region is not a selected one for
+the user. Secondly, supersets are prioritised over everything **except** ROMs that are marked as having
+RetroAchievements. This will mean that you may get a ROM from a different region than you might expect, but if it
+doesn't have RetroAchievements then this will be below a ROM that does.
+
 End result
 ----------
 

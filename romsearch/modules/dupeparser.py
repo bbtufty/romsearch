@@ -195,7 +195,7 @@ class DupeParser:
                         "filters": filters,
                     }
 
-            # Next, check for compilations. If we have them, pull them out and potentially the title position
+            # Check for compilations. If we have them, pull them out and potentially the title position
             if "compilations" in retool_dupe:
 
                 if final_group not in dupe_dict:
@@ -212,6 +212,29 @@ class DupeParser:
                         "name_type": name_type,
                         "is_compilation": True,
                         "priority": priority,
+                        "title_pos": title_pos,
+                        "filters": filters,
+                    }
+
+            # Check for supersets. If we have them, pull them out and potentially the title position
+            if "supersets" in retool_dupe:
+
+                if final_group not in dupe_dict:
+                    dupe_dict[final_group] = {}
+
+                for superset in retool_dupe["supersets"]:
+                    sup_g = superset["searchTerm"]
+                    name_type = superset.get("nameType", None)
+                    title_pos = superset.get("titlePosition", None)
+                    priority = superset.get("priority", 1)
+                    english_friendly = superset.get("englishFriendly", False)
+                    filters = superset.get("filters", None)
+
+                    dupe_dict[group][sup_g] = {
+                        "name_type": name_type,
+                        "is_superset": True,
+                        "priority": priority,
+                        "english_friendly": english_friendly,
                         "title_pos": title_pos,
                         "filters": filters,
                     }
