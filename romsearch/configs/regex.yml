@@ -70,6 +70,11 @@ kiosk:
   search_tags: false
   include_in_short_name: true
 
+gamecube_preview:
+  pattern: "\\(GameCube Preview\\)"
+  group: "demos"
+  include_in_short_name: true
+
 preview:
   pattern: "\\(Preview\\)"
   group: "demos"

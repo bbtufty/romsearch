@@ -1,0 +1,7 @@
+group: "No-Intro"
+dir: "/No-Intro/Nintendo - Pokemon Mini/"
+unzip: false
+
+# RetroAchievements
+ra_id: 24
+ra_hash_method: "md5"
