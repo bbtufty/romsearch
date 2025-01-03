@@ -1087,21 +1087,28 @@ class ROMParser:
 
             # Update groups, if needed
             if group is not None:
-                if group not in file_dict:
-                    file_dict[group] = dict_default_val
 
-                if regex_type == "bool":
-                    file_dict[group] = file_dict[group] | file_dict[regex_key]
-                elif regex_type == "str":
-                    if file_dict[group] and file_dict[regex_key]:
-                        raise ValueError("Can't combine multiple groups with type str")
+                # We can have multiple groups per-tag, so take that into account
+                if isinstance(group, str):
+                    group = [group]
+
+                for g in group:
+
+                    if g not in file_dict:
+                        file_dict[g] = dict_default_val
+
+                    if regex_type == "bool":
+                        file_dict[g] = file_dict[g] | file_dict[regex_key]
+                    elif regex_type == "str":
+                        if file_dict[g] and file_dict[regex_key]:
+                            raise ValueError("Can't combine multiple groups with type str")
+                        else:
+                            file_dict[g] += file_dict[regex_key]
+                    elif regex_type == "list":
+                        file_dict[g].extend(file_dict[regex_key])
                     else:
-                        file_dict[group] += file_dict[regex_key]
-                elif regex_type == "list":
-                    file_dict[group].extend(file_dict[regex_key])
-                else:
-                    raise ValueError(
-                        f"regex_type should be one of {list(DICT_DEFAULT_VALS.keys())}"
-                    )
+                        raise ValueError(
+                            f"regex_type should be one of {list(DICT_DEFAULT_VALS.keys())}"
+                        )
 
         return file_dict

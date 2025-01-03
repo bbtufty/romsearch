@@ -18,6 +18,7 @@ ROMCleaner
 ROMParser
 ~~~~~~~~~
 
+- ROMParser can now handle multi-group regex tags
 - Handle English-friendly tags
 - Significant cleanup in handling RetroAchievement hashes
 - Ensure MD5 hash is lowercase from RetroAchievements
@@ -25,6 +26,7 @@ ROMParser
 General
 ~~~~~~~
 
+- regex cleanup
 - Move clonelist from unexpectedpanda to Daeymon
 - Updated RA name extensions
 - Add ROMPatch method to (most) other consoles

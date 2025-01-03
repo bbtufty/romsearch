@@ -13,15 +13,15 @@ multi_disc:
   include_in_short_name: true
 
 date:
-  pattern: "\\s?\\((?:\\d{8}|\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|\\d{2}-\\d{2}-\\d{2}|\\d{4}-\\d{2}-\\d{2}T\\d{6}|~?\\d{4}-(?:\\d{2}|xx)-xx|(?:January|February|March|April|May|June|July|August|September|October|November|December),\\s?\\d{4})\\)"
+  pattern: "\\((?:\\d{8}|\\d{4}-\\d{2}-\\d{2}|\\d{2}-\\d{2}-\\d{4}|\\d{2}-\\d{2}-\\d{2}|\\d{4}-\\d{2}-\\d{2}T\\d{6}|~?\\d{4}-(?:\\d{2}|xx)-xx|(?:January|February|March|April|May|June|July|August|September|October|November|December),\\s?\\d{4})\\)"
   type: "str"
 
+# ALTERNATIVE VERSIONS
 alt:
   pattern: "\\(Alt.*?\\)"
   group: "alternate"
 
 # APPLICATIONS
-
 bracket_program:
   pattern: "\\((?:Test )?Program\\)"
   group: "applications"
@@ -34,14 +34,14 @@ non_bracket_program:
   include_in_short_name: true
 
 # BAD DUMP
-
 bad_dump:
   pattern: "\\[b\\]"
   search_tags: false
-  group: "bad_dumps"
+  group:
+    - "bad_dumps"
+    - "demoted_version"
 
 # CONSOLE
-
 bios:
   pattern: "\\[BIOS\\]\\s?"
   search_tags: false
@@ -112,20 +112,39 @@ beta:
   pattern: "\\((?:\\w*?\\s)*Beta(?:\\s\\d+)?\\)"
   group: "preproduction"
 
+proto:
+  pattern: "\\((?:\\w*?\\s)*Proto(?:type)?(?:\\s\\d+)?\\)"
+  group: "preproduction"
+
+prerelease:
+  pattern: "\\(Prerelease\\)"
+  group: "preproduction"
+
 debug:
   pattern: "\\(Debug\\)"
-  group: "preproduction"
+  group:
+    - "preproduction"
+    - "demoted_version"
+
+debug_upper:
+  pattern: "\\(DEBUG\\)"
+  group:
+    - "preproduction"
 
 dev:
   pattern: "\\(Dev\\)"
   group: "preproduction"
 
-prepro:
-  pattern: "\\((?:Pre-production|Prerelease)\\)"
+dev_upper:
+  pattern: "\\(DEV\\)"
   group: "preproduction"
 
-proto:
-  pattern: "\\((?:\\w*?\\s)*Proto(?:type)?(?:\\s\\d+)?\\)"
+preproduction:
+  pattern: "\\(Pre-Production\\)"
+  group: "preproduction"
+
+review_code:
+  pattern: "\\(Review Code\\)"
   group: "preproduction"
 
 # PROMOTIONAL
@@ -154,185 +173,30 @@ revision:
   transform_pattern: "R[eE][vV][ -]([0-9A-Z].*?)?"
   transform_repl: "v\\1"
 
-# UNLICENSED
+# UNLICENSED AND PIRATE
 aftermarket:
   pattern: "\\(Aftermarket\\)"
-  group: "unlicensed"
+  group:
+    - "unlicensed"
+    - "demoted_version"
 
 homebrew:
   pattern: "\\(Homebrew\\)"
   group: "unlicensed"
   include_in_short_name: true
 
-pirate:
-  pattern: "\\(Pirate\\)"
-  group: "pirate"
-
 unl:
   pattern: "\\(Unl\\)"
   group: "unlicensed"
 
-# IMPROVED VERSIONS
-c_and_e:
-  pattern: "\\(C&E\\)"
-  group: "improved_version"
-
-cart_present:
-  pattern: "\\(Cart Present\\)"
-  group: "improved_version"
-
-cgb_sgb_enhanced:
-  pattern: "\\(CGB\\+SGB Enhanced\\)"
-  group: "improved_version"
-
-controller_set:
-  pattern: "\\(Controller Set\\)"
-  group: "improved_version"
-
-culture_publishers:
-  pattern: "\\(Culture Publishers\\)"
-
-dsi:
-  pattern: "\\(DSI\\)"
-  group: "improved_version"
-
-dx_pack:
-  pattern: "\\(DX Pack\\)"
-  group: "improved_version"
-
-ebkore_plus:
-  pattern: "\\(ebKore Plus\\)"
-  group: "improved_version"
-
-edc:
-  pattern: "\\(EDC\\)"
-  group: "improved_version"
-
-enhanced:
-  pattern: "\\(Enhanced\\)"
-  group: "improved_version"
-
-gb_compatible:
-  pattern: "\\(GB Compatible\\)"
-  group: "improved_version"
-
-gba_enhanced:
-  pattern: "\\(GBA Enhanced\\)"
-  group: "improved_version"
-
-gentei:
-  pattern: "\\((?:(?!\\(|Gentei.*?)[\\s\\S])*Gentei.*?\\)"
-  group: "improved_version"
-
-gps_receiver_doukonban:
-  pattern: "\\(GPS Receiver Doukonban\\)"
-  group: "improved_version"
-
-ideatek:
-  pattern: "\\(Idea-Tek\\)"
-  group: "improved_version"
-
-ie_institute:
-  pattern: "\\(IE Institute\\)"
-  group: "improved_version"
-
-imagineer:
-  pattern: "\\(Imagineer\\)"
-  group: "improved_version"
-
-infinity_plus:
-  pattern: "\\(Infinity Plus\\)"
-  group: "improved_version"
-
-later:
-  pattern: "\\(Later\\)"
-  group: "improved_version"
-
-mega_soft:
-  pattern: "\\(Mega Soft\\)"
-  group: "improved_version"
-
-microphone_doukoban:
-  pattern: "\\(Microphone Doukonban\\)"
-  group: "improved_version"
-
-nina_03:
-  pattern: "\\(NINA-03\\)"
-  group: "improved_version"
-
-nina_06:
-  pattern: "\\(NINA-06\\)"
-  group: "improved_version"
-
-np:
-  pattern: "\\(NP\\)"
-  group: "improved_version"
-
-premium_pack:
-  pattern: "\\(Premium Pack\\)"
-  group: "improved_version"
-
-psone_books:
-  pattern: "\\(PSone Books\\)"
-  group: "improved_version"
-
-renkaban:
-  pattern: "\\(Renkaban\\)"
-  group: "improved_version"
-
-rumble_verion:
-  pattern: "\\(Rumble Version\\)"
-  group: "improved_version"
-
-sachen:
-  pattern: "\\(Sachen\\)"
-  group: "improved_version"
-
-sgb_enhanced:
-  pattern: "\\(SGB Enhanced\\)"
-  group: "improved_version"
-
-sgb_enhanced_gb_compatible:
-  pattern: "\\(SGB Enhanced, GB Compatible\\)"
-  group: "improved_version"
-
-shindou_edition:
-  pattern: "\\(Shindou Edition\\)"
-  group: "improved_version"
-
-subor_keyboard:
-  pattern: "\\(Subor Keyboard\\)"
-  group: "improved_version"
-
-super_mega:
-  pattern: "\\(Super Mega\\)"
-  group: "improved_version"
-
-super_value_set:
-  pattern: "\\(Super Value Set\\)"
-  group: "improved_version"
-
-tatacon_doukon_set:
-  pattern: "\\(Tatacon Doukon Set\\)"
-  group: "improved_version"
-
-tokubetsu:
-  pattern: "\\((?:(?!\\(|Tokubetsu-ban.*?)[\\s\\S])*Tokubetsu-ban.*?\\)"
-  group: "improved_version"
-
-txc:
-  pattern: "\\(TXC\\)"
-  group: "improved_version"
-
-usb_mic_doukonban:
-  pattern: "\\(USB Mic Doukonban\\)"
-  group: "improved_version"
-
-vivendi:
-  pattern: "\\(Vivendi\\)"
-  group: "improved_version"
+pirate:
+  pattern: "\\(Pirate\\)"
+  group: "pirate"
 
 # BUDGET EDITIONS
+aquaprice:
+  pattern: "\\(Aquaprice 2800\\)"
+  group: "budget_edition"
 
 artdink:
   pattern: "\\(Artdink Best Choice\\)"
@@ -358,7 +222,11 @@ bps_the_choice:
   pattern: "\\(BPS the Choice\\)"
   group: "budget_edition"
 
-cyclone_best:
+budget:
+  pattern: "\\(Budget\\)"
+  group: "budget_edition"
+
+cyclone:
   pattern: "\\(Cyclone's Best\\)"
   group: "budget_edition"
 
@@ -390,6 +258,18 @@ honkakuha:
   pattern: "\\(Honkakuha de 1300\\)"
   group: "budget_edition"
 
+hit_squad:
+  pattern: "\\(Hit Squad\\)"
+  group: "budget_edition"
+
+hit_squad_regenerator:
+  pattern: "\\(Hit Squad - Regenerator\\)"
+  group: "budget_edition"
+
+hit_squad_power_pack:
+  pattern: "\\(Hit Squad - Euro Power Pack\\)"
+  group: "budget_edition"
+
 koei_the_best:
   pattern: "\\(Koei the Best\\)"
   group: "budget_edition"
@@ -413,12 +293,40 @@ playstation_2_the_best:
   pattern: "\\(PlayStation 2 the Best\\)"
   group: "budget_edition"
 
+playstation_3_the_best:
+  pattern: "\\(PlayStation 3 the Best\\)"
+  group: "budget_edition"
+
+playstation_vita_the_best:
+  pattern: "\\(PlayStation Vita the Best\\)"
+  group: "budget_edition"
+
+platinum:
+  pattern: "\\(Platinum\\)"
+  group: "budget_edition"
+
+psp_essentials:
+  pattern: "\\(PSP Essentials\\)"
+  group: "budget_edition"
+
 psp_the_best:
   pattern: "\\(PSP The Best\\)"
   group: "budget_edition"
 
+psp_the_best_lower:
+  pattern: "\\(PSP the Best\\)"
+  group: "budget_edition"
+
 rockstar_classics:
   pattern: "\\(Rockstar Classics\\)"
+  group: "budget_edition"
+
+sold_out_extreme:
+  pattern: "\\(Sold Out Extreme\\)"
+  group: "budget_edition"
+
+sold_out_software:
+  pattern: "\\(Sold Out Software\\)"
   group: "budget_edition"
 
 spike_library:
@@ -441,185 +349,35 @@ value_1500:
   pattern: "\\(Value 1500\\)"
   group: "budget_edition"
 
-# MODERN VERSIONS
+value_price:
+  pattern: "\\(Value Price\\)"
+  group: "budget_edition"
 
-3ds_virtual_console:
-  pattern: "\\((?:\\w*?,?\\s)*3DS Virtual Console(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
+xplosiv:
+  pattern: "\\(Xplosiv\\)"
+  group: "budget_edition"
 
-battle_net:
-  pattern: "\\(Battle\\.net\\)"
-  group: "modern_version"
-
-castlevania_anniversary:
-  pattern: "\\(Castlevania Anniversary Collection\\)"
-  group: "modern_version"
-
-castlevania_advance:
-  pattern: "\\(Castlevania Advance Collection\\)"
-  group: "modern_version"
-
-capcom_classics_mini_mix:
-  pattern: "\\(Capcom Classics Mini Mix\\)"
-  group: "modern_version"
-
-capcom_town:
-  pattern: "\\(Capcom Town\\)"
-  group: "modern_version"
-
-collection_of_mana:
-  pattern: "\\(Collection of Mana\\)"
-  group: "modern_version"
-
-collection_of_saga:
-  pattern: "\\(Collection of SaGa\\)"
-  group: "modern_version"
-
-columbus_circle:
-  pattern: "\\(Columbus Circle\\)"
-  group: "modern_version"
-
-contra_anniversary:
-  pattern: "\\(Contra Anniversary Collection\\)"
-  group: "modern_version"
-
-cowabunga_collection:
-  pattern: "\\(The Cowabunga Collection\\)"
-  group: "modern_version"
-
-cowabunga_collection_the:
-  pattern: "\\(Cowabunga Collection, The\\)"
-  group: "modern_version"
-
-cozmic_collection:
-  pattern: "\\(Darius Cozmic Collection\\)"
-  group: "modern_version"
-
-disney_afternoon_collection:
-  pattern: "\\(The Disney Afternoon Collection\\)"
-  group: "modern_version"
-
-disney_classic_games:
-  pattern: "\\(Disney Classic Games\\)"
-  group: "modern_version"
-
-e_reader_edition:
-  pattern: "\\(e-Reader Edition\\)"
-  group: "modern_version"
-
-gamecube:
-  pattern: "\\(Game[Cc]ube.*?\\)"
-  group: "modern_version"
-
-iam8bit:
-  pattern: "\\(iam8bit\\)"
-  group: "modern_version"
-
-konami_collector_series:
-  pattern: "\\(Konami Collector's Series\\)"
-  group: "modern_version"
-
-mega_man_battle_network_legacy_collection:
-  pattern: "\\(Mega Man Battle Network Legacy Collection\\)"
-  group: "modern_version"
-
-mega_man_legacy_collection:
-  pattern: "\\(Mega Man Legacy Collection\\)"
-  group: "modern_version"
-
-mega_man_x_legacy:
-  pattern: "\\(Mega Man X Legacy Collection\\)"
-  group: "modern_version"
-
-namco_anthology_1:
-  pattern: "\\(Namco Anthology 1.*?\\)"
-  group: "modern_version"
-
-namco_anthology_2:
-  pattern: "\\(Namco Anthology 2.*?\\)"
-  group: "modern_version"
-
-namcot_collection:
-  pattern: "\\s?\\(Namcot Collection.*?\\)"
-  group: "modern_version"
-
-namco_museum_archives:
-  pattern: "\\(Namco Museum Archives Vol [0-9]\\)"
-  group: "modern_version"
-
-ninja_jajamaru_retro:
-  pattern: "\\(Ninja JaJaMaru Retro Collection\\)"
-  group: "modern_version"
-
-pokemon_box:
-  pattern: "\\(Pokemon Box\\)"
-  group: "modern_version"
-
-qubyte_classic:
-  pattern: "\\(QUByte Classics\\)"
-  group: "modern_version"
-
-retro_bit:
-  pattern: "\\(Retro-Bit\\)"
-  group: "modern_version"
-
-retro_bit_generations:
-  pattern: "\\(Retro-Bit Generations\\)"
-  group: "modern_version"
-
-rockman_123:
-  pattern: "\\(Rockman 123\\)"
-  group: "modern_version"
-
-seiken_denetsu_collection:
-  pattern: "\\(Seiken Densetsu Collection\\)"
-  group: "modern_version"
-
-snk_40th_anniversary:
-  pattern: "\\(SNK 40th Anniversary Collection\\)"
-  group: "modern_version"
-
-steam:
-  pattern: "\\(Steam\\)"
-  group: "modern_version"
-
-switch:
-  pattern: "\\(Switch\\)"
-  group: "modern_version"
-
-switch_version:
-  pattern: "\\s?\\((?:\\w*?,?\\s)*Switch Version(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
-
-switch_release:
-  pattern: "\\s?\\((?:\\w*?,?\\s)*Switch Release(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
-
-switch_online:
-  pattern: "\\s?\\((?:\\w*?,?\\s)*Switch Online(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
-
-virtual_console:
-  pattern: "\\(Virtual Console\\)"
-  group: "modern_version"
-
-wii:
-  pattern: "\\(Wii\\)"
-  group: "modern_version"
-
-wii_virtual_console:
-  pattern: "\\((?:\\w*?,?\\s)*Wii Virtual Console(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
-
-wiiu_virtual_console:
-  pattern: "\\((?:\\w*?,?\\s)*Wii\\s?U Virtual Console(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
-
-wii_and_wiiu_virtual_console:
-  pattern: "\\((?:\\w*?,?\\s)*Wii Virtual Console, Wii\\s?U Virtual Console(?:,?\\s\\w*?)*\\)"
-  group: "modern_version"
+valusoft:
+  pattern: "\\(ValueSoft\\)"
+  group: "budget_edition"
 
 # DEMOTED VERSIONS
+5_25_inch:
+  pattern: "\\(5.25 inch\\)"
+  group: "demoted_version"
+
+3_5_inch:
+  pattern: "\\(3.5 inch\\)"
+  group: "demoted_version"
+
+action_53:
+  pattern: "\\(.*?Action 53.*?\\)"
+  group: "demoted_version"
+
+airwalk:
+  pattern: "\\(Airwalk Studios\\)"
+  group: "demoted_version"
+
 arcade:
   pattern: "\\(Arcade\\)"
   group: "demoted_version"
@@ -628,12 +386,40 @@ asder:
   pattern: "\\(Asder\\)"
   group: "demoted_version"
 
+atari_lynx_30th_birthday:
+  pattern: "\\(Atari Lynx 30th Birthday\\)"
+  group: "demoted_version"
+
+batteryless:
+  pattern: "\\(Batteryless\\)"
+  group: "demoted_version"
+
+bensheng:
+  pattern: "\\(Bensheng\\)"
+  group: "demoted_version"
+
+bitbit_jam:
+  pattern: "\\(bitbitJAM 20[0-9]{2,2}\\)"
+  group: "demoted_version"
+
+byte_off:
+  pattern: "\\(Byte-Off 20[0-9]{2,2}\\)"
+  group: "demoted_version"
+
 caltron:
   pattern: "\\(Caltron\\)"
   group: "demoted_version"
 
+castlemania_games:
+  pattern: "\\(CastleMania Games\\)"
+  group: "demoted_version"
+
 competition_cart:
   pattern: "\\(Competition Cart.*?\\)"
+  group: "demoted_version"
+
+cony_soft:
+  pattern: "\\(Cony Soft\\)"
   group: "demoted_version"
 
 coolboy:
@@ -644,8 +430,24 @@ debug_version:
   pattern: "\\(Debug Version\\)"
   group: "demoted_version"
 
+deprecated:
+  pattern: "\\(Deprecated\\)"
+  group: "demoted_version"
+
 digital:
   pattern: "\\(Digital\\)"
+  group: "demoted_version"
+
+digital_version:
+  pattern: "\\(Digital Version\\)"
+  group: "demoted_version"
+
+digital_edition:
+  pattern: "\\(Digital Edition\\)"
+  group: "demoted_version"
+
+digital_release:
+  pattern: "\\(Digital Release\\)"
   group: "demoted_version"
 
 earlier:
@@ -656,8 +458,12 @@ early:
   pattern: "\\(Early\\)"
   group: "demoted_version"
 
-evercade:
-  pattern: "\\(Evercade\\)"
+encrypted_cia:
+  pattern: "\\(Encrypted CIA\\)"
+  group: "demoted_version"
+
+export:
+  pattern: "\\(Export\\)"
   group: "demoted_version"
 
 famicombox:
@@ -668,44 +474,92 @@ fs005:
   pattern: "\\(FS005\\)"
   group: "demoted_version"
 
-hwang_shinwei:
-  pattern: "\\(Hwang Shinwei\\)"
+first_press_games:
+  pattern: "\\(First Press Games\\)"
   group: "demoted_version"
 
-jncota:
-  pattern: "\\(Jncota\\)"
+game_jam:
+  pattern: "\\(Game Jam Edition\\)"
+  group: "demoted_version"
+
+gb_compo:
+  pattern: "\\(GB Compo 20[0-9][0-9]\\)"
+  group: "demoted_version"
+
+github:
+  pattern: "\\(GitHub\\)"
+  group: "demoted_version"
+
+global_game_jam:
+  pattern: "\\(Global Game Jam 20[0-9]{2,2}\\)"
+  group: "demoted_version"
+
+heartbeat_catalyst:
+  pattern: "\\(HeartBeat Catalyst\\)"
+  group: "demoted_version"
+
+hengge:
+  pattern: "\\(Hengge\\)"
+  group: "demoted_version"
+
+hibaihin:
+  pattern: "\\(Hibaihin\\)"
+  group: "demoted_version"
+
+hwang_shinwei:
+  pattern: "\\(Hwang Shinwei\\)"
   group: "demoted_version"
 
 jy_company:
   pattern: "\\(J\\.Y\\. Company\\)"
   group: "demoted_version"
 
-kaiser:
-  pattern: "\\(Kaiser\\)"
+jncota:
+  pattern: "\\(Jncota\\)"
+  group: "demoted_version"
+
+jimakuban:
+  pattern: "\\(Jimakuban\\)"
+  group: "demoted_version"
+
+fukikaeban:
+  pattern: "\\(Fukikaeban\\)"
   group: "demoted_version"
 
 ka_sheng:
   pattern: "\\(Ka Sheng\\)"
   group: "demoted_version"
 
-kickstarter:
-  pattern: "\\(Kickstarter\\)"
+kaiser:
+  pattern: "\\(Kaiser\\)"
   group: "demoted_version"
 
-kickstarter_evercade:
-  pattern: "\\(Kickstarter\\, Evercade\\)"
+kickstarter:
+  pattern: "\\(Kickstarter\\)"
   group: "demoted_version"
 
 kickstarter_version:
   pattern: "\\(Kickstarter Version\\)"
   group: "demoted_version"
 
-limited_run:
-  pattern: "\\(Limited Run Games\\)"
+hardware_version:
+  pattern: "\\(Hardware Version\\)"
+  group: "demoted_version"
+
+launch_cart:
+  pattern: "\\(Launch Cart\\)"
+  group: "demoted_version"
+
+light_phaser:
+  pattern: "\\(Light Phaser\\)"
   group: "demoted_version"
 
 lodgenet:
   pattern: "\\(LodgeNet\\)"
+  group: "demoted_version"
+
+ludum_dare:
+  pattern: "\\(Ludum Dare [0-9]{0,3}\\)"
   group: "demoted_version"
 
 mb91:
@@ -724,6 +578,30 @@ micro_genius:
   pattern: "\\(Micro Genius\\)"
   group: "demoted_version"
 
+nanjing:
+  pattern: "\\(Nanjing\\)"
+  group: "demoted_version"
+
+no_sram:
+  pattern: "\\(No SRAM\\)"
+  group: "demoted_version"
+
+gb_showdown:
+  pattern: "\\(GB Showdown\\)"
+  group: "demoted_version"
+
+gba_jam:
+  pattern: "\\(GBA Jam\\)"
+  group: "demoted_version"
+
+neo_compo_2012:
+  pattern: "\\(NEO Compo 2012\\)"
+  group: "demoted_version"
+
+nesdev:
+  pattern: "\\(NESDev 20.*?\\)"
+  group: "demoted_version"
+
 nintendoage:
   pattern: "\\(NintendoAge\\)"
   group: "demoted_version"
@@ -736,16 +614,12 @@ not_for_resale:
   pattern: "\\(Not for Resale\\)"
   group: "demoted_version"
 
-piko_interactive:
-  pattern: "\\(Piko Interactive\\)"
-  group: "demote_version"
-
-pixel_heart:
-  pattern: "\\(Pixel Heart\\)"
+not_for_resale_upper:
+  pattern: "\\(Not For Resale\\)"
   group: "demoted_version"
 
-rerelease:
-  pattern: "\\(Rerelease\\)"
+patreon:
+  pattern: "\\(Patreon\\)"
   group: "demoted_version"
 
 reprint:
@@ -756,24 +630,658 @@ retrozone:
   pattern: "\\(RetroZone\\)"
   group: "demoted_version"
 
+region_lock:
+  pattern: "\\((?:\\w*,?\\s)*Region Lock\\)"
+  group: "demoted_version"
+
+robert_l_bryant:
+  pattern: "\\(Robert L Bryant\\)"
+  group: "demoted_version"
+
+sansai_mook:
+  pattern: "\\(Sansai Mook\\)"
+  group: "demoted_version"
+
+scholastic:
+  pattern: "\\(Scholastic\\)"
+  group: "demoted_version"
+
+sega_3d_fukkoku_akaibusu:
+  pattern: "\\(Sega 3D Fukkoku Akaibusu\\)"
+  group: "demoted_version"
+
+sega_channel:
+  pattern: "\\(Sega Channel\\)"
+  group: "demoted_version"
+
+seganet:
+  pattern: "\\(SegaNet\\)"
+  group: "demoted_version"
+
 shokai_seisanban:
   pattern: "\\(Shokai Seisanban\\)"
+  group: "demoted_version"
+
+software_boukonban:
+  pattern: "\\(Software Doukonban\\)"
+  group: "demoted_version"
+
+software_tantaiban:
+  pattern: "\\(Software Tantaiban\\)"
+  group: "demoted_version"
+
+the_retro_room:
+  pattern: "\\(The Retro Room\\)"
+  group: "demoted_version"
+
+waixing:
+  pattern: "\\(Waixing\\)"
   group: "demoted_version"
 
 whirlwind_manu:
   pattern: "\\(Whirlwind Manu\\)"
   group: "demoted_version"
 
+wonderwitch:
+  pattern: "\\(WonderWitch\\)"
+  group: "demoted_version"
+
+yancheng:
+  pattern: "\\(Yancheng\\)"
+  group: "demoted_version"
+
+zhenhua:
+  pattern: "\\(Zhenhua\\)"
+  group: "demoted_version"
+
+# IMPROVED VERSIONS
+cgb_sgb_enhanced:
+  pattern: "\\(CGB\\+SGB Enhanced\\)"
+  group: "improved_version"
+
+sgb_enhanced_gb_compatible:
+  pattern: "\\(SGB Enhanced, GB Compatible\\)"
+  group: "improved_version"
+
+sgb_enhanced:
+  pattern: "\\(SGB Enhanced\\)"
+  group: "improved_version"
+
+ndsi_enhanced:
+  pattern: "\\(NDSi Enhanced\\)"
+  group: "improved_version"
+
+emulator_version:
+  pattern: "\\(Emulator Version\\)"
+  group: "improved_version"
+
+rumble_verion:
+  pattern: "\\(Rumble Version\\)"
+  group: "improved_version"
+
+shindou_edition:
+  pattern: "\\(Shindou Edition\\)"
+  group: "improved_version"
+
+gb_compatible:
+  pattern: "\\(GB Compatible\\)"
+  group: "improved_version"
+
+gba_enhanced:
+  pattern: "\\(GBA Enhanced\\)"
+  group: "improved_version"
+
+legit_cia:
+  pattern: "\\(Legit CIA\\)"
+  group: "improved_version"
+
+cart:
+  pattern: "\\(Cart\\)"
+  group: "improved_version"
+
+led_cart:
+  pattern: "\\(LED Cart\\)"
+  group: "improved_version"
+
+j_cart:
+  pattern: "\\(J-Cart\\)"
+  group: "improved_version"
+
+cart_present:
+  pattern: "\\(Cart Present\\)"
+  group: "improved_version"
+
+gps_receiver_doukonban:
+  pattern: "\\(GPS Receiver Doukonban\\)"
+  group: "improved_version"
+
+microphone_doukoban:
+  pattern: "\\(Microphone Doukonban\\)"
+  group: "improved_version"
+
+usb_mic_doukonban:
+  pattern: "\\(USB Mic Doukonban\\)"
+  group: "improved_version"
+
+fm_towns_marty:
+  pattern: "\\(FM Towns Marty\\)"
+  group: "improved_version"
+
+fm_towns_marty_rerelease:
+  pattern: "\\(FM Towns Marty Rerelease\\)"
+  group: "improved_version"
+
+joypad:
+  pattern: "\\(Joypad\\)"
+  group: "improved_version"
+
+v_smile_motion:
+  pattern: "\\(V\\.Smile Motion\\)"
+  group: "improved_version"
+
+current:
+  pattern: "\\(Current\\)"
+  group: "improved_version"
+
+bit_corporation:
+  pattern: "\\(Bit Corporation\\)"
+  group: "improved_version"
+
+c_and_e:
+  pattern: "\\(C&E\\)"
+  group: "improved_version"
+
+cce:
+  pattern: "\\(CCE\\)"
+  group: "improved_version"
+
+culture_publishers:
+  pattern: "\\(Culture Publishers\\)"
+  group: "improved_version"
+
+dmasafe:
+  pattern: "\\(dmaSafe\\)"
+  group: "improved_version"
+
+dsi:
+  pattern: "\\(DSI\\)"
+  group: "improved_version"
+
+dx_pack:
+  pattern: "\\(DX Pack\\)"
+  group: "improved_version"
+
+ebkore_plus:
+  pattern: "\\(ebKore Plus\\)"
+  group: "improved_version"
+
+ebkore_plus_symbol:
+  pattern: "\\(ebKore \\)\\+"
+  group: "improved_version"
+
+gluk_video:
+  pattern: "\\(Gluk Video\\)"
+  group: "improved_version"
+
+goliath:
+  pattern: "\\(Goliath\\)"
+  group: "improved_version"
+
+ideatek:
+  pattern: "\\(Idea-Tek\\)"
+  group: "improved_version"
+
+ie_institute:
+  pattern: "\\(IE Institute\\)"
+  group: "improved_version"
+
+imagineer:
+  pattern: "\\(Imagineer\\)"
+  group: "improved_version"
+
+infinity_plus:
+  pattern: "\\(Infinity Plus\\)"
+  group: "improved_version"
+
+kixx:
+  pattern: "\\(Kixx\\)"
+  group: "improved_version"
+
+later:
+  pattern: "\\(Later\\)"
+  group: "improved_version"
+
+mega_soft:
+  pattern: "\\(Mega Soft\\)"
+  group: "improved_version"
+
+nina_06:
+  pattern: "\\(NINA-06\\)"
+  group: "improved_version"
+
+nina_03:
+  pattern: "\\(NINA-03\\)"
+  group: "improved_version"
+
+np:
+  pattern: "\\(NP\\)"
+  group: "improved_version"
+
+premium_pack:
+  pattern: "\\(Premium Pack\\)"
+  group: "improved_version"
+
+psone_books:
+  pattern: "\\(PSone Books\\)"
+  group: "improved_version"
+
+renkaban:
+  pattern: "\\(Renkaban\\)"
+  group: "improved_version"
+
+sachen:
+  pattern: "\\(Sachen\\)"
+  group: "improved_version"
+
+sly_dog_studios:
+  pattern: "\\(Sly Dog Studios\\)"
+  group: "improved_version"
+
+spectacular_voyage:
+  pattern: "\\(Spectacular Voyage\\)"
+  group: "improved_version"
+
+subor_keyboard:
+  pattern: "\\(Subor Keyboard\\)"
+  group: "improved_version"
+
+sram:
+  pattern: "\\(SRAM\\)"
+  group: "improved_version"
+
+super_mega:
+  pattern: "\\(Super Mega\\)"
+  group: "improved_version"
+
+super_value_set:
+  pattern: "\\(Super Value Set\\)"
+  group: "improved_version"
+
+tatacon_doukon_set:
+  pattern: "\\(Tatacon Doukon Set\\)"
+  group: "improved_version"
+
+txc:
+  pattern: "\\(TXC\\)"
+  group: "improved_version"
+
+vivendi:
+  pattern: "\\(Vivendi\\)"
+  group: "improved_version"
+
+gentei:
+  pattern: "\\((?:(?!\\(|Gentei.*?)[\\s\\S])*Gentei.*?\\)"
+  group: "improved_version"
+
+tokubetsu_ban:
+  pattern: "\\((?:(?!\\(|Tokubetsu-ban.*?)[\\s\\S])*Tokubetsu-ban.*?\\)"
+  group: "improved_version"
+
+controller_set:
+  pattern: "\\(Controller Set\\)"
+  group: "improved_version"
+
+disk_writer:
+  pattern: "\\(Disk Writer\\)"
+  group: "improved_version"
+
+english_logo:
+  pattern: "\\(English Logo\\)"
+  group: "improved_version"
+
+chinese_logo:
+  pattern: "\\(Chinese Logo\\)"
+  group: "improved_version"
+
+korean_logo:
+  pattern: "\\(Korean Logo\\)"
+  group: "improved_version"
+
+no_logo:
+  pattern: "\\(No Logo\\)"
+  group: "improved_version"
+
+# MODERN VERSIONS
+
+switch_version:
+  pattern: "\\((?:\\w*?,?\\s)*Switch(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+steam_version:
+  pattern: "\\((?:\\w*?,?\\s)*Steam(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+gog_version:
+  pattern: "\\((?:\\w*?,?\\s)*GOG(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+itch_version:
+  pattern: "\\((?:\\w*?,?\\s)*[Ii]tch(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+genesis_mini_version:
+  pattern: "\\((?:\\w*?,?\\s)*Genesis Mini(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+mega_drive_mini_version:
+  pattern: "\\((?:\\w*?,?\\s)*Mega Drive Mini(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+nes_mini_version:
+  pattern: "\\(NES Mini Version\\)"
+  group: "modern_version"
+
+pc_engine_mini_version:
+  pattern: "\\(PC Engine Mini\\)"
+  group: "modern_version"
+
+aleste_collection:
+  pattern: "\\(Aleste Collection\\)"
+  group: "modern_version"
+
+bubsy_two_fur:
+  pattern: "\\(Bubsy Two-Fur\\)"
+  group: "modern_version"
+
+castlevania_advance:
+  pattern: "\\(Castlevania Advance Collection\\)"
+  group: "modern_version"
+
+castlevania_anniversary:
+  pattern: "\\(Castlevania Anniversary Collection\\)"
+  group: "modern_version"
+
+collection_of_mana:
+  pattern: "\\(Collection of Mana\\)"
+  group: "modern_version"
+
+seiken_denetsu_collection:
+  pattern: "\\(Seiken Densetsu Collection\\)"
+  group: "modern_version"
+
+collection_of_saga:
+  pattern: "\\(Collection of SaGa\\)"
+  group: "modern_version"
+
+contra_anniversary:
+  pattern: "\\(Contra Anniversary Collection\\)"
+  group: "modern_version"
+
+cowabunga_collection_the:
+  pattern: "\\(Cowabunga Collection, The\\)"
+  group: "modern_version"
+
+cowabunga_collection:
+  pattern: "\\(The Cowabunga Collection\\)"
+  group: "modern_version"
+
+cozmic_collection:
+  pattern: "\\(Darius Cozmic Collection\\)"
+  group: "modern_version"
+
+disney_classic_games:
+  pattern: "\\(Disney Classic Games\\)"
+  group: "modern_version"
+
+disney_afternoon_collection:
+  pattern: "\\(The Disney Afternoon Collection\\)"
+  group: "modern_version"
+
+mega_man_battle_network_legacy_collection:
+  pattern: "\\(Mega Man Battle Network Legacy Collection\\)"
+  group: "modern_version"
+
+mega_man_legacy_collection:
+  pattern: "\\(Mega Man Legacy Collection\\)"
+  group: "modern_version"
+
+mega_man_x_legacy:
+  pattern: "\\(Mega Man X Legacy Collection\\)"
+  group: "modern_version"
+
+namcot_collection:
+  pattern: "\\(Namcot Collection.*?\\)"
+  group: "modern_version"
+
+namco_museum_archives:
+  pattern: "\\(Namco Museum Archives Vol [0-9]\\)"
+  group: "modern_version"
+
+ninja_jajamaru_retro:
+  pattern: "\\(Ninja JaJaMaru Retro Collection\\)"
+  group: "modern_version"
+
+sega_classic_collection:
+  pattern: "\\(SEGA Classic Collection\\)"
+  group: "modern_version"
+
+snk_40th_anniversary:
+  pattern: "\\(SNK 40th Anniversary Collection\\)"
+  group: "modern_version"
+
+evercade:
+  pattern: "\\((?:\\w*?,?\\s)*Evercade(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+atari_lynx_collection_1:
+  pattern: "\\(Atari Lynx Collection 1\\)"
+  group: "modern_version"
+
+atariage:
+  pattern: "\\(AtariAge\\)"
+  group: "modern_version"
+
+capcom_town:
+  pattern: "\\(Capcom Town\\)"
+  group: "modern_version"
+
+columbus_circle:
+  pattern: "\\(Columbus Circle\\)"
+  group: "modern_version"
+
+iam8bit:
+  pattern: "\\(iam8bit\\)"
+  group: "modern_version"
+
+limited_run:
+  pattern: "\\(Limited Run Games\\)"
+  group: "modern_version"
+
+piko_interactive:
+  pattern: "\\(Piko Interactive\\)"
+  group: "modern_version"
+
+pixel_heart:
+  pattern: "\\(Pixel Heart\\)"
+  group: "modern_version"
+
+premium_edition:
+  pattern: "\\(Premium Edition Games\\)"
+  group: "modern_version"
+
+qubyte_classic:
+  pattern: "\\(QUByte Classics\\)"
+  group: "modern_version"
+
+strictly_limited:
+  pattern: "\\(Strictly Limited Games\\)"
+  group: "modern_version"
+
+retro_bit:
+  pattern: "\\(Retro-Bit\\)"
+  group: "modern_version"
+
+retro_bit_generations:
+  pattern: "\\(Retro-Bit Generations\\)"
+  group: "modern_version"
+
+retroguru:
+  pattern: "\\(Retroguru\\)"
+  group: "modern_version"
+
+songbird:
+  pattern: "\\(Songbird\\)"
+  group: "modern_version"
+
+wiiu_virtual_console:
+  pattern: "\\((?:\\w*?,?\\s)*Wii\\s?U Virtual Console(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+wii_virtual_console:
+  pattern: "\\((?:\\w*?,?\\s)*Wii Virtual Console(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+3ds_virtual_console:
+  pattern: "\\((?:\\w*?,?\\s)*3DS Virtual Console(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+nes_virtual_console:
+  pattern: "\\(NES\\) \\(Virtual Console\\)"
+  group: "modern_version"
+
+snes_virtual_console:
+  pattern: "\\(SNES\\) \\(Virtual Console\\)"
+  group: "modern_version"
+
+gba_virtual_console:
+  pattern: "\\(GBA\\) \\(Virtual Console\\)"
+  group: "modern_version"
+
+virtual_console:
+  pattern: "\\((?:\\w*?,?\\s)*Virtual Console(?:,?\\s\\w*?)*\\)"
+  group: "modern_version"
+
+wii:
+  pattern: "\\(Wii\\)"
+  group: "modern_version"
+
+gamecube:
+  pattern: "\\(Game[Cc]ube.*?\\)"
+  group: "modern_version"
+
+activision_antholoy:
+  pattern: "\\(Activision Anthology - Remix Edition\\)"
+  group: "modern_version"
+
+atari_anthology:
+  pattern: "\\(Atari Anthology\\)"
+  group: "modern_version"
+
+bomberman_collection:
+  pattern: "\\(Bomberman Collection\\)"
+  group: "modern_version"
+
+capcom_classics_mini_mix:
+  pattern: "\\(Capcom Classics Mini Mix\\)"
+  group: "modern_version"
+
+dreamcast_version:
+  pattern: "\\(Dreamcast Version\\)"
+  group: "modern_version"
+
+game_no_kanzume_otokuyou:
+  pattern: "\\(Game no Kanzume Otokuyou\\)"
+  group: "modern_version"
+
+game_no_kanzume_vol_1:
+  pattern: "\\(Game no Kanzume Vol. 1\\)"
+  group: "modern_version"
+
+game_no_kanzume_vol_2:
+  pattern: "\\(Game no Kanzume Vol. 2\\)"
+  group: "modern_version"
+
+intellivision_lives:
+  pattern: "\\(Intellivision Lives\\!\\)"
+  group: "modern_version"
+
+konami_collector_series:
+  pattern: "\\(Konami Collector's Series\\)"
+  group: "modern_version"
+
+namco_anthology_1:
+  pattern: "\\(Namco Anthology 1.*?\\)"
+  group: "modern_version"
+
+namco_anthology_2:
+  pattern: "\\(Namco Anthology 2.*?\\)"
+  group: "modern_version"
+
+pc_rerelease:
+  pattern: "\\(PC Rerelease\\)"
+  group: "modern_version"
+
+pokemon_box:
+  pattern: "\\(Pokemon Box\\)"
+  group: "modern_version"
+
+rockman_123:
+  pattern: "\\(Rockman 123\\)"
+  group: "modern_version"
+
+sega_ages:
+  pattern: "\\(Sega Ages\\)"
+  group: "modern_version"
+
+sega_3d_classics:
+  pattern: "\\(Sega 3D Classics\\)"
+  group: "modern_version"
+
+sega_3d_classics_collection:
+  pattern: "\\(Sega 3D Classics Collection\\)"
+  group: "modern_version"
+
+sega_smash_pack:
+  pattern: "\\(Sega Smash Pack(?: [0-9])?\\)"
+  group: "modern_version"
+
+sonic_classic_collection:
+  pattern: "\\(Sonic Classic Collection\\)"
+  group: "modern_version"
+
+sonic_mega_collection:
+  pattern: "\\(Sonic Mega Collection\\)"
+  group: "modern_version"
+
+e_reader_edition:
+  pattern: "\\(e-Reader Edition\\)"
+  group: "modern_version"
+
 # GENERALLY IGNORE
 
-l_tags:
-  pattern: "\\s?\\(L[ABCDEFGH]\\d{2,2}\\)"
+nintendo_mastering_code:
+  pattern: "\\((?:A[BDEFNPS]|B[58DFJNPT]|CX|FT|JE|K[AFIKMRZ]|PN|QA|RC|S[KN]|T[ABCJQ]|V[BEJKLMW]|Y[XW])[ABCDEFGHIKJMLNPQSTUVWYZ0-9][DEJPVXYZ]\\)"
 
-knv_st_tags:
-  pattern: "\\s?\\([KNV][ST]-\\d{3,4}[A-Z]?\\)"
+ps_firmware:
+  pattern: "\\(FW[0-9].*?\\)"
 
-jy_tags:
-  pattern: "\\s?\\(JY-?\\d{3,3}\\)"
+ps1_2_id:
+  pattern: "\\([PS][BCL][EKPU][ADHMNSX]-\\d{5}\\)"
+
+ps3_id:
+  pattern: "\\([BM][CLR][AEJKTU][BCDMST]-\\d{5}\\)"
+
+ps4_id:
+  pattern: "\\([CP][CLU][ACJKS][AMS]-\\d{5}\\)"
+
+psp_id:
+  pattern: "\\(U[CLT][EJUS][BST]-\\d{5}\\)"
+
+psv_id:
+  pattern: "\\(P[CS]{2}[ABEFGH]\\d{5}\\)"
+
+sega_panasonic_ring_code:
+  pattern: "\\((?:(?:[0-9]{1,2}[ABCMRS],? ?)*|R[E]?[-]?[0-9]*)\\)"
 
 60_pin_cart:
   pattern: "\\(60 pin cart\\)"
@@ -781,8 +1289,43 @@ jy_tags:
 72_pin_cart:
   pattern: "\\(72 pin cart\\)"
 
-strictly_limited:
-  pattern: "\\(Strictly Limited Games\\)"
+covermount:
+  pattern: "\\(Covermount\\)"
+  group: "alternate"
+
+eshop:
+  pattern: "\\(eShop\\)"
+
+gba:
+  pattern: "\\(GBA\\)"
+
+gb:
+  pattern: "\\(GB\\)"
+
+gbc:
+  pattern: "\\(GBC\\)"
+
+ids:
+  pattern: "\\(iDS\\)"
+
+ique:
+  pattern: "\\(iQue\\)"
+
+nes:
+  pattern: "\\(NES\\)"
+
+snes:
+  pattern: "\\(SNES\\)"
+
+edc:
+  pattern: "\\(EDC\\)"
+  group: "improved_version"
+
+no_edc:
+  pattern: "\\(No EDC\\)"
+
+web:
+  pattern: "\\(Web\\)"
 
 multi_tap_doukoban:
   pattern: "\\(Multi Tap.*?Doukonban\\)"
@@ -790,34 +1333,105 @@ multi_tap_doukoban:
 ntdec:
   pattern: "\\(NTDEC\\)"
 
-ntsc:
-  pattern: "([?:-][\\s])?[(]?NTSC\\)?"
-  flags: "NOFLAG"
+mega_drive_4:
+  pattern: "\\(Mega Drive 4\\)"
 
-pal:
-  pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:\\)?| (?=\\())"
-  flags: "NOFLAG"
+sega_game_toshokan:
+  pattern: "\\(Sega Game Toshokan\\)"
 
-presence_of_mind:
-  pattern: "\\(Presence of Mind \\'98\\)"
+sega_gopher:
+  pattern: "\\(Sega Gopher\\)"
 
-summer64:
-  pattern: "\\(Summer64\\)"
+sega_reactor:
+  pattern: "\\(Sega Reactor\\)"
+
+super_fighter_team:
+  pattern: "\\(Super Fighter Team\\)"
 
 supervision:
   pattern: "\\(SuperVision\\)"
 
-43_406_pcb:
-  pattern: "\\(43-406 PCB\\)"
+wwgp2001:
+  pattern: "\\(WWGP2001\\)"
 
-fw:
-  pattern: "\\(FW[0-9].*?\\)"
+wwgp2002:
+  pattern: "\\(WWGP2002\\)"
 
-u_numbers:
-  pattern: "\\(U[CLT][EJUS][BST]-\\d{5}\\)"
+jy_tags:
+  pattern: "\\(JY-?\\d{3,3}\\)"
 
-p_s_numbers:
-  pattern: "\\s?\\([PS][BCL][EKPU][ADHMNSX]-\\d{5}\\)"
+knv_st_tags:
+  pattern: "\\([KNV][ST]-\\d{3,4}[A-Z]?\\)"
 
-product_ids:
-  pattern: "\\((?:A[BDEFNPS]|B[58DFJNPT]|CX|FT|JE|K[AFIKMRZ]|PN|QA|RC|S[KN]|T[ABCJQ]|V[BEJKLMW]|Y[XW])[ABCDEFGHIKJMLNPQSTUVWYZ0-9][DEJPVXYZ]\\)"
+l_tags:
+  pattern: "\\(L[ABCDEFGH]\\d{2,2}\\)"
+
+ctc_tags:
+  pattern: "\\(CTC-\\d{2,2}\\)"
+
+essentials:
+  pattern: "\\(Essentials\\)"
+
+oem:
+  pattern: "\\((?:\\w-?\\s*)*?OEM\\)"
+  group: "demoted_version"
+
+rerelease:
+  pattern: "\\(Rerelease\\)"
+  group: "demoted_version"
+
+magazine:
+  pattern: "\\(Magazine\\)"
+  group: "multimedia"
+
+presence_of_mind:
+  pattern: "\\(Presence of Mind \\'98\\)"
+
+n64_brew_game_jam:
+  pattern: "\\(N?64brew Game Jam 202[0-9]\\)"
+
+summer64:
+  pattern: "\\(Summer64\\)"
+
+made_in:
+  pattern: "\\(Made in.*?\\)"
+
+more_number_re_code:
+  pattern: "\\((?:[0-9]{1,2}[A-Z](?:[ ,].[0-9]{1,2}[A-Z])*|R[E]{,1}[-]{,1}[0-9]{0,})\\)"
+
+# VIDEO STANDARDS
+pal_50_60_hz:
+  pattern: "\\(PAL [56]0[Hh]z\\)"
+  flags: "NOFLAG"
+
+mpal:
+  pattern: "(?:-)?[( ]MPAL\\)?"
+  flags: "NOFLAG"
+
+ntsc_1:
+  pattern: "(?:-)?[( ]NTSC\\)?"
+  flags: "NOFLAG"
+
+ntsc_2:
+  pattern: "\\[(.*)?NTSC(.*)?\\]"
+  flags: "NOFLAG"
+
+ntsc_pal:
+  pattern: "[( ]NTSC-PAL(\\))?"
+  flags: "NOFLAG"
+
+pal_1:
+  pattern: "([?:-][\\s])?[(]?PAL(?: [a-zA-Z]+| 50[Hh]z)?(?:\\)?| (?=\\())"
+  flags: "NOFLAG"
+
+pal_2:
+  pattern: "\\[(.*)?PAL(?!P)(.*)?\\]"
+  flags: "NOFLAG"
+
+secam_1:
+  pattern: "(?:-)?[( ]SECAM\\)?"
+  flags: "NOFLAG"
+
+secam_2:
+  pattern: "\\[(.*)?SECAM(.*)?\\]"
+  flags: "NOFLAG"
