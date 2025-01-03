@@ -36,10 +36,10 @@ Nintendo - Game Boy Advance
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Game Boy Advance.yml
 
-Nintendo - GameCube
-===================
+Nintendo - Pokemon Mini
+=======================
 
-.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - GameCube.yml
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Pokemon Mini.yml
 
 Nintendo - Nintendo Entertainment System
 ========================================
@@ -50,6 +50,16 @@ Nintendo - Super Nintendo Entertainment System
 ==============================================
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Super Nintendo Entertainment System.yml
+
+Nintendo - Nintendo 64
+======================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Nintendo 64.yml
+
+Nintendo - GameCube
+===================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - GameCube.yml
 
 Sony - PlayStation Portable
 ===========================

@@ -4,6 +4,7 @@
 Features
 --------
 
+- Added Pokemon Mini
 - Support for supersets
 - Added N64
 
