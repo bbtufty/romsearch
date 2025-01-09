@@ -87,6 +87,22 @@ def get_pattern_val(
 
     return pattern_val
 
+def apply_filters(
+        file_dict,
+):
+    """Apply any filters we may have
+
+    Args:
+        file_dict (dict): Dictionary of file properties
+    """
+
+    # Flag supersets
+    flag_as_superset = file_dict.get("flag_as_superset", None)
+    if flag_as_superset is not None:
+        file_dict["flag_as_superset"] = flag_as_superset
+
+    return file_dict
+
 
 def is_ra_subset(name):
     """Check if a name is a RetroAchievements subset
@@ -320,7 +336,7 @@ class ROMParser:
 
             f_parsed = self.parse_file(
                 f=f,
-                file_dict=files[f],
+                file_dict=copy.deepcopy(files[f]),
                 title_pos=title_pos,
             )
             game_dict[f].update(f_parsed)
@@ -359,6 +375,9 @@ class ROMParser:
                 f=f,
                 file_dict=file_dict,
             )
+
+        # Apply any filters that wouldn't have been applied here
+        file_dict = apply_filters(file_dict)
 
         file_dict["has_cheevos"] = False
         file_dict["patch_file"] = ""

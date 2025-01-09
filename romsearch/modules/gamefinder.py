@@ -176,39 +176,6 @@ def check_region_order(
     return True
 
 
-def apply_results(
-    parent_name,
-    game_dict,
-    results,
-):
-    """Apply results to a filtered match
-
-    Args:
-        parent_name: Parent name
-        game_dict: Dictionary of game properties
-        results: Dictionary of results to apply to the game/game dict
-    """
-
-    for r in results:
-
-        # If we're changing the name, that gets pulled out here
-        if r == "group":
-            parent_name = copy.deepcopy(results[r])
-
-        # If we're changing priority, edit the game dict
-        elif r == "priority":
-            game_dict[r] = results[r]
-
-        # Ignore local names, since we won't use them
-        elif r == "localNames":
-            continue
-
-        else:
-            raise ValueError(f"Unsure how to deal with result type {r}")
-
-    return parent_name, game_dict
-
-
 def add_dupe_entry_to_game_dict(
     game,
     game_dict,
@@ -751,10 +718,49 @@ class GameFinder:
 
             # If we've met the conditions, then apply the results
             if all(conditions_met):
-                parent_name, dupe_entry = apply_results(
+                parent_name, dupe_entry = self.apply_results(
                     parent_name,
                     dupe_entry,
                     filt["results"],
                 )
 
         return parent_name, dupe_entry
+
+    def apply_results(
+            self,
+            parent_name,
+            game_dict,
+            results,
+    ):
+        """Apply results to a filtered match
+
+        Args:
+            parent_name: Parent name
+            game_dict: Dictionary of game properties
+            results: Dictionary of results to apply to the game/game dict
+        """
+
+        for r in results:
+
+            # If we're changing the name, that gets pulled out here
+            if r == "group":
+                parent_name = copy.deepcopy(results[r])
+
+            # If we're changing priority, edit the game dict
+            elif r == "priority":
+                game_dict[r] = results[r]
+
+            # If the filter is for supersets, take that bool
+            elif r == "superset":
+                game_dict["flag_as_superset"] = results[r]
+
+            # Ignore local names, since we won't use them
+            elif r == "localNames":
+                continue
+
+            # If we have something else unexpected, raise a warning but do nothing
+            else:
+                self.logger.warning(f"Unsure how to deal with result type {r}")
+                continue
+
+        return parent_name, game_dict

@@ -61,6 +61,11 @@ Nintendo - GameCube
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - GameCube.yml
 
+Sega - Mega Drive - Genesis
+===========================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Sega - Mega Drive - Genesis.yml
+
 Sony - PlayStation Portable
 ===========================
 

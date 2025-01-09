@@ -4,12 +4,18 @@
 Features
 --------
 
+- Added Mega Drive/Genesis
 - Added Pokemon Mini
 - Support for supersets
 - Added N64
 
 Fixes
 -----
+
+GameFinder
+~~~~~~~~~~
+
+- GameFinder can now pick up superset filters
 
 ROMCleaner
 ~~~~~~~~~~
