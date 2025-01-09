@@ -50,6 +50,11 @@ def get_directory_name(f):
     if len(f_find) > 0:
         f = f_find[0]
 
+    # Catch the edge case where the directory name can end with
+    # a period (e.g. Super Smash Bros.)
+    if f.endswith("."):
+        f = f[:-1]
+
     return f
 
 
