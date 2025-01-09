@@ -38,6 +38,8 @@ works for the following consoles:
    * Super Nintendo Entertainment System
    * Nintendo 64
    * GameCube
+* Sega (Home)
+  * Mega Drive/Genesis
 * Sony (Handheld)
    * PlayStation Portable
 * Sony (Home)

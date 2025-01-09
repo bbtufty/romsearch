@@ -52,6 +52,10 @@ has the capability for:
   * Nintendo 64
   * GameCube
 
+* Sega (Home)
+
+  * Mega Drive/Genesis
+
 * Sony (Handheld)
 
   * PlayStation Portable

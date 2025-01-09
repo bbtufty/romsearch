@@ -1,0 +1,14 @@
+group: "No-Intro"
+dir: "/No-Intro/Sega - Mega Drive - Genesis/"
+unzip: false
+
+# RetroAchievements
+ra_id: 1
+ra_hash_method: "md5"
+
+# ROMPatcher
+patch_method: "rompatcher.js"
+file_exts:
+  - ".md"
+patch_file_exts:
+  - ".bps"
