@@ -33,6 +33,7 @@ ROMParser
 General
 ~~~~~~~
 
+- Clean up potential errors if directory name ends with period
 - regex cleanup
 - Move clonelist from unexpectedpanda to Daeymon
 - Updated RA name extensions

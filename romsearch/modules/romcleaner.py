@@ -162,11 +162,6 @@ class ROMCleaner:
 
                 rom_dir = rom_dict[r][f]["dir_name"]
 
-                # Catch the edge case where the directory name can end with
-                # a period (e.g. Super Smash Bros.)
-                if rom_dir.endswith("."):
-                    rom_dir = rom_dir[:-1]
-
                 rom_name_w_dir = os.path.join(rom_dir, rom_name)
 
                 roms_in_dict.append(rom_name_w_dir)
@@ -206,11 +201,6 @@ class ROMCleaner:
                         # Because these can have disc names or whatever in, parse
                         # to a dir name
                         g_short = get_directory_name(g)
-
-                        # Catch the edge case where the directory name can end with
-                        # a period (e.g. Super Smash Bros.)
-                        if g_short.endswith("."):
-                            g_short = g_short[:-1]
 
                         for g_i in self.cache[self.platform][g]:
 
@@ -262,11 +252,6 @@ class ROMCleaner:
                 # Because these can have disc names or whatever in, parse
                 # to a dir name
                 d_short = get_directory_name(d)
-
-                # Catch the edge case where the directory name can end with
-                # a period (e.g. Super Smash Bros.)
-                if d_short.endswith("."):
-                    d_short = d_short[:-1]
 
                 for d_i in self.cache[self.platform][d]:
                     found_d_i_on_disk = False
