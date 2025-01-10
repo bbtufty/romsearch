@@ -1,4 +1,4 @@
-0.1.2 (Unreleased)
+0.1.2 (2024-01-10)
 ==================
 
 Features
@@ -33,6 +33,7 @@ ROMParser
 General
 ~~~~~~~
 
+- Bump to 0.1.2
 - Add logo and version in GUI
 - Clean up potential errors if directory name ends with period
 - regex cleanup
