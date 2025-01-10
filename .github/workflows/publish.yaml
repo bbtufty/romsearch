@@ -42,6 +42,7 @@ jobs:
           pyinstaller romsearch_gui.py 
           --copy-metadata romsearch 
           --collect-data romsearch 
+          --icon=romsearch/gui/img/logo.ico
           --onefile 
           -n romsearch.exe
       - uses: softprops/action-gh-release@v2

@@ -1,4 +1,6 @@
-from PySide6.QtCore import Slot, Signal, QObject, QThread
+import os
+from PySide6.QtCore import Slot, Signal, QObject, QThread, QSize
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -27,6 +29,12 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_RomSearch()
         self.ui.setupUi(self)
+
+        # Set the window icon
+        icon_path = os.path.join(os.path.dirname(__file__), "img", "logo.png")
+        icon = QIcon()
+        icon.addFile(icon_path, QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.setWindowIcon(icon)
 
         log_level = self.ui.radioButtonConfigLoggerLevel.checkedButton().text().lower()
         self.logger = get_gui_logger(log_level=log_level)

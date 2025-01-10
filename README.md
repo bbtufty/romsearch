@@ -48,3 +48,5 @@ works for the following consoles:
 
 but be aware there may be quirks that will only become apparent over time. We encourage users to open
 [issues](https://github.com/bbtufty/romsearch/issues) as and where they find them.
+
+The ROMSearch icon has been created by [Freepik - Flaticon](https://www.flaticon.com/free-icons/rom).
