@@ -72,3 +72,5 @@ but be aware there may be quirks that will only become apparent over time. We en
 ROMSearch is also built in such a way that other platforms/filters can be added in a simple way using config files
 rather than manually adding to the base code. For more details of how these work, see the various
 :doc:`configs <configs>` pages.
+
+The ROMSearch icon has been created by `Freepik - Flaticon <https://www.flaticon.com/free-icons/rom>`_.
