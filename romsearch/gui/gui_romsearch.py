@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 from romsearch import ROMSearch
 from .gui_about import AboutWindow
 from .gui_config import ConfigWindow
+from .gui_rombrowser import ROMBrowser
 from .gui_utils import open_url, get_gui_logger
 from .layout_romsearch import Ui_RomSearch
 
@@ -44,8 +45,12 @@ class MainWindow(QMainWindow):
         self.romsearch_thread = None
         self.romsearch_worker = None
 
-        # Set up the config file here
+        # Set up the config file and ROMBrowser here
         self.config_window = ConfigWindow(self.ui, logger=self.logger)
+        self.rombrowser = ROMBrowser(main_ui=self.ui,
+                                     config_window=self.config_window,
+                                     logger=self.logger,
+                                     )
 
         # File menu buttons
         new_config = self.ui.actionNewConfigFile

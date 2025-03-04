@@ -6,11 +6,14 @@
 [![Actions](https://img.shields.io/github/actions/workflow/status/bbtufty/romsearch/build.yaml?branch=main&style=flat-square)](https://github.com/bbtufty/romsearch/actions)
 [![License](https://img.shields.io/badge/license-GNUv3-blue.svg?label=License&style=flat-square)](LICENSE)
 
-ROMSearch is designed as a simple-to-inferface with tool that will allow you to pull ROM files from some remote (or
+![ROMSearch](docs/images/rombrowser.png)
+
+ROMSearch is designed as a simple-to-interface with tool that will allow you to pull ROM files from some remote (or
 local) location, figure out the best ROM, and move it cleanly to a folder that can imported into an emulator. ROMSearch
 is supposed to be a one-shot program to get you from files online to playing games (which is what we want, right?).
 
-ROMSearch also has a GUI! Currently only for Windows, but makes setting up configurations simple and clean.
+ROMSearch also has a GUI! Currently only for Windows, but makes setting up configurations simple, and also allows
+for easy viewing of ROMs grouped into games via the ROMBrowser.
 
 ROMSearch offers the ability to:
 
@@ -21,6 +24,7 @@ ROMSearch offers the ability to:
 * Patch ROM files so RetroAchievements can be enabled
 * Moving files to a structured location, including potentially additional files that may be needed
 * Discord integration so users can see the results of runs in a simple, clean way
+* View ROMs grouped into game titles, via the ROMBrowser
 
 To get started, see the [documentation](https://romsearch.readthedocs.io/en/latest/). For known issues and workarounds, 
 see the [known issues](https://romsearch.readthedocs.io/en/latest/known_issues.html).

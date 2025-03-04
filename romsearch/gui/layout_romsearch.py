@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'layout_romsearch.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.3
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,17 +17,18 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QButtonGroup, QCheckBox,
-    QFrame, QGridLayout, QHBoxLayout, QLabel,
-    QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
-    QMenu, QMenuBar, QPushButton, QRadioButton,
-    QSizePolicy, QSpacerItem, QStatusBar, QTabWidget,
-    QVBoxLayout, QWidget)
+    QComboBox, QFrame, QGridLayout, QHBoxLayout,
+    QHeaderView, QLabel, QLineEdit, QListWidget,
+    QListWidgetItem, QMainWindow, QMenu, QMenuBar,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QStatusBar, QTabWidget, QTextBrowser, QTreeWidget,
+    QTreeWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_RomSearch(object):
     def setupUi(self, RomSearch):
         if not RomSearch.objectName():
             RomSearch.setObjectName(u"RomSearch")
-        RomSearch.resize(1179, 785)
+        RomSearch.resize(1173, 785)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1463,6 +1464,88 @@ class Ui_RomSearch(object):
         self.verticalLayout_2.addWidget(self.tabWidgetConfig)
 
         self.tabWidgetModules.addTab(self.tabConfig, "")
+        self.tabRomBrowser = QWidget()
+        self.tabRomBrowser.setObjectName(u"tabRomBrowser")
+        self.verticalLayout_5 = QVBoxLayout(self.tabRomBrowser)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.horizontalLayoutRomBrowserTop = QHBoxLayout()
+        self.horizontalLayoutRomBrowserTop.setObjectName(u"horizontalLayoutRomBrowserTop")
+        self.labelRomBrowserPlatform = QLabel(self.tabRomBrowser)
+        self.labelRomBrowserPlatform.setObjectName(u"labelRomBrowserPlatform")
+
+        self.horizontalLayoutRomBrowserTop.addWidget(self.labelRomBrowserPlatform)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutRomBrowserTop.addItem(self.horizontalSpacer)
+
+        self.comboBoxRomBrowserPlatform = QComboBox(self.tabRomBrowser)
+        self.comboBoxRomBrowserPlatform.setObjectName(u"comboBoxRomBrowserPlatform")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.comboBoxRomBrowserPlatform.sizePolicy().hasHeightForWidth())
+        self.comboBoxRomBrowserPlatform.setSizePolicy(sizePolicy2)
+        self.comboBoxRomBrowserPlatform.setFrame(True)
+
+        self.horizontalLayoutRomBrowserTop.addWidget(self.comboBoxRomBrowserPlatform)
+
+        self.horizontalSpacerRomBrowserTop = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutRomBrowserTop.addItem(self.horizontalSpacerRomBrowserTop)
+
+
+        self.verticalLayout_5.addLayout(self.horizontalLayoutRomBrowserTop)
+
+        self.horizontalLayoutRomBrowserMain = QHBoxLayout()
+        self.horizontalLayoutRomBrowserMain.setObjectName(u"horizontalLayoutRomBrowserMain")
+        self.verticalLayoutRomBrowserRoms = QVBoxLayout()
+        self.verticalLayoutRomBrowserRoms.setObjectName(u"verticalLayoutRomBrowserRoms")
+        self.horizontalLayoutRomBrowserSearch = QHBoxLayout()
+        self.horizontalLayoutRomBrowserSearch.setObjectName(u"horizontalLayoutRomBrowserSearch")
+        self.labelRomBrowserSearch = QLabel(self.tabRomBrowser)
+        self.labelRomBrowserSearch.setObjectName(u"labelRomBrowserSearch")
+
+        self.horizontalLayoutRomBrowserSearch.addWidget(self.labelRomBrowserSearch)
+
+        self.horizontalSpacerRomBrowserSearch = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutRomBrowserSearch.addItem(self.horizontalSpacerRomBrowserSearch)
+
+        self.lineEditRomBrowserSearch = QLineEdit(self.tabRomBrowser)
+        self.lineEditRomBrowserSearch.setObjectName(u"lineEditRomBrowserSearch")
+
+        self.horizontalLayoutRomBrowserSearch.addWidget(self.lineEditRomBrowserSearch)
+
+
+        self.verticalLayoutRomBrowserRoms.addLayout(self.horizontalLayoutRomBrowserSearch)
+
+        self.treeWidgetRomBrowser = QTreeWidget(self.tabRomBrowser)
+        self.treeWidgetRomBrowser.setObjectName(u"treeWidgetRomBrowser")
+        self.treeWidgetRomBrowser.setFrameShape(QFrame.Shape.WinPanel)
+        self.treeWidgetRomBrowser.setFrameShadow(QFrame.Shadow.Plain)
+        self.treeWidgetRomBrowser.setRootIsDecorated(True)
+
+        self.verticalLayoutRomBrowserRoms.addWidget(self.treeWidgetRomBrowser)
+
+
+        self.horizontalLayoutRomBrowserMain.addLayout(self.verticalLayoutRomBrowserRoms)
+
+        self.horizontalSpacerRomBrowserRomsAndDescriptions = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutRomBrowserMain.addItem(self.horizontalSpacerRomBrowserRomsAndDescriptions)
+
+        self.textBrowserRomBrowserRomDescriptions = QTextBrowser(self.tabRomBrowser)
+        self.textBrowserRomBrowserRomDescriptions.setObjectName(u"textBrowserRomBrowserRomDescriptions")
+        self.textBrowserRomBrowserRomDescriptions.setFrameShape(QFrame.Shape.WinPanel)
+        self.textBrowserRomBrowserRomDescriptions.setFrameShadow(QFrame.Shadow.Plain)
+
+        self.horizontalLayoutRomBrowserMain.addWidget(self.textBrowserRomBrowserRomDescriptions)
+
+
+        self.verticalLayout_5.addLayout(self.horizontalLayoutRomBrowserMain)
+
+        self.tabWidgetModules.addTab(self.tabRomBrowser, "")
 
         self.verticalLayout.addWidget(self.tabWidgetModules)
 
@@ -1495,7 +1578,7 @@ class Ui_RomSearch(object):
         RomSearch.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RomSearch)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1179, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1173, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1518,8 +1601,8 @@ class Ui_RomSearch(object):
 
         self.retranslateUi(RomSearch)
 
-        self.tabWidgetModules.setCurrentIndex(0)
-        self.tabWidgetConfig.setCurrentIndex(0)
+        self.tabWidgetModules.setCurrentIndex(1)
+        self.tabWidgetConfig.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(RomSearch)
@@ -1833,6 +1916,19 @@ class Ui_RomSearch(object):
         self.radioButtonConfigLoggerLevelCritical.setText(QCoreApplication.translate("RomSearch", u"Critical", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigLogger), QCoreApplication.translate("RomSearch", u"Logger", None))
         self.tabWidgetModules.setTabText(self.tabWidgetModules.indexOf(self.tabConfig), QCoreApplication.translate("RomSearch", u"Config", None))
+        self.labelRomBrowserPlatform.setText(QCoreApplication.translate("RomSearch", u"Platform:", None))
+        self.labelRomBrowserSearch.setText(QCoreApplication.translate("RomSearch", u"Search:", None))
+        ___qtreewidgetitem = self.treeWidgetRomBrowser.headerItem()
+        ___qtreewidgetitem.setText(0, QCoreApplication.translate("RomSearch", u"Select a platform above!", None));
+        self.textBrowserRomBrowserRomDescriptions.setHtml(QCoreApplication.translate("RomSearch", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"hr { height: 1px; border-width: 0; }\n"
+"li.unchecked::marker { content: \"\\2610\"; }\n"
+"li.checked::marker { content: \"\\2612\"; }\n"
+"</style></head><body style=\" font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", None))
+        self.tabWidgetModules.setTabText(self.tabWidgetModules.indexOf(self.tabRomBrowser), QCoreApplication.translate("RomSearch", u"ROMBrowser", None))
 #if QT_CONFIG(statustip)
         self.pushButtonExit.setStatusTip(QCoreApplication.translate("RomSearch", u"Exit ROMSearch", None))
 #endif // QT_CONFIG(statustip)

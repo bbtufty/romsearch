@@ -12,7 +12,9 @@ ROMSearch
    :target: https://romsearch.readthedocs.io/en/latest/
 .. image:: https://img.shields.io/badge/license-GNUv3-blue.svg?label=License&style=flat-square
 
-ROMSearch is designed as a simple-to-inferface with tool that will allow you to pull ROM files from some remote (or
+.. image:: images/rombrowser.png
+
+ROMSearch is designed as a simple-to-interface with tool that will allow you to pull ROM files from some remote (or
 local) location, figure out the best ROM, and move it cleanly to a folder that can imported into an emulator. ROMSearch
 is supposed to be a one-shot program to get you from files online to playing games (which is what we want, right?).
 
@@ -25,6 +27,7 @@ ROMSearch offers the ability to:
 * Patch ROM files so RetroAchievements can be enabled
 * Moving files to a structured location, including potentially additional files that may be needed
 * Discord integration so users can see the results of runs in a simple, clean way
+* View ROMs grouped into game titles, via the ROMBrowser
 
 To get started, see the :doc:`installation <installation>` and :doc:`configuration <configuration>` pages. For the
 philosophy behind how ROMSearch chooses a ROM, see :doc:`1G1R <1g1r>`. Romsearch has a UI option which we recommend

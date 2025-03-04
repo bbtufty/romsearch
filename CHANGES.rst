@@ -1,3 +1,11 @@
+0.2.0 (Unreleased)
+==================
+
+Features
+--------
+
+- Added ROMBrowser, for easier searching and parsing of ROMs
+
 0.1.2 (2024-01-10)
 ==================
 

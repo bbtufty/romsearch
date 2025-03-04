@@ -1,0 +1,77 @@
+original_name:
+  formatted_name: "Original name"
+
+dir_name:
+  formatted_name: "Directory name"
+
+short_name:
+  formatted_name: "Short name"
+
+region_free_name:
+  formatted_name: "Region-free name"
+
+multi_disc:
+  formatted_name: "Multi-disc"
+
+languages:
+  formatted_name: "Languages"
+
+add-ons:
+  formatted_name: "Add-on"
+
+applications:
+  formatted_name: "Application"
+
+audio:
+  formatted_name: "Audio"
+
+bad_dumps:
+  formatted_name: "Bad dump"
+
+console:
+  formatted_name: "Console"
+
+bonus_discs:
+  formatted_name: "Bonus disc"
+
+coverdiscs:
+  formatted_name: "Cover disc"
+
+demos:
+  formatted_name: "Demo"
+
+educational:
+  formatted_name: "Educational"
+
+manuals:
+  formatted_name: "Manual"
+
+multimedia:
+  formatted_name: "Multi-media"
+
+pirate:
+  formatted_name: "Pirate"
+
+preproduction:
+  formatted_name: "Pre-production"
+
+promotional:
+  formatted_name: "Promotional"
+
+unlicensed:
+  formatted_name: "Unlicensed"
+
+video:
+  formatted_name: "Video"
+
+budget_edition:
+  formatted_name: "Budget version"
+
+demoted_version:
+  formatted_name: "Demoted version"
+
+improved_version:
+  formatted_name: "Improved version"
+
+modern_version:
+  formatted_name: "Modern version"
