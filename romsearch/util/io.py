@@ -51,9 +51,14 @@ def unzip_file(
     out_dir = str(out_dir)
 
     with zipfile.ZipFile(zip_file_name, "r") as zip_file:
+
+        # Get the names of all the files we're going to extract
+        unzipped_files = zip_file.namelist()
+
+        # And extract
         zip_file.extractall(out_dir)
 
-    return True
+    return unzipped_files
 
 
 def load_json(file):

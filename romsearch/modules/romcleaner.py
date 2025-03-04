@@ -1,4 +1,5 @@
 import copy
+import fnmatch
 import glob
 import numpy as np
 import os
@@ -11,7 +12,6 @@ from ..util import (
     setup_logger,
     load_json,
     save_json,
-    get_directory_name,
 )
 
 
@@ -136,102 +136,56 @@ class ROMCleaner:
 
         full_rom_dir = os.path.join(self.rom_dir, self.platform)
 
-        # Find files on disk
-        roms_on_disk = glob.glob(os.path.join(full_rom_dir, "*", "*.*"))
-
-        # Pull out any included ROMs, stripping out the extension since that *may*
-        # change
-        roms_in_dict = []
-        for r in rom_dict:
-
-            for f in rom_dict[r]:
-                if rom_dict[r][f]["excluded"]:
-                    continue
-
-                rom_name = os.path.splitext(f)[0]
-
-                # We need to include if things have been patched. Pull that from the cache
-                patched = (
-                    self.cache.get(self.platform, {})
-                    .get(r, {})
-                    .get(f, {})
-                    .get("patched", False)
-                )
-                if patched:
-                    rom_name += " (ROMPatched)"
-
-                rom_dir = rom_dict[r][f]["dir_name"]
-
-                rom_name_w_dir = os.path.join(rom_dir, rom_name)
-
-                roms_in_dict.append(rom_name_w_dir)
-
         roms_cleaned = []
         cache_cleaned = []
         dict_cleaned = {}
 
-        for rom_on_disk in roms_on_disk:
+        # Find files in the cache that are no longer included
+        if self.platform in self.cache:
+            for r in self.cache[self.platform]:
+                for f in self.cache[self.platform][r]:
 
-            # Pull out a short ROM name, skipping any extensions and parent directories
-            rom_base = os.path.split(rom_on_disk)[-1]
-            rom_short = os.path.splitext(rom_base)[0]
+                    # Get whether we've excluded or not. If we don't have it in the ROM dict, it's excluded
+                    # by default
+                    excluded = rom_dict.get(r, {}).get(f, {}).get("excluded", True)
 
-            # Loop over, see if we can find the ROM
-            found_rom_in_dict = False
-            for r in roms_in_dict:
+                    # If we've excluded the file we want to delete it here both from the cache and on disk
+                    if excluded:
+                        if r not in dict_cleaned:
+                            dict_cleaned[r] = []
+                        dict_cleaned[r].append(f)
 
-                if found_rom_in_dict:
-                    continue
+        # Find items in the cache that aren't on disk
+        if self.platform in self.cache:
+            for r in self.cache[self.platform]:
+                for f in self.cache[self.platform][r]:
 
-                if str(r) in rom_on_disk:
-                    found_rom_in_dict = True
+                    # Just check if any files exist, to speed things up
+                    files_exist = False
 
-            # If we haven't found anything, clear out the cache
-            if not found_rom_in_dict:
+                    # If we don't have an output directory, we should clear this from the cache
+                    rom_output_directory = self.cache[self.platform][r][f].get(
+                        "output_directory", None
+                    )
+                    if rom_output_directory is None:
+                        dict_cleaned[r].append(f)
+                        continue
 
-                # Just loop through the dictionary
-                found_entry_in_dict = False
-                if self.platform in self.cache:
+                    for rom_file in self.cache[self.platform][r][f]["all_files"]:
+                        rom_output_file = os.path.join(
+                            full_rom_dir, rom_output_directory, rom_file
+                        )
 
-                    for g in self.cache[self.platform]:
+                        if os.path.exists(rom_output_file):
+                            files_exist = True
 
-                        if found_entry_in_dict:
+                        if files_exist:
                             continue
 
-                        # Because these can have disc names or whatever in, parse
-                        # to a dir name
-                        g_short = get_directory_name(g)
-
-                        for g_i in self.cache[self.platform][g]:
-
-                            if found_entry_in_dict:
-                                continue
-
-                            g_i_short = os.path.splitext(g_i)[0]
-
-                            if "(ROMPatched)" in rom_short:
-                                g_i_short += " (ROMPatched)"
-
-                            # Get this as a name we'd expect on disk
-                            g_i_on_disk = os.path.join(g_short, g_i_short)
-
-                            if str(g_i_on_disk) in rom_on_disk:
-
-                                # Also keep info on the dictionary stuff to clean from the cache
-                                if g not in dict_cleaned:
-                                    dict_cleaned[g] = []
-                                dict_cleaned[g].append(g_i)
-
-                                # Remove from the filesystem
-                                found_entry_in_dict = True
-                                roms_cleaned.append(rom_base)
-                                os.remove(rom_on_disk)
-                                self.logger.info(
-                                    centred_string(
-                                        f"Removed {rom_base} from disk",
-                                        total_length=self.log_line_length,
-                                    )
-                                )
+                    if not files_exist:
+                        if r not in dict_cleaned:
+                            dict_cleaned[r] = []
+                        dict_cleaned[r].append(f)
 
         # Now pass through, removing items we no longer need and keeping track
         # of empty cache items
@@ -243,52 +197,8 @@ class ROMCleaner:
                     if len(self.cache[self.platform][d]) == 0:
                         cache_items_to_pop.append(d)
 
-        # Go through all the cache entries and if we no longer have them on disk, clear those out
-        if self.platform in self.cache:
-            for d in self.cache[self.platform]:
-
-                d_is_to_remove = []
-
-                # Because these can have disc names or whatever in, parse
-                # to a dir name
-                d_short = get_directory_name(d)
-
-                for d_i in self.cache[self.platform][d]:
-                    found_d_i_on_disk = False
-
-                    d_i_short = os.path.splitext(d_i)[0]
-
-                    # Account for the fact the file might be patched
-                    if self.cache[self.platform][d][d_i]["patched"]:
-                        d_i_short += " (ROMPatched)"
-
-                    # Get this as a names we'd expect on disk
-                    d_i_on_disk = os.path.join(d_short, d_i_short)
-
-                    for r in roms_on_disk:
-
-                        if found_d_i_on_disk:
-                            continue
-
-                        if str(d_i_on_disk) in r:
-                            found_d_i_on_disk = True
-
-                    if not found_d_i_on_disk:
-                        d_is_to_remove.append(d_i)
-
-                for d_i_to_remove in d_is_to_remove:
-
-                    cache_cleaned.append(d_i_to_remove)
-                    self.cache[self.platform][d].pop(d_i_to_remove, None)
-                    self.logger.info(
-                        centred_string(
-                            f"Removed {d_i_to_remove} from cache",
-                            total_length=self.log_line_length,
-                        )
-                    )
-
-                    if len(self.cache[self.platform][d]) == 0:
-                        cache_items_to_pop.append(d)
+        cache_items_to_pop = np.unique(cache_items_to_pop)
+        cache_items_to_pop = [str(f) for f in cache_items_to_pop]
 
         # Clear out any empty cache items
         if self.platform in self.cache:
@@ -302,12 +212,53 @@ class ROMCleaner:
                     )
                 )
 
-        # Remove any empty directories
-        all_dirs = os.listdir(full_rom_dir)
-        for d in all_dirs:
-            full_dir = os.path.join(full_rom_dir, d)
-            if not os.listdir(full_dir):
-                shutil.rmtree(full_dir)
+        # Find files on disk, searching recursively
+        roms_on_disk = glob.glob(
+            os.path.join(full_rom_dir, "*/", "*.*"), recursive=True
+        )
+
+        # Clear out files that are not in the cache
+        roms_in_cache = []
+        if self.platform in self.cache:
+            for r in self.cache[self.platform]:
+
+                for f in self.cache[self.platform][r]:
+
+                    rom_output_directory = copy.deepcopy(
+                        self.cache[self.platform][r][f]["output_directory"]
+                    )
+
+                    for rom_file in self.cache[self.platform][r][f]["all_files"]:
+                        rom_file_w_directory = os.path.join(
+                            full_rom_dir, rom_output_directory, rom_file
+                        )
+                        roms_in_cache.append(rom_file_w_directory)
+
+        for r in roms_on_disk:
+
+            found_rom_in_cache = False
+
+            for c in roms_in_cache:
+
+                if found_rom_in_cache:
+                    continue
+
+                if fnmatch.fnmatchcase(r, c):
+                    found_rom_in_cache = True
+
+            if not found_rom_in_cache:
+                r_short = os.path.basename(r)
+                os.remove(r)
+                roms_cleaned.append(r_short)
+
+        # Remove any empty directories, searching recursively
+        for root, subdirs, _ in os.walk(full_rom_dir):
+
+            if len(subdirs) > 0:
+                for subdir in subdirs:
+                    full_dir = os.path.join(root, subdir)
+                    if not os.listdir(full_dir):
+                        shutil.rmtree(full_dir)
 
         # Because there can be some duplicates, remove here
         roms_cleaned = np.unique(roms_cleaned)

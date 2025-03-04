@@ -1,6 +1,8 @@
 group: "No-Intro"
 dir: "/No-Intro/Nintendo - Nintendo 64 (BigEndian)/"
 unzip: false
+file_exts:
+  - ".z64"
 
 # RetroAchievements
 ra_id: 2
@@ -8,7 +10,5 @@ ra_hash_method: "md5"
 
 # ROMPatcher
 patch_method: "rompatcher.js"
-file_exts:
-  - ".z64"
 patch_file_exts:
   - ".bps"
