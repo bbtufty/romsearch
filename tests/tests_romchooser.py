@@ -60,6 +60,7 @@ def test_romchooser_version():
 
     test_case = {
         TEST_NAME: {"priority": 1},
+        f"{TEST_NAME} (v.01)": {"priority": 1},
         f"{TEST_NAME} (v1.00)": {"priority": 1},
         f"{TEST_NAME} (v2.00)": {"priority": 1},
     }

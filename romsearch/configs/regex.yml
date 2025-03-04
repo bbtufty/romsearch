@@ -163,6 +163,8 @@ promo:
 version_no:
   pattern: "\\(v[\\.0-9].*?\\)"
   type: "str"
+  transform_pattern: "v((\\.)[0-9]*)"
+  transform_repl: "v0\\1"
   group: "version"
 
 long_version:

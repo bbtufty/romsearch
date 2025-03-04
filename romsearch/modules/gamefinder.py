@@ -727,10 +727,10 @@ class GameFinder:
         return parent_name, dupe_entry
 
     def apply_results(
-            self,
-            parent_name,
-            game_dict,
-            results,
+        self,
+        parent_name,
+        game_dict,
+        results,
     ):
         """Apply results to a filtered match
 

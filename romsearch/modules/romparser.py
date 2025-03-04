@@ -87,8 +87,9 @@ def get_pattern_val(
 
     return pattern_val
 
+
 def apply_filters(
-        file_dict,
+    file_dict,
 ):
     """Apply any filters we may have
 
@@ -1120,7 +1121,9 @@ class ROMParser:
                         file_dict[g] = file_dict[g] | file_dict[regex_key]
                     elif regex_type == "str":
                         if file_dict[g] and file_dict[regex_key]:
-                            raise ValueError("Can't combine multiple groups with type str")
+                            raise ValueError(
+                                "Can't combine multiple groups with type str"
+                            )
                         else:
                             file_dict[g] += file_dict[regex_key]
                     elif regex_type == "list":

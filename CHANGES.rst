@@ -6,6 +6,24 @@ Features
 
 - Added ROMBrowser, for easier searching and parsing of ROMs
 
+Fixes
+-----
+
+ROMCleaner
+~~~~~~~~~~
+
+- Significant cleanup to take account of new cache structure
+
+ROMMover
+~~~~~~~~
+
+- Updated cache to include output directory and all files
+
+General
+~~~~~~~
+
+- Fix crash when version formatted like 'v.21', and added test
+
 0.1.2 (2024-01-10)
 ==================
 

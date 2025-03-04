@@ -1,6 +1,8 @@
 group: "Redump"
 dir: "/Redump/Nintendo - GameCube - NKit RVZ [zstd-19-128k]/"
 unzip: true
+file_exts:
+  - ".rvz"
 
 # RetroAchievements
 ra_id: 16

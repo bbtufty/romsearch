@@ -162,23 +162,45 @@ class ROMMover:
 
             # Loop over here, since the extensions might change
             out_files = glob.glob(os.path.join(out_dir, "*"))
+            short_out_files = [os.path.basename(o) for o in out_files]
 
             final_file_exists = False
-            for o in out_files:
 
-                if final_file_exists:
-                    continue
+            # First, search for an exact match, but only if we're not unzipping
+            if not self.unzip and not to_patch_rom:
+                for o in short_out_files:
 
-                o_base = os.path.basename(o)
-                o_short = os.path.splitext(o_base)[0]
+                    if final_file_exists:
+                        continue
 
-                rom_short = os.path.splitext(rom)[0]
+                    if o == rom:
+                        final_file_exists = True
+
+            # If we're unzipping (and potentially patching), then pull the expected files out here and check again
+            if self.unzip or expecting_patched_rom:
+
+                # Pull potential file extensions out
+                file_exts = self.platform_config.get("file_exts", [])
+                if len(file_exts) == 0:
+                    raise ValueError(
+                        "ROM file extensions should be defined in the platform config"
+                    )
+
+                rom_no_ext = os.path.splitext(rom)[0]
+
+                # Add in that this has been patched, if necessary
                 if expecting_patched_rom:
-                    rom_short += " (ROMPatched)"
+                    rom_no_ext += " (ROMPatched)"
 
-                if o_short == rom_short:
-                    final_file_exists = True
+                # Loop over the files, loop over the ROM file extensions, look for a match
+                for o in short_out_files:
+                    for file_ext in file_exts:
+                        rom_w_ext = rom_no_ext + file_ext
 
+                        if o == rom_w_ext:
+                            final_file_exists = True
+
+            # If nothing has changed, then move on
             if rom_dict[rom]["file_mod_time"] == cache_mod_time and final_file_exists:
                 self.logger.info(
                     centred_string(
@@ -186,7 +208,35 @@ class ROMMover:
                         total_length=self.log_line_length,
                     )
                 )
+
+                # Gracefully update the cache from earlier versions
+                cache_files = (
+                    self.cache.get(self.platform, {})
+                    .get(self.game, {})
+                    .get(rom, {})
+                    .get("all_files", [])
+                )
+
+                if len(cache_files) == 0:
+
+                    # Log whether we've patched or not
+                    patched = False
+                    if expecting_patched_rom:
+                        patched = True
+                    rom_dict[rom]["patched"] = patched
+
+                    # Update the cache
+                    self.cache_update(
+                        rom=rom,
+                        files=short_out_files,
+                        out_dir=dir_name,
+                        rom_dict=rom_dict,
+                    )
+
                 continue
+
+            # We need to keep track of output files
+            out_files = []
 
             # If we're patching ROMs, then do that here
             if to_patch_rom:
@@ -220,7 +270,9 @@ class ROMMover:
 
             # Move the main file. Don't delete folders as the game and the out directory
             # don't necessarily match
-            move_file_success = self.move_file(full_rom, out_dir=out_dir, unzip=unzip)
+            move_file_success, moved_files = self.move_file(
+                full_rom, out_dir=out_dir, unzip=unzip
+            )
 
             if not move_file_success:
                 self.logger.warning(
@@ -230,6 +282,8 @@ class ROMMover:
                     )
                 )
                 continue
+
+            out_files.extend(moved_files)
 
             self.logger.info(
                 centred_string(f"Moved {rom}", total_length=self.log_line_length)
@@ -242,16 +296,30 @@ class ROMMover:
                     add_full_dir = f"{self.raw_dir} {add_dir}"
                     add_file = os.path.join(add_full_dir, rom)
                     if os.path.exists(add_file):
-                        self.move_file(add_file, unzip=self.unzip)
-                        self.logger.info(
-                            centred_string(
-                                f"Moved {rom} {add_dir}",
-                                total_length=self.log_line_length,
-                            )
+                        move_file_success, moved_files = self.move_file(
+                            add_file, unzip=self.unzip
                         )
 
+                        if not move_file_success:
+                            self.logger.warning(
+                                centred_string(
+                                    f"{rom} {add_dir} not found in raw directory, skipping",
+                                    total_length=self.log_line_length,
+                                )
+                            )
+                        else:
+                            self.logger.info(
+                                centred_string(
+                                    f"Moved {rom} {add_dir}",
+                                    total_length=self.log_line_length,
+                                )
+                            )
+                            out_files.extend(moved_files)
+
             # Update the cache
-            self.cache_update(file=rom, rom_dict=rom_dict)
+            self.cache_update(
+                rom=rom, files=out_files, out_dir=dir_name, rom_dict=rom_dict
+            )
 
             roms_moved.append(rom)
 
@@ -266,9 +334,11 @@ class ROMMover:
     ):
         """Move file to directory structure, optionally unzipping"""
 
+        moved_files = []
+
         # If the file doesn't exist, crash out
         if not os.path.exists(zip_file_name):
-            return False
+            return False, moved_files
 
         # If we don't have an output directory, set one from the game name
         if out_dir is None:
@@ -282,7 +352,8 @@ class ROMMover:
         out_dir = str(out_dir)
 
         if unzip:
-            unzip_file(zip_file_name, out_dir)
+            unzipped_files = unzip_file(zip_file_name, out_dir)
+            moved_files.extend(unzipped_files)
         else:
             short_zip_file = os.path.split(zip_file_name)[-1]
             out_file = os.path.join(out_dir, short_zip_file)
@@ -292,18 +363,23 @@ class ROMMover:
                 os.remove(out_file)
 
             os.link(zip_file_name, out_file)
+            moved_files.append(short_zip_file)
 
-        return True
+        return True, moved_files
 
     def cache_update(
         self,
-        file,
+        rom,
+        files,
+        out_dir,
         rom_dict,
     ):
         """Update the cache with new file data
 
         Args:
-            file: File to save to cache
+            rom: ROM name to save to cache
+            files: List of files to save to cache
+            out_dir: Output directory for files, relative to [rom_dir]/[platform]
             rom_dict: Dictionary of ROM properties
         """
 
@@ -318,11 +394,15 @@ class ROMMover:
             self.cache[self.platform][self.game] = {}
 
         # Include info about whether the ROM has been patched or not,
-        # and the patch file
-        self.cache[self.platform][self.game][file] = {
-            "file_mod_time": rom_dict[file]["file_mod_time"],
-            "patch_file": rom_dict[file]["patch_file"],
-            "patched": rom_dict[file]["patched"],
+        # the patch file, and all the files we've included and where
+        # we've put em
+
+        self.cache[self.platform][self.game][rom] = {
+            "file_mod_time": rom_dict[rom]["file_mod_time"],
+            "patch_file": rom_dict[rom]["patch_file"],
+            "patched": rom_dict[rom]["patched"],
+            "output_directory": out_dir,
+            "all_files": files,
         }
 
     def save_cache(self):

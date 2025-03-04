@@ -1,6 +1,8 @@
 group: "No-Intro"
 dir: "/No-Intro/Nintendo - Game Boy Color/"
 unzip: false
+file_exts:
+  - ".gbc"
 
 # RetroAchievements
 ra_id: 6
@@ -8,7 +10,5 @@ ra_hash_method: "md5"
 
 # ROMPatcher
 patch_method: "rompatcher.js"
-file_exts:
-  - ".gbc"
 patch_file_exts:
   - ".bps"

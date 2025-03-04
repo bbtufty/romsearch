@@ -162,11 +162,13 @@ class ROMSearch:
             # Pull in platform-specific config
             platform_config = self.get_platform_config(platform=platform)
 
-            dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = self.get_all_games(
-                platform=platform,
-                platform_config=platform_config,
-                log_line_sep=log_line_sep,
-                log_line_length=log_line_length,
+            dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
+                self.get_all_games(
+                    platform=platform,
+                    platform_config=platform_config,
+                    log_line_sep=log_line_sep,
+                    log_line_length=log_line_length,
+                )
             )
 
             all_roms_moved = []
@@ -175,15 +177,16 @@ class ROMSearch:
             for game in all_games:
 
                 rom_files = all_games[game]
-                rom_dict = self.run_romparser(rom_files=rom_files,
-                                              platform=platform,
-                                              game=game,
-                                              dat=dat_dict,
-                                              retool=retool_dict,
-                                              ra_hash=ra_hash_dict,
-                                              platform_config=platform_config,
-                                              log_line_length=log_line_length,
-                                              )
+                rom_dict = self.run_romparser(
+                    rom_files=rom_files,
+                    platform=platform,
+                    game=game,
+                    dat=dat_dict,
+                    retool=retool_dict,
+                    ra_hash=ra_hash_dict,
+                    platform_config=platform_config,
+                    log_line_length=log_line_length,
+                )
 
                 if self.run_romchooser:
                     # Here, we'll parse down the number of files to one game, one ROM
@@ -342,9 +345,10 @@ class ROMSearch:
 
         return True
 
-    def get_platform_config(self,
-                            platform,
-                            ):
+    def get_platform_config(
+        self,
+        platform,
+    ):
         """Get platform configuration
 
         Args:
@@ -383,9 +387,10 @@ class ROMSearch:
 
         raw_dir = os.path.join(self.raw_dir, platform)
 
-        ra_hash_dict = self.get_ra_hash_dict(platform=platform,
-                                             log_line_length=log_line_length,
-                                             )
+        ra_hash_dict = self.get_ra_hash_dict(
+            platform=platform,
+            log_line_length=log_line_length,
+        )
 
         # Parse DAT files here, if we're doing that
         dat_dict = None
@@ -511,10 +516,11 @@ class ROMSearch:
 
         return dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games
 
-    def get_ra_hash_dict(self,
-                         platform,
-                         log_line_length=100,
-                         ):
+    def get_ra_hash_dict(
+        self,
+        platform,
+        log_line_length=100,
+    ):
         """Get RetroAchievements hash dictionary
 
         Args:
@@ -535,16 +541,17 @@ class ROMSearch:
 
         return ra_hash_dict
 
-    def run_romparser(self,
-                      rom_files,
-                      platform,
-                      game,
-                      dat,
-                      retool,
-                      ra_hash,
-                      platform_config,
-                      log_line_length=100,
-                      ):
+    def run_romparser(
+        self,
+        rom_files,
+        platform,
+        game,
+        dat,
+        retool,
+        ra_hash,
+        platform_config,
+        log_line_length=100,
+    ):
         """Run the ROMParser
 
         Args:

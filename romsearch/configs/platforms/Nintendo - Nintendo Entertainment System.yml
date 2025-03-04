@@ -1,6 +1,8 @@
 group: "No-Intro"
 dir: "/No-Intro/Nintendo - Nintendo Entertainment System (Headered)/"
 unzip: false
+file_exts:
+  - ".nes"
 
 # RetroAchievements
 ra_id: 7
@@ -8,7 +10,5 @@ ra_hash_method: "custom"
 
 # ROMPatcher
 patch_method: "rompatcher.js"
-file_exts:
-  - ".nes"
 patch_file_exts:
   - ".ips"
