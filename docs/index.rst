@@ -17,6 +17,7 @@
    modules
    configs
    utils
+   planned_changes
    known_issues
    changelog
 

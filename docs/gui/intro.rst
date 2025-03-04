@@ -18,6 +18,9 @@ something like this:
 You can exit ROMSearch using the button in the bottom left, or run ROMSearch using the button on the bottom right. By
 default, it will load in sensible settings but you will need to add in the platforms you care about.
 
+You can also use the ROMBrowser to view useful information about each ROM file, and see how ROMSearch is grouping
+games up together.
+
 Creating a config file
 ----------------------
 
@@ -40,3 +43,4 @@ load you can do so by ``File->Load config file`` or ``Ctrl-O``.
   config_regions_languages
   config_includes_excludes
   config_modules
+  rombrowser
