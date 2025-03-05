@@ -28,7 +28,7 @@ class Ui_RomSearch(object):
     def setupUi(self, RomSearch):
         if not RomSearch.objectName():
             RomSearch.setObjectName(u"RomSearch")
-        RomSearch.resize(1173, 785)
+        RomSearch.resize(1298, 808)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -204,6 +204,27 @@ class Ui_RomSearch(object):
 
 
         self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigPatchDir)
+
+        self.labelConfigPatchDir_2 = QLabel(self.tabConfigMain)
+        self.labelConfigPatchDir_2.setObjectName(u"labelConfigPatchDir_2")
+
+        self.verticalLayoutConfigRomsearchDirs.addWidget(self.labelConfigPatchDir_2)
+
+        self.horizontalLayoutConfigCompressDir = QHBoxLayout()
+        self.horizontalLayoutConfigCompressDir.setObjectName(u"horizontalLayoutConfigCompressDir")
+        self.lineEditConfigCompressDir = QLineEdit(self.tabConfigMain)
+        self.lineEditConfigCompressDir.setObjectName(u"lineEditConfigCompressDir")
+
+        self.horizontalLayoutConfigCompressDir.addWidget(self.lineEditConfigCompressDir)
+
+        self.pushButtonConfigCompressDir = QPushButton(self.tabConfigMain)
+        self.pushButtonConfigCompressDir.setObjectName(u"pushButtonConfigCompressDir")
+        self.pushButtonConfigCompressDir.setFlat(False)
+
+        self.horizontalLayoutConfigCompressDir.addWidget(self.pushButtonConfigCompressDir)
+
+
+        self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigCompressDir)
 
         self.labelConfigDatDir = QLabel(self.tabConfigMain)
         self.labelConfigDatDir.setObjectName(u"labelConfigDatDir")
@@ -1317,6 +1338,76 @@ class Ui_RomSearch(object):
         self.verticalLayout_4.addLayout(self.gridLayoutConfigRomPatcher)
 
         self.tabWidgetConfig.addTab(self.tabConfigRomPatcher, "")
+        self.tabConfigRomCompressor = QWidget()
+        self.tabConfigRomCompressor.setObjectName(u"tabConfigRomCompressor")
+        self.gridLayout_3 = QGridLayout(self.tabConfigRomCompressor)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayoutConfigRomCompressor = QGridLayout()
+        self.gridLayoutConfigRomCompressor.setObjectName(u"gridLayoutConfigRomCompressor")
+        self.horizontalLayoutConfigRomCompressor = QHBoxLayout()
+        self.horizontalLayoutConfigRomCompressor.setObjectName(u"horizontalLayoutConfigRomCompressor")
+        self.horizontalSpacerConfigRomCompressorLeft = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutConfigRomCompressor.addItem(self.horizontalSpacerConfigRomCompressorLeft)
+
+        self.verticalLayoutConfigRomCompressor = QVBoxLayout()
+        self.verticalLayoutConfigRomCompressor.setObjectName(u"verticalLayoutConfigRomCompressor")
+        self.verticalSpacerConfigRomCompressorTop = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRomCompressor.addItem(self.verticalSpacerConfigRomCompressorTop)
+
+        self.lineConfigRomCompressorTop = QFrame(self.tabConfigRomCompressor)
+        self.lineConfigRomCompressorTop.setObjectName(u"lineConfigRomCompressorTop")
+        self.lineConfigRomCompressorTop.setFrameShape(QFrame.Shape.HLine)
+        self.lineConfigRomCompressorTop.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayoutConfigRomCompressor.addWidget(self.lineConfigRomCompressorTop)
+
+        self.labelConfigRomCompressorChdman = QLabel(self.tabConfigRomCompressor)
+        self.labelConfigRomCompressorChdman.setObjectName(u"labelConfigRomCompressorChdman")
+
+        self.verticalLayoutConfigRomCompressor.addWidget(self.labelConfigRomCompressorChdman)
+
+        self.horizontalLayoutConfigRomCompressorChdmanPath = QHBoxLayout()
+        self.horizontalLayoutConfigRomCompressorChdmanPath.setObjectName(u"horizontalLayoutConfigRomCompressorChdmanPath")
+        self.lineEditConfigRomCompressorChdmanPath = QLineEdit(self.tabConfigRomCompressor)
+        self.lineEditConfigRomCompressorChdmanPath.setObjectName(u"lineEditConfigRomCompressorChdmanPath")
+
+        self.horizontalLayoutConfigRomCompressorChdmanPath.addWidget(self.lineEditConfigRomCompressorChdmanPath)
+
+        self.pushButtonConfigRomCompressorChdmanPath = QPushButton(self.tabConfigRomCompressor)
+        self.pushButtonConfigRomCompressorChdmanPath.setObjectName(u"pushButtonConfigRomCompressorChdmanPath")
+
+        self.horizontalLayoutConfigRomCompressorChdmanPath.addWidget(self.pushButtonConfigRomCompressorChdmanPath)
+
+
+        self.verticalLayoutConfigRomCompressor.addLayout(self.horizontalLayoutConfigRomCompressorChdmanPath)
+
+        self.lineConfigRomCompressorBottom = QFrame(self.tabConfigRomCompressor)
+        self.lineConfigRomCompressorBottom.setObjectName(u"lineConfigRomCompressorBottom")
+        self.lineConfigRomCompressorBottom.setFrameShape(QFrame.Shape.HLine)
+        self.lineConfigRomCompressorBottom.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayoutConfigRomCompressor.addWidget(self.lineConfigRomCompressorBottom)
+
+        self.verticalSpacerConfigRomCompressorBottom = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRomCompressor.addItem(self.verticalSpacerConfigRomCompressorBottom)
+
+
+        self.horizontalLayoutConfigRomCompressor.addLayout(self.verticalLayoutConfigRomCompressor)
+
+        self.horizontalSpacerConfigRomCompressorRight = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayoutConfigRomCompressor.addItem(self.horizontalSpacerConfigRomCompressorRight)
+
+
+        self.gridLayoutConfigRomCompressor.addLayout(self.horizontalLayoutConfigRomCompressor, 0, 0, 1, 1)
+
+
+        self.gridLayout_3.addLayout(self.gridLayoutConfigRomCompressor, 0, 0, 1, 1)
+
+        self.tabWidgetConfig.addTab(self.tabConfigRomCompressor, "")
         self.tabConfigDiscord = QWidget()
         self.tabConfigDiscord.setObjectName(u"tabConfigDiscord")
         self.horizontalLayout_8 = QHBoxLayout(self.tabConfigDiscord)
@@ -1578,7 +1669,7 @@ class Ui_RomSearch(object):
         RomSearch.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RomSearch)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1173, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1298, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1601,8 +1692,8 @@ class Ui_RomSearch(object):
 
         self.retranslateUi(RomSearch)
 
-        self.tabWidgetModules.setCurrentIndex(1)
-        self.tabWidgetConfig.setCurrentIndex(1)
+        self.tabWidgetModules.setCurrentIndex(0)
+        self.tabWidgetConfig.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RomSearch)
@@ -1697,6 +1788,17 @@ class Ui_RomSearch(object):
         self.lineEditConfigPatchDir.setText(QCoreApplication.translate("RomSearch", u"patches", None))
         self.lineEditConfigPatchDir.setPlaceholderText("")
         self.pushButtonConfigPatchDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+#if QT_CONFIG(statustip)
+        self.labelConfigPatchDir_2.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for patches", None))
+#endif // QT_CONFIG(statustip)
+        self.labelConfigPatchDir_2.setText(QCoreApplication.translate("RomSearch", u"Compression Directory", None))
+#if QT_CONFIG(statustip)
+        self.lineEditConfigCompressDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for patches", None))
+#endif // QT_CONFIG(statustip)
+        self.lineEditConfigCompressDir.setInputMask("")
+        self.lineEditConfigCompressDir.setText(QCoreApplication.translate("RomSearch", u"compress", None))
+        self.lineEditConfigCompressDir.setPlaceholderText("")
+        self.pushButtonConfigCompressDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
 #if QT_CONFIG(statustip)
         self.labelConfigDatDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for raw .dat files", None))
 #endif // QT_CONFIG(statustip)
@@ -1905,6 +2007,10 @@ class Ui_RomSearch(object):
         self.lineEditConfigRomPatcherRomPatcherjsPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"index.js", None))
         self.pushButtonConfigRomPatcherRomPatcherjsPath.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomPatcher), QCoreApplication.translate("RomSearch", u"ROMPatcher", None))
+        self.labelConfigRomCompressorChdman.setText(QCoreApplication.translate("RomSearch", u"chdman path", None))
+        self.lineEditConfigRomCompressorChdmanPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"chdman.exe", None))
+        self.pushButtonConfigRomCompressorChdmanPath.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+        self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomCompressor), QCoreApplication.translate("RomSearch", u"ROMCompressor", None))
         self.labelConfigDiscordWebhookUrlTitle.setText(QCoreApplication.translate("RomSearch", u"Webhook URL", None))
         self.labelConfigDiscordWebhookUrlDescription.setText(QCoreApplication.translate("RomSearch", u"URL for Discord webhooks. Must be set for notifications to be sent", None))
         self.lineEditConfigDiscordWebhookUrl.setText("")

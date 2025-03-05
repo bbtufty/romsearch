@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1173</width>
-    <height>785</height>
+    <width>1298</width>
+    <height>808</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -293,6 +293,46 @@
                     </item>
                     <item>
                      <widget class="QPushButton" name="pushButtonConfigPatchDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigPatchDir_2">
+                    <property name="statusTip">
+                     <string>Location for patches</string>
+                    </property>
+                    <property name="text">
+                     <string>Compression Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigCompressDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigCompressDir">
+                      <property name="statusTip">
+                       <string>Location for patches</string>
+                      </property>
+                      <property name="inputMask">
+                       <string/>
+                      </property>
+                      <property name="text">
+                       <string>compress</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigCompressDir">
                       <property name="text">
                        <string>Browse</string>
                       </property>
@@ -2272,6 +2312,116 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tabConfigRomCompressor">
+           <attribute name="title">
+            <string>ROMCompressor</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayoutConfigRomCompressor">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayoutConfigRomCompressor">
+                <item>
+                 <spacer name="horizontalSpacerConfigRomCompressorLeft">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutConfigRomCompressor">
+                  <item>
+                   <spacer name="verticalSpacerConfigRomCompressorTop">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomCompressorTop">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="labelConfigRomCompressorChdman">
+                    <property name="text">
+                     <string>chdman path</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigRomCompressorChdmanPath">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigRomCompressorChdmanPath">
+                      <property name="placeholderText">
+                       <string>chdman.exe</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigRomCompressorChdmanPath">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigRomCompressorBottom">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="verticalSpacerConfigRomCompressorBottom">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacerConfigRomCompressorRight">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="tabConfigDiscord">
            <attribute name="title">
             <string>Discord</string>
@@ -2765,7 +2915,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1173</width>
+     <width>1298</width>
      <height>33</height>
     </rect>
    </property>
@@ -2857,7 +3007,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigLoggerLevel"/>
   <buttongroup name="radioButtonConfigRomsearchMethod"/>
+  <buttongroup name="radioButtonConfigLoggerLevel"/>
  </buttongroups>
 </ui>

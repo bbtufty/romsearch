@@ -5,6 +5,7 @@ Features
 --------
 
 - Added ROMBrowser, for easier searching and parsing of ROMs
+- Added ROMCompressor, which can compress files into a different format
 
 Fixes
 -----

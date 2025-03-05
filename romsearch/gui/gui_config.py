@@ -145,6 +145,7 @@ class ConfigWindow(QMainWindow):
             "raw_dir": self.ui.lineEditConfigRawDir,
             "rom_dir": self.ui.lineEditConfigRomDir,
             "patch_dir": self.ui.lineEditConfigPatchDir,
+            "compress_dir": self.ui.lineEditConfigCompressDir,
             "ra_hash_dir": self.ui.lineEditConfigRAHashDir,
             "dat_dir": self.ui.lineEditConfigDatDir,
             "parsed_dat_dir": self.ui.lineEditConfigParsedDatDir,
@@ -157,6 +158,7 @@ class ConfigWindow(QMainWindow):
             "raw_dir": self.ui.pushButtonConfigRawDir,
             "rom_dir": self.ui.pushButtonConfigRomDir,
             "patch_dir": self.ui.pushButtonConfigPatchDir,
+            "compress_dir": self.ui.pushButtonConfigCompressDir,
             "ra_hash_dir": self.ui.pushButtonConfigRAHashDir,
             "dat_dir": self.ui.pushButtonConfigDatDir,
             "parsed_dat_dir": self.ui.pushButtonConfigParsedDatDir,
@@ -174,10 +176,12 @@ class ConfigWindow(QMainWindow):
         self.all_files = {
             "xdelta_path": self.ui.lineEditConfigRomPatcherxdeltaPath,
             "rompatcher_js_path": self.ui.lineEditConfigRomPatcherRomPatcherjsPath,
+            "chdman_path": self.ui.lineEditConfigRomCompressorChdmanPath,
         }
         self.all_files_buttons = {
             "xdelta_path": self.ui.pushButtonConfigRomPatcherxdeltaPath,
             "rompatcher_js_path": self.ui.pushButtonConfigRomPatcherRomPatcherjsPath,
+            "chdman_path": self.ui.pushButtonConfigRomCompressorChdmanPath,
         }
         for b in self.all_files_buttons:
             self.all_files_buttons[b].clicked.connect(
@@ -197,6 +201,10 @@ class ConfigWindow(QMainWindow):
         self.rompatcher_text_fields = {
             "xdelta_path": self.ui.lineEditConfigRomPatcherxdeltaPath,
             "rompatcher_js_path": self.ui.lineEditConfigRomPatcherRomPatcherjsPath,
+        }
+
+        self.romcompressor_text_fields = {
+            "chdman_path": self.ui.lineEditConfigRomCompressorChdmanPath,
         }
 
         self.discord_text_fields = {
@@ -561,6 +569,7 @@ class ConfigWindow(QMainWindow):
             "romdownloader": self.romdownloader_text_fields,
             "rahasher": self.rahasher_text_fields,
             "rompatcher": self.rompatcher_text_fields,
+            "romcompressor": self.romcompressor_text_fields,
             "discord": self.discord_text_fields,
         }
 
@@ -710,6 +719,7 @@ class ConfigWindow(QMainWindow):
             "romdownloader": self.romdownloader_text_fields,
             "rahasher": self.rahasher_text_fields,
             "rompatcher": self.rompatcher_text_fields,
+            "romcompressor": self.romcompressor_text_fields,
             "discord": self.discord_text_fields,
         }
         for k in keys:

@@ -4,6 +4,7 @@ import os
 import shutil
 
 import romsearch
+from .romcompressor import ROMCompressor
 from .rompatcher import ROMPatcher
 from ..util import (
     centred_string,
@@ -63,6 +64,9 @@ class ROMMover:
             )
         self.logger = logger
 
+        self.log_line_sep = log_line_sep
+        self.log_line_length = log_line_length
+
         # Pull in directories
         self.raw_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if self.raw_dir is None:
@@ -106,14 +110,40 @@ class ROMMover:
         self.platform_config = platform_config
 
         self.unzip = self.platform_config.get("unzip", False)
+        self.compress = self.platform_config.get("compress", False)
+        self.compress_method = self.platform_config.get("compress_method", None)
 
-        self.log_line_sep = log_line_sep
-        self.log_line_length = log_line_length
+        # We should only have one of unzip or compress set
+        if self.unzip and self.compress:
+            raise ValueError("unzip and compress can't be used together")
+
+        # If we have compression on, we need to define a compression method
+        if self.compress and self.compress_method is None:
+            raise ValueError("compress_method needs to be defined if compressing")
+
+        # If we have compression, make sure we have a path to the tool defined
+        self.compress_method_path = self.config.get("romcompressor", {}).get(
+            f"{self.compress_method}_path", None
+        )
+        if self.compress and self.compress_method_path is None:
+            self.logger.error(
+                centred_string(
+                    f"{self.compress_method}_path needs to be defined in the user config if compressing."
+                    f"Disabling compression",
+                    total_length=self.log_line_length,
+                )
+            )
+            self.compress = False
 
     def run(
         self,
         rom_dict,
     ):
+        """Run the ROMMover
+
+        Args:
+            rom_dict (dict): ROM dictionary
+        """
 
         roms_moved = self.move_roms(rom_dict)
         self.save_cache()
@@ -121,7 +151,11 @@ class ROMMover:
         return roms_moved
 
     def move_roms(self, rom_dict):
-        """Actually move the roms"""
+        """Actually move the roms
+
+        Args:
+            rom_dict (dict): ROM dictionary
+        """
 
         roms_moved = []
 
@@ -179,26 +213,22 @@ class ROMMover:
             # If we're unzipping (and potentially patching), then pull the expected files out here and check again
             if self.unzip or expecting_patched_rom:
 
-                # Pull potential file extensions out
-                file_exts = self.platform_config.get("file_exts", [])
-                if len(file_exts) == 0:
-                    raise ValueError(
-                        "ROM file extensions should be defined in the platform config"
-                    )
+                final_file_exists = self.check_files_exist(
+                    rom=rom,
+                    files=short_out_files,
+                    file_ext_key="file_exts",
+                    patched_rom=expecting_patched_rom,
+                )
 
-                rom_no_ext = os.path.splitext(rom)[0]
+            # If we're compressing, then pull the expected files out here and check again
+            if self.compress:
 
-                # Add in that this has been patched, if necessary
-                if expecting_patched_rom:
-                    rom_no_ext += " (ROMPatched)"
-
-                # Loop over the files, loop over the ROM file extensions, look for a match
-                for o in short_out_files:
-                    for file_ext in file_exts:
-                        rom_w_ext = rom_no_ext + file_ext
-
-                        if o == rom_w_ext:
-                            final_file_exists = True
+                final_file_exists = self.check_files_exist(
+                    rom=rom,
+                    files=short_out_files,
+                    file_ext_key="compress_file_exts",
+                    patched_rom=expecting_patched_rom,
+                )
 
             # If nothing has changed, then move on
             if rom_dict[rom]["file_mod_time"] == cache_mod_time and final_file_exists:
@@ -265,6 +295,20 @@ class ROMMover:
 
                 patched = False
 
+            # If we're compressing ROMs, do that here
+            if self.compress:
+
+                if to_patch_rom:
+                    raise NotImplementedError(
+                        "Currently cannot handle compressing of patched files"
+                    )
+
+                rom_file = os.path.join(self.raw_dir, self.platform, rom)
+
+                full_rom = self.compress_file(
+                    rom_file,
+                )
+
             # Log whether we've patched or not
             rom_dict[rom]["patched"] = patched
 
@@ -325,6 +369,47 @@ class ROMMover:
 
         return roms_moved
 
+    def check_files_exist(
+        self,
+        rom,
+        files,
+        file_ext_key,
+        patched_rom=False,
+    ):
+        """Check files exist, so we know whether to move things around or not
+
+        Args:
+            rom: ROM name
+            files: List of existing files
+            file_ext_key: Potential file extensions
+            patched_rom: Whether ROM is patched or not. Defaults to False
+        """
+
+        final_file_exists = False
+
+        # Pull potential file extensions out
+        file_exts = self.platform_config.get(file_ext_key, [])
+        if len(file_exts) == 0:
+            raise ValueError(
+                "ROM file extensions should be defined in the platform config"
+            )
+
+        rom_no_ext = os.path.splitext(rom)[0]
+
+        # Add in that this has been patched, if necessary
+        if patched_rom:
+            rom_no_ext += " (ROMPatched)"
+
+        # Loop over the files, loop over the ROM file extensions, look for a match
+        for o in files:
+            for file_ext in file_exts:
+                rom_w_ext = rom_no_ext + file_ext
+
+                if o == rom_w_ext:
+                    final_file_exists = True
+
+        return final_file_exists
+
     def move_file(
         self,
         zip_file_name,
@@ -366,6 +451,30 @@ class ROMMover:
             moved_files.append(short_zip_file)
 
         return True, moved_files
+
+    def compress_file(
+        self,
+        rom,
+    ):
+        """Compress a file
+
+        Args:
+            rom: ROM name
+        """
+
+        rc = ROMCompressor(
+            platform=self.platform,
+            config=self.config,
+            compress_method=self.compress_method,
+            compress_method_path=self.compress_method_path,
+            logger=self.logger,
+            log_line_length=self.log_line_length,
+            log_line_sep=self.log_line_sep,
+        )
+
+        compressed_file = rc.run(rom)
+
+        return compressed_file
 
     def cache_update(
         self,

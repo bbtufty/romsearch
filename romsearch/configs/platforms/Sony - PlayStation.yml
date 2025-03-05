@@ -1,9 +1,13 @@
 group: "Redump"
 dir: "/Redump/Sony - PlayStation/"
-unzip: true
+unzip: false
 file_exts:
   - ".bin"
   - ".cue"
+compress: true
+compress_method: "chdman"
+compress_file_exts:
+  - ".chd"
 
 additional_dirs:
   SBI: "/Redump/Sony - PlayStation - SBI Subchannels/"
