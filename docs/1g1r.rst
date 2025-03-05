@@ -15,6 +15,8 @@ Firstly, ROMs are filtered.
   so demos, beta, etc.)
 * We then filter out ROMs that don't have languages (or implied languages) that are in the user preferences
 * ROMs are filtered if they don't have regions in the user preferences
+* Optionally, you can filter out any modern versions. If not, they will still be de-prioritized in the scoring, but
+  this option allows you to remove them altogether
 
 Scoring
 -------

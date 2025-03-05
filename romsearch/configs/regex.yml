@@ -541,14 +541,6 @@ kaiser:
   pattern: "\\(Kaiser\\)"
   group: "demoted_version"
 
-kickstarter:
-  pattern: "\\(Kickstarter\\)"
-  group: "demoted_version"
-
-kickstarter_version:
-  pattern: "\\(Kickstarter Version\\)"
-  group: "demoted_version"
-
 hardware_version:
   pattern: "\\(Hardware Version\\)"
   group: "demoted_version"
@@ -675,10 +667,6 @@ software_boukonban:
 
 software_tantaiban:
   pattern: "\\(Software Tantaiban\\)"
-  group: "demoted_version"
-
-the_retro_room:
-  pattern: "\\(The Retro Room\\)"
   group: "demoted_version"
 
 waixing:
@@ -1044,6 +1032,18 @@ disney_afternoon_collection:
   pattern: "\\(The Disney Afternoon Collection\\)"
   group: "modern_version"
 
+kickstarter:
+  pattern: "\\(Kickstarter\\)"
+  group: "modern_version"
+
+kickstarter_version:
+  pattern: "\\(Kickstarter Version\\)"
+  group: "modern_version"
+
+metal_gear_solid_collection:
+  pattern: "\\(Metal Gear Solid Collection\\)"
+  group: "modern_version"
+
 mega_man_battle_network_legacy_collection:
   pattern: "\\(Mega Man Battle Network Legacy Collection\\)"
   group: "modern_version"
@@ -1066,6 +1066,14 @@ namco_museum_archives:
 
 ninja_jajamaru_retro:
   pattern: "\\(Ninja JaJaMaru Retro Collection\\)"
+  group: "modern_version"
+
+red_art_games:
+  pattern: "\\(Red Art Games\\)"
+  group: "modern_version"
+
+the_retro_room:
+  pattern: "\\(The Retro Room\\)"
   group: "modern_version"
 
 sega_classic_collection:

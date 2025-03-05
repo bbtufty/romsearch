@@ -76,6 +76,8 @@ Syntax: ::
 
     romchooser:                         # ROMChooser specific options
       dry_run: false                    # OPTIONAL. Set to true to not make any changes to filesystem. Defaults to false
+      exclude_modern: false             # OPTIONAL. If true, will not include ROMs flagged as modern versions in the
+                                                    selection. Defaults to false
       use_best_version: true            # OPTIONAL. Whether to choose only what ROMChooser decides is the best version.
                                         #           Defaults to true
       filter_regions: true              # OPTIONAL. Whether to filter by region or not. Defaults to true

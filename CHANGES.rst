@@ -10,6 +10,11 @@ Features
 Fixes
 -----
 
+ROMChooser
+~~~~~~~~~~
+
+- Add option to exclude modern releases (off by default)
+
 ROMCleaner
 ~~~~~~~~~~
 
@@ -24,6 +29,8 @@ General
 ~~~~~~~
 
 - Fix crash when version formatted like 'v.21', and added test
+- Updated regex to move Kickstarter, The Retro Room to modern versions
+- Added "Red Art Games" and "Metal Gear Solid Collection" to modern versions in regex
 
 0.1.2 (2024-01-10)
 ==================
