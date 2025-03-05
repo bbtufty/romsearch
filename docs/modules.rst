@@ -20,4 +20,5 @@ the available modules.
   modules/romchooser
   modules/rommover
   modules/rompatcher
+  modules/romcompressor
   modules/romcleaner

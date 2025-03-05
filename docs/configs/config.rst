@@ -13,6 +13,7 @@ Syntax: ::
       raw_dir: [raw_dir]                # Raw directory to download ROM files using ROMDownloader
       rom_dir: [rom_dir]                # Final output directory for ROMs. Will automatically subdivide by platform
       patch_dir: [patch_dir]            # Directory for patch files. Will divide up by game
+      compress_dir: [patch_dir]         # Directory for compressed files. Will subdivide by platform
       ra_hash_dir: [ra_hash_dir]        # Directory for parsed RA platform hashes
       dat_dir: [dat_dir]                # Directory to place raw .dat files
       parsed_dat_dir: [parsed_dat_dir]  # Directory to place parsed .dat files, as well as clonelists
@@ -87,6 +88,9 @@ Syntax: ::
     rompatcher:                                # ROMPatcher specific options
       xdelta_path: [path_to_xdelta]            # OPTIONAL. This is where xdelta is located on your filesystem
       rompatcher_js_path: [path_to_rompatcher] # OPTIONAL. This is where RomPatcher.js is located on your filesystem
+
+    romcompressor:                             # ROMCompressor specific options
+      chdman_path: [path_to_chdman]            # OPTIONAL. This is where chdman.exe is located on your filesystem
 
     discord:                            # OPTIONAL. If defined, supply a webhook URL so that ROMSearch can post Discord
       webhook_url: [webhook_url]        #           notifications
