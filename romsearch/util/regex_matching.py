@@ -117,6 +117,38 @@ def get_short_name(
     return f
 
 
+def get_disc_free_name(
+    f,
+    regex_config=None,
+    default_config=None,
+):
+    """Get disc-free game name from the ROM file naming convention"""
+
+    if ".zip" in f:
+        f = f.rstrip(".zip")
+
+    mod_dir = os.path.dirname(romsearch.__file__)
+
+    if default_config is None:
+        default_file = os.path.join(mod_dir, "configs", "defaults.yml")
+        default_config = load_yml(default_file)
+
+    if regex_config is None:
+        regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+        regex_config = load_yml(regex_file)
+
+    # We only care about whether something's multi-disc here
+    regex_config = {
+        "multi_disc": copy.deepcopy(regex_config["multi_disc"]),
+    }
+    # And make sure we strip from the name
+    regex_config["multi_disc"]["include_in_short_name"] = False
+
+    disc_free_name = get_short_name(f, regex_config, default_config)
+
+    return disc_free_name
+
+
 def get_region_free_name(
     f,
     regex_config=None,

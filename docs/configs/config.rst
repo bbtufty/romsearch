@@ -39,6 +39,8 @@ Syntax: ::
     romsearch:                          # ROMSearch specific options
       method: 'filter_then_download'    # OPTIONAL. Method to use, option are 'filter_then_download', or
                                         #           'download_then_filter'. Defaults to 'filter_then_download'
+      handle_multi_discs: false         # OPTIONAL. Whether to group multi-disc games into a single .m3u file. Defaults
+                                        #           to false
       run_romdownloader: true           # OPTIONAL. Whether to run ROMDownloader. Defaults to true
       run_rahasher: false               # OPTIONAL. Whether to run RAHasher. Defaults to false
       run_datparser: true               # OPTIONAL. Whether to run DATParser. Defaults to true

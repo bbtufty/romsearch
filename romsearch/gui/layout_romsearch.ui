@@ -718,6 +718,52 @@
                    </widget>
                   </item>
                   <item>
+                   <spacer name="verticalSpacerConfigRomsearchModulesLower_5">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Vertical</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>20</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigMultiDisc_2">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigHandleMultiDiscs">
+                    <property name="statusTip">
+                     <string>Group multi-disc files together and create an m3u playlist?</string>
+                    </property>
+                    <property name="text">
+                     <string>Create m3u playlists for multi-disc files</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigMultiDisc">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <spacer name="verticalSpacerConfigRomsearchModulesLower">
                     <property name="orientation">
                      <enum>Qt::Orientation::Vertical</enum>
@@ -3033,7 +3079,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigLoggerLevel"/>
   <buttongroup name="radioButtonConfigRomsearchMethod"/>
+  <buttongroup name="radioButtonConfigLoggerLevel"/>
  </buttongroups>
 </ui>

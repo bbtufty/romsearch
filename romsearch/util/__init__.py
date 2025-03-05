@@ -7,6 +7,7 @@ from .regex_matching import (
     get_bracketed_file_pattern,
     get_directory_name,
     get_short_name,
+    get_disc_free_name,
     get_region_free_name,
 )
 
@@ -20,6 +21,7 @@ __all__ = [
     "get_file_pattern",
     "get_directory_name",
     "get_short_name",
+    "get_disc_free_name",
     "get_region_free_name",
     "load_json",
     "save_json",

@@ -47,6 +47,11 @@ class ROMCleaner:
             config = load_yml(config_file)
         self.config = config
 
+        # Whether we'll handle multi-disc files or not
+        self.handle_multi_discs = self.config.get("romsearch", {}).get(
+            "handle_multi_discs", False
+        )
+
         if logger is None:
             log_dir = self.config.get("dirs", {}).get(
                 "log_dir", os.path.join(os.getcwd(), "logs")
@@ -145,9 +150,20 @@ class ROMCleaner:
             for r in self.cache[self.platform]:
                 for f in self.cache[self.platform][r]:
 
-                    # Get whether we've excluded or not. If we don't have it in the ROM dict, it's excluded
-                    # by default
-                    excluded = rom_dict.get(r, {}).get(f, {}).get("excluded", True)
+                    is_multi_disc = self.cache[self.platform][r][f].get(
+                        "multi_disc", False
+                    )
+
+                    if not is_multi_disc:
+                        # Get whether we've excluded or not. If we don't have it in the ROM dict, it's excluded
+                        # by default
+                        excluded = rom_dict.get(r, {}).get(f, {}).get("excluded", True)
+                    else:
+
+                        # If we've got a multi-disc file, but we're not supposed to have them, then exclude
+                        excluded = True
+                        if self.handle_multi_discs:
+                            excluded = False
 
                     # If we've excluded the file we want to delete it here both from the cache and on disk
                     if excluded:

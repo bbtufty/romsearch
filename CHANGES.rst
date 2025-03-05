@@ -4,6 +4,7 @@
 Features
 --------
 
+- Added ability to handle multi-disc files, using m3u files
 - Added ROMBrowser, for easier searching and parsing of ROMs
 - Added ROMCompressor, which can compress files into a different format
 
@@ -23,6 +24,7 @@ ROMCleaner
 ROMMover
 ~~~~~~~~
 
+- Refactored to loop over entire platform
 - Updated cache to include output directory and all files
 
 General

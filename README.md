@@ -23,6 +23,7 @@ ROMSearch offers the ability to:
 * Match ROM hashes to RetroAchievements to get compatible ROMs 
 * Patch ROM files so RetroAchievements can be enabled
 * Moving files to a structured location, including potentially additional files that may be needed
+* Grouping multi-disc games into a single .m3u playlist
 * File (re)compression to a single-file, supported format
 * Discord integration so users can see the results of runs in a simple, clean way
 * View ROMs grouped into game titles, via the ROMBrowser

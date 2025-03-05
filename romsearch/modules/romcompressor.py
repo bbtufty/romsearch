@@ -102,45 +102,61 @@ class ROMCompressor:
             rom: ROM file to compress
         """
 
-        # Start by unzipping to a temp folder in the compress directory, then do the compression
-        temp_dir = os.path.join(self.compress_dir, "temp")
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir)
+        # Check if we've already compressed
+        rom_no_ext = os.path.splitext(os.path.basename(rom))[0]
+        compressed_file = glob.glob(os.path.join(self.compress_dir, f"{rom_no_ext}.*"))
 
-        self.logger.info(
-            centred_string(
-                f"Compressing {os.path.basename(rom)} with {self.compress_method}",
-                total_length=self.log_line_length,
+        # If we already have the compressed file, we can return
+        if len(compressed_file) == 1:
+            compressed_file = compressed_file[0]
+
+        # If we've got nothing, do the compression
+        elif len(compressed_file) == 0:
+
+            # Start by unzipping to a temp folder in the compress directory, then do the compression
+            temp_dir = os.path.join(self.compress_dir, "temp")
+            if not os.path.exists(temp_dir):
+                os.makedirs(temp_dir)
+
+            self.logger.info(
+                centred_string(
+                    f"Compressing {os.path.basename(rom)} with {self.compress_method}",
+                    total_length=self.log_line_length,
+                )
             )
-        )
 
-        # If we have a zip file, unzip it. Else just move the file
-        if rom.endswith(".zip"):
-            unzip_file(rom, temp_dir)
+            # If we have a zip file, unzip it. Else just move the file
+            if rom.endswith(".zip"):
+                unzip_file(rom, temp_dir)
+            else:
+                base_rom = os.path.basename(rom)
+                out_rom = os.path.join(temp_dir, base_rom)
+                shutil.copy(rom, out_rom)
+
+            if self.compress_method == "chdman":
+                compress_files = self.compress_chd(
+                    self.compress_dir,
+                    temp_dir,
+                )
+
+                if len(compress_files) > 1:
+                    raise ValueError(f"More compressed files than expected!")
+
+                compressed_file = compress_files[0]
+
+            else:
+                raise ValueError(
+                    f"compress_method should be one of {ALLOWED_COMPRESSION_METHODS}, "
+                    f"not {self.compress_method}"
+                )
+
+            # Delete the temp dir
+            shutil.rmtree(temp_dir)
+
         else:
-            base_rom = os.path.basename(rom)
-            out_rom = os.path.join(temp_dir, base_rom)
-            shutil.copy(rom, out_rom)
 
-        if self.compress_method == "chdman":
-            compress_files = self.compress_chd(
-                self.compress_dir,
-                temp_dir,
-            )
-
-            if len(compress_files) > 1:
-                raise ValueError(f"More compressed files than expected!")
-
-            compressed_file = compress_files[0]
-
-        else:
-            raise ValueError(
-                f"compress_method should be one of {ALLOWED_COMPRESSION_METHODS}, "
-                f"not {self.compress_method}"
-            )
-
-        # Delete the temp dir
-        shutil.rmtree(temp_dir)
+            # If we've found more than one file, freak out
+            raise ValueError("Found more files than expected!")
 
         return compressed_file
 
