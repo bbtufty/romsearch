@@ -420,6 +420,30 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigDryRun)
 
+        self.verticalSpacerConfigRomsearchModulesLower_5 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayoutConfigRomsearchModules.addItem(self.verticalSpacerConfigRomsearchModulesLower_5)
+
+        self.lineConfigMultiDisc_2 = QFrame(self.tabConfigMain)
+        self.lineConfigMultiDisc_2.setObjectName(u"lineConfigMultiDisc_2")
+        self.lineConfigMultiDisc_2.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigMultiDisc_2.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigMultiDisc_2)
+
+        self.checkBoxConfigHandleMultiDiscs = QCheckBox(self.tabConfigMain)
+        self.checkBoxConfigHandleMultiDiscs.setObjectName(u"checkBoxConfigHandleMultiDiscs")
+        self.checkBoxConfigHandleMultiDiscs.setChecked(False)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigHandleMultiDiscs)
+
+        self.lineConfigMultiDisc = QFrame(self.tabConfigMain)
+        self.lineConfigMultiDisc.setObjectName(u"lineConfigMultiDisc")
+        self.lineConfigMultiDisc.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigMultiDisc.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigMultiDisc)
+
         self.verticalSpacerConfigRomsearchModulesLower = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayoutConfigRomsearchModules.addItem(self.verticalSpacerConfigRomsearchModulesLower)
@@ -1903,6 +1927,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigDryRun.setStatusTip(QCoreApplication.translate("RomSearch", u"If checked, will not make any changes to filesystem. Default unchecked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigDryRun.setText(QCoreApplication.translate("RomSearch", u"Dry Run", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigHandleMultiDiscs.setStatusTip(QCoreApplication.translate("RomSearch", u"Group multi-disc files together and create an m3u playlist?", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigHandleMultiDiscs.setText(QCoreApplication.translate("RomSearch", u"Create m3u playlists for multi-disc files", None))
         self.labelConfigRomsearchMethodTitle.setText(QCoreApplication.translate("RomSearch", u"What ROMSearch method would you like to use?", None))
         self.labelConfigRomsearchMethodDescription.setText(QCoreApplication.translate("RomSearch", u"You can either filter all files from the dat file (default), or download first then filter (completionist)", None))
 #if QT_CONFIG(statustip)

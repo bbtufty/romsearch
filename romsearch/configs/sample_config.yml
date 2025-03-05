@@ -24,6 +24,7 @@ include_games:
 
 romsearch:
   method: filter_then_download
+  handle_multi_discs: false
   run_romdownloader: true
   run_rahasher: true
   run_datparser: true

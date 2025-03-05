@@ -219,6 +219,7 @@ class ConfigWindow(QMainWindow):
             "run_romchooser": self.ui.checkBoxConfigRunRomChooser,
             "run_rommover": self.ui.checkBoxConfigRunRomMover,
             "run_rompatcher": self.ui.checkBoxConfigRunRomPatcher,
+            "handle_multi_discs": self.ui.checkBoxConfigHandleMultiDiscs,
             "dry_run": self.ui.checkBoxConfigDryRun,
         }
 
