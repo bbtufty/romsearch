@@ -1079,6 +1079,20 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomChooserSettings.addWidget(self.lineConfigRomChooserFilterLanguagesDividerBottom)
 
+        self.checkBoxConfigRomChooserExcludeModern = QCheckBox(self.tabConfigRomChooser)
+        self.checkBoxConfigRomChooserExcludeModern.setObjectName(u"checkBoxConfigRomChooserExcludeModern")
+        self.checkBoxConfigRomChooserExcludeModern.setEnabled(True)
+        self.checkBoxConfigRomChooserExcludeModern.setChecked(False)
+
+        self.verticalLayoutConfigRomChooserSettings.addWidget(self.checkBoxConfigRomChooserExcludeModern)
+
+        self.lineConfigRomChooserExcludeModernDividerBottom = QFrame(self.tabConfigRomChooser)
+        self.lineConfigRomChooserExcludeModernDividerBottom.setObjectName(u"lineConfigRomChooserExcludeModernDividerBottom")
+        self.lineConfigRomChooserExcludeModernDividerBottom.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigRomChooserExcludeModernDividerBottom.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRomChooserSettings.addWidget(self.lineConfigRomChooserExcludeModernDividerBottom)
+
         self.verticalSpacerConfigRomChooserSettingsMiddle = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayoutConfigRomChooserSettings.addItem(self.verticalSpacerConfigRomChooserSettingsMiddle)
@@ -1976,6 +1990,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomChooserFilterLanguages.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to remove ROMs that don't fall into the selected language choices. Default checked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRomChooserFilterLanguages.setText(QCoreApplication.translate("RomSearch", u"Filter languages?", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRomChooserExcludeModern.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to remove ROMs flagged as modern versions. Default unchecked", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRomChooserExcludeModern.setText(QCoreApplication.translate("RomSearch", u"Exclude modern games?", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRomChooserDryRun.setStatusTip(QCoreApplication.translate("RomSearch", u"If checked, will not make any changes to filesystem. Default unchecked", None))
 #endif // QT_CONFIG(statustip)

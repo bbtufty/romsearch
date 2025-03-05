@@ -53,6 +53,7 @@ romparser:
 
 romchooser:
   use_best_version: true
+  exclude_modern: false
   filter_regions: true
   filter_languages: true
   dry_run: false

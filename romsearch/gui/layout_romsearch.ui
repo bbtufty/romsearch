@@ -1892,6 +1892,32 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomChooserExcludeModern">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="statusTip">
+                   <string>Whether to remove ROMs flagged as modern versions. Default unchecked</string>
+                  </property>
+                  <property name="text">
+                   <string>Exclude modern games?</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomChooserExcludeModernDividerBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <spacer name="verticalSpacerConfigRomChooserSettingsMiddle">
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
@@ -3007,7 +3033,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigRomsearchMethod"/>
   <buttongroup name="radioButtonConfigLoggerLevel"/>
+  <buttongroup name="radioButtonConfigRomsearchMethod"/>
  </buttongroups>
 </ui>

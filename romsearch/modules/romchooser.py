@@ -352,6 +352,9 @@ class ROMChooser:
         self.filter_languages = self.config.get("romchooser", {}).get(
             "filter_languages", True
         )
+        self.exclude_modern = self.config.get("romchooser", {}).get(
+            "exclude_modern", False
+        )
         self.use_best_version = self.config.get("romchooser", {}).get(
             "use_best_version", True
         )
@@ -460,6 +463,20 @@ class ROMChooser:
                 "regions",
                 remove_type="list",
                 list_preferences=self.region_preferences,
+            )
+
+        # Modern versions
+        if self.exclude_modern:
+            self.logger.debug(
+                left_aligned_string(
+                    f"Removing modern versions", total_length=self.log_line_length
+                )
+            )
+            rom_dict = remove_rom_dict_entries(
+                rom_dict,
+                "modern_version",
+                remove_type="bool",
+                bool_remove=True,
             )
 
         # If we have a split between singular titles and compilations, sort that out here
