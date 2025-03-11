@@ -1,3 +1,4 @@
+import copy
 import glob
 import numpy as np
 import os
@@ -232,11 +233,11 @@ class ROMSearch:
                 self.logger.info(f"{log_line_sep * log_line_length}")
                 continue
 
-            # If we filter then download, this is where we download
+            # If we filter then download, this is where we download. Use the download names!
             if self.romsearch_method == "filter_then_download":
                 all_files = []
                 for game in all_roms_dict:
-                    fs = [f for f in all_roms_dict[game]]
+                    fs = [all_roms_dict[game][f]["download_name"] for f in all_roms_dict[game]]
 
                     all_files.extend(fs)
 
@@ -256,7 +257,7 @@ class ROMSearch:
                 for game in all_roms_dict:
 
                     for f in all_roms_dict[game]:
-                        full_filename = os.path.join(self.raw_dir, platform, f)
+                        full_filename = os.path.join(self.raw_dir, platform, all_roms_dict[game][f]["download_name"])
 
                         file_mod_time = get_file_time(
                             full_filename,
@@ -466,6 +467,17 @@ class ROMSearch:
         all_file_dict = {}
         for f in all_files:
             dir_name = get_directory_name(f)
+
+            # The download name is generally just the same thing,
+            # but if we have a remapping then it can change
+            download_name = copy.deepcopy(f)
+            if dat_mappings is not None:
+
+                f_no_ext = f.rstrip(".zip")
+
+                if f_no_ext in dat_mappings:
+                    download_name = download_name.replace(f_no_ext, dat_mappings[f_no_ext])
+
             full_name = normalize_name(
                 f,
                 disc_rename=self.default_config["disc_rename"],
@@ -489,6 +501,7 @@ class ROMSearch:
             all_file_dict[f] = {
                 "original_name": f,
                 "dir_name": dir_name,
+                "download_name": download_name,
                 "full_name": full_name,
                 "short_name": short_name,
                 "disc_free_name": disc_free_name,

@@ -6,7 +6,7 @@ file_exts:
 
 # RetroAchievements
 ra_id: 3
-ra_hash_method: "custom"
+ra_hash_method: "md5"
 
 # ROMPatcher
 patch_method: "rompatcher.js"
