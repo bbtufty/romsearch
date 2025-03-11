@@ -28,7 +28,7 @@ class Ui_RomSearch(object):
     def setupUi(self, RomSearch):
         if not RomSearch.objectName():
             RomSearch.setObjectName(u"RomSearch")
-        RomSearch.resize(1298, 808)
+        RomSearch.resize(1298, 897)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -247,6 +247,27 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigDatDir)
 
+        self.labelConfigMappedDatDir = QLabel(self.tabConfigMain)
+        self.labelConfigMappedDatDir.setObjectName(u"labelConfigMappedDatDir")
+
+        self.verticalLayoutConfigRomsearchDirs.addWidget(self.labelConfigMappedDatDir)
+
+        self.horizontalLayoutConfigMappedDatDir = QHBoxLayout()
+        self.horizontalLayoutConfigMappedDatDir.setObjectName(u"horizontalLayoutConfigMappedDatDir")
+        self.lineEditConfigMappedDatDir = QLineEdit(self.tabConfigMain)
+        self.lineEditConfigMappedDatDir.setObjectName(u"lineEditConfigMappedDatDir")
+
+        self.horizontalLayoutConfigMappedDatDir.addWidget(self.lineEditConfigMappedDatDir)
+
+        self.pushButtonConfigMappedDatDir = QPushButton(self.tabConfigMain)
+        self.pushButtonConfigMappedDatDir.setObjectName(u"pushButtonConfigMappedDatDir")
+        self.pushButtonConfigMappedDatDir.setFlat(False)
+
+        self.horizontalLayoutConfigMappedDatDir.addWidget(self.pushButtonConfigMappedDatDir)
+
+
+        self.verticalLayoutConfigRomsearchDirs.addLayout(self.horizontalLayoutConfigMappedDatDir)
+
         self.labelConfigParsedDatDir = QLabel(self.tabConfigMain)
         self.labelConfigParsedDatDir.setObjectName(u"labelConfigParsedDatDir")
 
@@ -386,6 +407,12 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRunDatParser.setChecked(True)
 
         self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigRunDatParser)
+
+        self.checkBoxConfigRunDatMapper = QCheckBox(self.tabConfigMain)
+        self.checkBoxConfigRunDatMapper.setObjectName(u"checkBoxConfigRunDatMapper")
+        self.checkBoxConfigRunDatMapper.setChecked(False)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigRunDatMapper)
 
         self.checkBoxConfigRunDupeParser = QCheckBox(self.tabConfigMain)
         self.checkBoxConfigRunDupeParser.setObjectName(u"checkBoxConfigRunDupeParser")
@@ -1848,6 +1875,16 @@ class Ui_RomSearch(object):
         self.lineEditConfigDatDir.setPlaceholderText("")
         self.pushButtonConfigDatDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
 #if QT_CONFIG(statustip)
+        self.labelConfigMappedDatDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for old .dat files, for mapping", None))
+#endif // QT_CONFIG(statustip)
+        self.labelConfigMappedDatDir.setText(QCoreApplication.translate("RomSearch", u"Mapped DAT Directory", None))
+#if QT_CONFIG(statustip)
+        self.lineEditConfigMappedDatDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for old .dat files, for mapping", None))
+#endif // QT_CONFIG(statustip)
+        self.lineEditConfigMappedDatDir.setText(QCoreApplication.translate("RomSearch", u"mapped_dats", None))
+        self.lineEditConfigMappedDatDir.setPlaceholderText("")
+        self.pushButtonConfigMappedDatDir.setText(QCoreApplication.translate("RomSearch", u"Browse", None))
+#if QT_CONFIG(statustip)
         self.labelConfigParsedDatDir.setStatusTip(QCoreApplication.translate("RomSearch", u"Location for parsed .dat files and clonelists", None))
 #endif // QT_CONFIG(statustip)
         self.labelConfigParsedDatDir.setText(QCoreApplication.translate("RomSearch", u"Parsed DAT/Clonelist Directory", None))
@@ -1907,6 +1944,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRunDatParser.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the DATParser?", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRunDatParser.setText(QCoreApplication.translate("RomSearch", u"Run DATParser", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRunDatMapper.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the DATMapper?", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRunDatMapper.setText(QCoreApplication.translate("RomSearch", u"Run DATMapper", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRunDupeParser.setStatusTip(QCoreApplication.translate("RomSearch", u"Run the DupeParser?", None))
 #endif // QT_CONFIG(statustip)

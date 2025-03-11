@@ -2,38 +2,21 @@ import glob
 import os
 from urllib.request import urlopen
 
-import xmltodict
-
 import romsearch
-from ..util import centred_string, load_yml, setup_logger, unzip_file, save_json
+from ..util import (
+    centred_string,
+    load_yml,
+    setup_logger,
+    unzip_file,
+    save_json,
+    get_dat,
+    format_dat,
+)
 
 ALLOWED_GROUPS = [
     "No-Intro",
     "Redump",
 ]
-
-
-def get_dat(
-    dat_file_name,
-):
-    """Parse the dat file to a raw dictionary from a zip file"""
-
-    with open(dat_file_name, "r") as f:
-        dat = xmltodict.parse(f.read(), attr_prefix="")
-
-    return dat
-
-
-def format_dat(dat):
-    """Format dat into a nice dictionary"""
-
-    rom_dict = {}
-    rom_data = dat["datafile"]["game"]
-
-    for rom in rom_data:
-        rom_dict[rom["name"]] = rom
-
-    return rom_dict
 
 
 class DATParser:

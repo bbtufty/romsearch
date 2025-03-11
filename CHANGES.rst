@@ -4,6 +4,7 @@
 Features
 --------
 
+- Added DATMapper, that can map ROM name changes between dat files
 - Added ability to handle multi-disc files, using m3u files
 - Added ROMBrowser, for easier searching and parsing of ROMs
 - Added ROMCompressor, which can compress files into a different format

@@ -4,6 +4,7 @@ from importlib.metadata import version
 __version__ = version(__name__)
 
 from .modules import (
+    DATMapper,
     DATParser,
     DupeParser,
     GameFinder,
@@ -19,6 +20,7 @@ from .modules import (
 )
 
 __all__ = [
+    "DATMapper",
     "DATParser",
     "DupeParser",
     "GameFinder",

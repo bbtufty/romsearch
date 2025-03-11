@@ -2,6 +2,7 @@ import json
 import os
 import zipfile
 
+import xmltodict
 import yaml
 
 
@@ -100,3 +101,26 @@ def save_json(
             ensure_ascii=False,
             indent=4,
         )
+
+
+def get_dat(
+    dat_file_name,
+):
+    """Parse the dat file to a raw dictionary from a zip file"""
+
+    with open(dat_file_name, "r") as f:
+        dat = xmltodict.parse(f.read(), attr_prefix="")
+
+    return dat
+
+
+def format_dat(dat):
+    """Format dat into a nice dictionary"""
+
+    rom_dict = {}
+    rom_data = dat["datafile"]["game"]
+
+    for rom in rom_data:
+        rom_dict[rom["name"]] = rom
+
+    return rom_dict
