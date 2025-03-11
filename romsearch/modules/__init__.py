@@ -1,3 +1,4 @@
+from .datmapper import DATMapper
 from .datparser import DATParser
 from .dupeparser import DupeParser
 from .gamefinder import GameFinder
@@ -12,6 +13,7 @@ from .rompatcher import ROMPatcher
 from .romsearch import ROMSearch
 
 __all__ = [
+    "DATMapper",
     "DATParser",
     "DupeParser",
     "GameFinder",

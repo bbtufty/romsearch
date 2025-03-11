@@ -4,6 +4,7 @@ import os
 import time
 
 import romsearch
+from .datmapper import DATMapper
 from .datparser import DATParser
 from .dupeparser import DupeParser
 from .gamefinder import GameFinder
@@ -116,6 +117,9 @@ class ROMSearch:
         )
         self.run_rahasher = self.config.get("romsearch", {}).get("run_rahasher", False)
         self.run_datparser = self.config.get("romsearch", {}).get("run_datparser", True)
+        self.run_datmapper = self.config.get("romsearch", {}).get(
+            "run_datmapper", False
+        )
         self.run_dupeparser = self.config.get("romsearch", {}).get(
             "run_dupeparser", True
         )
@@ -389,6 +393,17 @@ class ROMSearch:
                 log_line_length=log_line_length,
             )
             dat_dict = dat_parser.run()
+
+        # If we're mapping name changes from one DAT to another, do that here
+        dat_mappings = None
+        if self.run_datmapper:
+            dat_mapper = DATMapper(
+                platform=platform,
+                config=self.config,
+                logger=self.logger,
+                log_line_length=log_line_length,
+            )
+            dat_mappings = dat_mapper.run(dat=dat_dict)
 
         # Get dupes here, if we're doing that
         dupe_dict = None

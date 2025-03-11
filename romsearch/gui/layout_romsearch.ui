@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1298</width>
-    <height>808</height>
+    <height>897</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -381,6 +381,43 @@
                    </layout>
                   </item>
                   <item>
+                   <widget class="QLabel" name="labelConfigMappedDatDir">
+                    <property name="statusTip">
+                     <string>Location for old .dat files, for mapping</string>
+                    </property>
+                    <property name="text">
+                     <string>Mapped DAT Directory</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayoutConfigMappedDatDir">
+                    <item>
+                     <widget class="QLineEdit" name="lineEditConfigMappedDatDir">
+                      <property name="statusTip">
+                       <string>Location for old .dat files, for mapping</string>
+                      </property>
+                      <property name="text">
+                       <string>mapped_dats</string>
+                      </property>
+                      <property name="placeholderText">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButtonConfigMappedDatDir">
+                      <property name="text">
+                       <string>Browse</string>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
                    <widget class="QLabel" name="labelConfigParsedDatDir">
                     <property name="statusTip">
                      <string>Location for parsed .dat files and clonelists</string>
@@ -639,6 +676,19 @@
                     </property>
                     <property name="checked">
                      <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigRunDatMapper">
+                    <property name="statusTip">
+                     <string>Run the DATMapper?</string>
+                    </property>
+                    <property name="text">
+                     <string>Run DATMapper</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -3079,7 +3129,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigRomsearchMethod"/>
   <buttongroup name="radioButtonConfigLoggerLevel"/>
+  <buttongroup name="radioButtonConfigRomsearchMethod"/>
  </buttongroups>
 </ui>

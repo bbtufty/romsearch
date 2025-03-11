@@ -19,6 +19,7 @@ ROMSearch offers the ability to:
 
 * Sync from remote folder using rclone
 * Parse DAT files as well as filenames for ROM information
+* Provide filename mappings between different DAT files
 * Remove dupes from ROM lists using the excellent ``retool`` clonelists
 * Match ROM hashes to RetroAchievements to get compatible ROMs 
 * Patch ROM files so RetroAchievements can be enabled

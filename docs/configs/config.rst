@@ -16,6 +16,7 @@ Syntax: ::
       compress_dir: [patch_dir]         # Directory for compressed files. Will subdivide by platform
       ra_hash_dir: [ra_hash_dir]        # Directory for parsed RA platform hashes
       dat_dir: [dat_dir]                # Directory to place raw .dat files
+      mapped_dat_dir: [mapped_dat_dir]  # Directory to place old .dat files to compare against
       parsed_dat_dir: [parsed_dat_dir]  # Directory to place parsed .dat files, as well as clonelists
       dupe_dir: [dupe_dir]              # Directory to place dupe files
       log_dir: [log_dir]                # Directory to place logs
@@ -44,6 +45,7 @@ Syntax: ::
       run_romdownloader: true           # OPTIONAL. Whether to run ROMDownloader. Defaults to true
       run_rahasher: false               # OPTIONAL. Whether to run RAHasher. Defaults to false
       run_datparser: true               # OPTIONAL. Whether to run DATParser. Defaults to true
+      run_datmapper: false              # OPTIONAL. Whether to run DATMapper. Defaults to false
       run_dupeparser: true              # OPTIONAL. Whether to run DupeParsed. Defaults to true
       run_romchooser: true              # OPTIONAL. Whether to run ROMChooser. Defaults to true
       run_rompatcher: false             # OPTIONAL. Whether to run ROMPatcher. Defaults to false
