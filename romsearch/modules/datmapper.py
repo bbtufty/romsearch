@@ -154,11 +154,28 @@ class DATMapper:
 
         dat_mappings = {}
 
-        for d in dat:
-            for od in old_dat:
+        # Keep track of ones we've matched for speed, since they should be unique
+        d_found = [False] * len(dat)
+        od_found = [False] * len(old_dat)
+
+        for idx_d, d in enumerate(dat):
+
+            # If we've already matched, move on
+            if d_found[idx_d]:
+                continue
+
+            for idx_od, od in enumerate(old_dat):
+
+                # If we've already matched, move on
+                if d_found[idx_d]:
+                    continue
+                if od_found[idx_od]:
+                    continue
 
                 # If we already have an exact name match, skip
                 if d == od:
+                    d_found[idx_d] = True
+                    od_found[idx_od] = True
                     continue
 
                 # Get list of ROM files out
@@ -180,8 +197,10 @@ class DATMapper:
                 od_md5s = [od_rom["md5"].lower() for od_rom in od_roms]
                 od_md5s.sort()
 
-                # If we have a match and the name is different, then append to dictionary
+                # If we have a match and the name is different, then append to dictionary and mark as found
                 if d_md5s == od_md5s:
+                    d_found[idx_d] = True
+                    od_found[idx_od] = True
                     dat_mappings[d] = od
 
         # Save this to yml

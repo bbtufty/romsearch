@@ -203,6 +203,9 @@ class ROMMover:
 
             for rom_no, rom in enumerate(rom_dict):
 
+                # Because the filename can change, keep it here
+                rom_file = rom_dict[rom]["download_name"]
+
                 # Pull out a clean directory name, and disc-free name in case we need it
                 dir_name = str(copy.deepcopy(rom_dict[rom]["dir_name"]))
                 disc_free_name = str(copy.deepcopy(rom_dict[rom]["disc_free_name"]))
@@ -270,7 +273,7 @@ class ROMMover:
                         if final_file_exists:
                             continue
 
-                        if o == rom:
+                        if o == rom_file:
                             final_file_exists = True
                             final_file_name = os.path.basename(o)
 
@@ -278,7 +281,7 @@ class ROMMover:
                 if self.unzip or expecting_patched_rom:
 
                     final_file_exists, final_file_name = self.check_files_exist(
-                        rom=rom,
+                        rom=rom_file,
                         files=short_out_files,
                         file_ext_key="file_exts",
                         patched_rom=expecting_patched_rom,
@@ -288,7 +291,7 @@ class ROMMover:
                 if self.compress:
 
                     final_file_exists, final_file_name = self.check_files_exist(
-                        rom=rom,
+                        rom=rom_file,
                         files=short_out_files,
                         file_ext_key="compress_file_exts",
                         patched_rom=expecting_patched_rom,
@@ -347,7 +350,7 @@ class ROMMover:
                 # If we're patching ROMs, then do that here
                 if to_patch_rom:
 
-                    rom_file = os.path.join(self.raw_dir, self.platform, rom)
+                    rom_patch_file = os.path.join(self.raw_dir, self.platform, rom_file)
 
                     patcher = ROMPatcher(
                         platform=self.platform,
@@ -357,7 +360,7 @@ class ROMMover:
                     )
 
                     full_rom = patcher.run(
-                        file=rom_file,
+                        file=rom_patch_file,
                         patch_url=patch_url,
                     )
 
@@ -366,7 +369,7 @@ class ROMMover:
 
                 else:
                     full_dir = os.path.join(self.raw_dir, self.platform)
-                    full_rom = os.path.join(str(full_dir), rom)
+                    full_rom = os.path.join(str(full_dir), rom_file)
                     unzip = copy.deepcopy(self.unzip)
 
                     patched = False
@@ -379,10 +382,10 @@ class ROMMover:
                             "Currently cannot handle compressing of patched files"
                         )
 
-                    rom_file = os.path.join(self.raw_dir, self.platform, rom)
+                    rom_compress_file = os.path.join(self.raw_dir, self.platform, rom_file)
 
                     full_rom = self.compress_file(
-                        rom_file,
+                        rom_compress_file,
                     )
 
                 # Log whether we've patched or not
@@ -397,7 +400,7 @@ class ROMMover:
                 if not move_file_success:
                     self.logger.warning(
                         centred_string(
-                            f"{rom} not found in raw directory, skipping",
+                            f"{rom_file} not found in raw directory, skipping",
                             total_length=self.log_line_length,
                         )
                     )
@@ -406,7 +409,7 @@ class ROMMover:
                 out_files.extend(moved_files)
 
                 self.logger.info(
-                    centred_string(f"Moved {rom}", total_length=self.log_line_length)
+                    centred_string(f"Moved {rom_file}", total_length=self.log_line_length)
                 )
 
                 # If there are additional file to move/unzip, do that now
@@ -414,23 +417,23 @@ class ROMMover:
                     for add_dir in self.platform_config["additional_dirs"]:
 
                         add_full_dir = f"{self.raw_dir} {add_dir}"
-                        add_file = os.path.join(add_full_dir, rom)
+                        add_file = os.path.join(add_full_dir, rom_file)
                         if os.path.exists(add_file):
                             move_file_success, moved_files = self.move_file(
-                                add_file, unzip=self.unzip
+                                add_file,  game=game, out_dir=out_dir, unzip=unzip
                             )
 
                             if not move_file_success:
                                 self.logger.warning(
                                     centred_string(
-                                        f"{rom} {add_dir} not found in raw directory, skipping",
+                                        f"{rom_file} {add_dir} not found in raw directory, skipping",
                                         total_length=self.log_line_length,
                                     )
                                 )
                             else:
                                 self.logger.info(
                                     centred_string(
-                                        f"Moved {rom} {add_dir}",
+                                        f"Moved {rom_file} {add_dir}",
                                         total_length=self.log_line_length,
                                     )
                                 )
@@ -449,7 +452,7 @@ class ROMMover:
                     rom_dict=rom_dict,
                 )
 
-                roms_moved.append(rom)
+                roms_moved.append(rom_file)
 
         # Handle the multi-disc files by generating m3u playlists
         if self.handle_multi_discs and len(all_multi_discs) > 0:
@@ -467,7 +470,6 @@ class ROMMover:
 
                 # If we already have this file, then continue on
                 if os.path.exists(m3u_full_file_name):
-                    print("um")
                     continue
 
                 # Or, create the m3u and put this into the cache
@@ -615,7 +617,7 @@ class ROMMover:
 
         Args:
             game: Game name
-            rom: ROM name to save to cache
+            rom: ROM name for dictionary info
             files: List of files to save to cache
             out_dir: Output directory for files, relative to [rom_dir]/[platform]
             rom_dict: Dictionary of ROM properties
