@@ -1,15 +1,11 @@
 import copy
 import os
-from PySide6.QtGui import QFont
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QTreeWidgetItem, QLabel
-)
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem
 
 import romsearch
 from romsearch import ROMSearch
-from romsearch.util import load_yml
+from romsearch.util import load_yml, load_json
 from .gui_config import ConfigWindow
 from .gui_utils import get_gui_logger
 
@@ -24,9 +20,9 @@ def add_text_to_text_edit(text_edit, text):
 
     text_edit.append(
         '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">'
-        f'{text}'
-        '</p>'
-        '\n'
+        f"{text}"
+        "</p>"
+        "\n"
     )
 
 
@@ -41,10 +37,10 @@ def add_underlined_text_to_text_edit(text_edit, text):
     text_edit.append(
         '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">'
         '<span style=" text-decoration: underline;">'
-        f'{text}'
-        '</span>'
-        '</p>'
-        '\n'
+        f"{text}"
+        "</span>"
+        "</p>"
+        "\n"
     )
 
 
@@ -59,20 +55,20 @@ def add_bold_text_to_text_edit(text_edit, text):
     text_edit.append(
         '<p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">'
         '<span style=" font-weight:700;">'
-        f'{text}'
-        '</span>'
-        '</p>'
-        '\n'
+        f"{text}"
+        "</span>"
+        "</p>"
+        "\n"
     )
 
 
 class ROMBrowser(QMainWindow):
 
     def __init__(
-            self,
-            main_ui,
-            config_window=None,
-            logger=None,
+        self,
+        main_ui,
+        config_window=None,
+        logger=None,
     ):
         """Class for the ROMBrowser
 
@@ -119,7 +115,7 @@ class ROMBrowser(QMainWindow):
         self.search_bar = self.ui.lineEditRomBrowserSearch
         self.search_bar.textChanged.connect(self.search_bar_update)
 
-        # And info about the actual games and ROMs
+        # Info about the actual games and ROMs
         self.current_platform = None
         self.parsed = {}
         self.all_dats = {}
@@ -127,6 +123,9 @@ class ROMBrowser(QMainWindow):
         self.all_retool = {}
         self.all_ra_hash = {}
         self.all_games = {}
+
+        # Cache
+        self.cache = {}
 
     def setup_platforms_list(self):
         """Load a list of platforms"""
@@ -162,12 +161,15 @@ class ROMBrowser(QMainWindow):
             # Get the name for the config file
             config_file = self.ui.lineEditConfigConfigFile.text()
 
-            rs = ROMSearch(config_file,
-                           logger=self.logger,
-                           )
+            rs = ROMSearch(
+                config_file,
+                logger=self.logger,
+            )
 
-            dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = rs.get_all_games(
-                platform=self.current_platform,
+            dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
+                rs.get_all_games(
+                    platform=self.current_platform,
+                )
             )
 
             self.ui.centralwidget.setEnabled(True)
@@ -183,11 +185,24 @@ class ROMBrowser(QMainWindow):
             for g in self.all_games[self.current_platform]:
                 self.parsed[self.current_platform][g] = False
 
+            # Pull out the cache, if it exists
+            cache_dir = rs.config.get("dirs", {}).get("cache_dir", os.getcwd())
+            cache_file = os.path.join(
+                cache_dir, f"cache ({self.current_platform}).json"
+            )
+            if os.path.exists(cache_file):
+                cache = load_json(cache_file)
+                cache = copy.deepcopy(cache[self.current_platform])
+            else:
+                cache = {}
+            self.cache[self.current_platform] = copy.deepcopy(cache)
+
         self.set_games(all_games=self.all_games[self.current_platform])
 
-    def set_games(self,
-                  all_games,
-                  ):
+    def set_games(
+        self,
+        all_games,
+    ):
         """Set all games in the tree
 
         Args:
@@ -203,10 +218,25 @@ class ROMBrowser(QMainWindow):
             game_item = QTreeWidgetItem()
             game_item.setText(0, self.tr(g))
 
+            # Check if game is in cache, and colour if so
+            game_in_cache = self.cache.get(self.current_platform, {}).get(g, None)
+            if game_in_cache is not None:
+                game_item.setBackground(0, QColor(0, 255, 0, 50))
+
             for i, r in enumerate(all_games[g]):
                 rom_item = QTreeWidgetItem()
                 rom_item.setText(0, self.tr(r))
                 game_item.addChild(rom_item)
+
+                # Check if ROM is in cache, and colour if so
+                if game_in_cache is not None:
+                    rom_in_cache = (
+                        self.cache.get(self.current_platform, {})
+                        .get(g, {})
+                        .get(r, None)
+                    )
+                    if rom_in_cache is not None:
+                        rom_item.setBackground(0, QColor(0, 255, 0, 50))
 
             tree_widget.addTopLevelItem(game_item)
 
@@ -284,22 +314,23 @@ class ROMBrowser(QMainWindow):
             # Get the name for the config file
             config_file = self.ui.lineEditConfigConfigFile.text()
 
-            rs = ROMSearch(config_file,
-                           logger=self.logger,
-                           )
+            rs = ROMSearch(
+                config_file,
+                logger=self.logger,
+            )
 
             platform_config = rs.get_platform_config(self.current_platform)
 
             rom_dict = rs.run_romparser(
-                          rom_files=rom_files,
-                          platform=self.current_platform,
-                          game=game,
-                          dat=self.all_dats[self.current_platform],
-                          retool=self.all_retool[self.current_platform],
-                          ra_hash=self.all_ra_hash[self.current_platform],
-                          platform_config=platform_config,
-                          log_line_length=100,
-                          )
+                rom_files=rom_files,
+                platform=self.current_platform,
+                game=game,
+                dat=self.all_dats[self.current_platform],
+                retool=self.all_retool[self.current_platform],
+                ra_hash=self.all_ra_hash[self.current_platform],
+                platform_config=platform_config,
+                log_line_length=100,
+            )
 
             self.all_games[self.current_platform][game] = copy.deepcopy(rom_dict)
             self.parsed[self.current_platform][game] = True
