@@ -1,4 +1,4 @@
-0.2.0 (Unreleased)
+0.2.0 (2025-03-19)
 ==================
 
 Features
@@ -31,12 +31,13 @@ ROMMover
 General
 ~~~~~~~
 
+- Bump to 0.2.0
 - Added new "download names", that can map a ROM to a different name
 - Fix crash when version formatted like 'v.21', and added test
 - Updated regex to move Kickstarter, The Retro Room to modern versions
 - Added "Red Art Games" and "Metal Gear Solid Collection" to modern versions in regex
 
-0.1.2 (2024-01-10)
+0.1.2 (2025-01-10)
 ==================
 
 Features
