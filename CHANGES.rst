@@ -1,3 +1,14 @@
+0.2.1 (Unreleased)
+==================
+
+Fixes
+-----
+
+General
+~~~~~~~
+
+- Include upcoming consoles in ``planned_changes.rst``
+
 0.2.0 (2025-03-19)
 ==================
 
