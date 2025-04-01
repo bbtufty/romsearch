@@ -166,7 +166,7 @@ class ROMBrowser(QMainWindow):
                 logger=self.logger,
             )
 
-            dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
+            dat_dict, subchannel_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
                 rs.get_all_games(
                     platform=self.current_platform,
                 )

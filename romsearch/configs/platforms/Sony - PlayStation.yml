@@ -9,7 +9,7 @@ compress_method: "chdman"
 compress_file_exts:
   - ".chd"
 
-additional_dirs:
+subchannels:
   SBI: "/Redump/Sony - PlayStation - SBI Subchannels/"
 
 # RetroAchievements

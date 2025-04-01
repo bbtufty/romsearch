@@ -1,3 +1,6 @@
+from zipfile import ZipFile
+
+import copy
 import glob
 import os
 from urllib.request import urlopen
@@ -24,6 +27,7 @@ class DATParser:
     def __init__(
         self,
         platform=None,
+        use_subchannels=False,
         config_file=None,
         config=None,
         platform_config=None,
@@ -39,6 +43,7 @@ class DATParser:
 
         Args:
             platform (str, optional): Platform name. Defaults to None, which will throw a ValueError
+            use_subchannels (bool, optional): Whether to get dats for subchannels. Defaults to False.
             config_file (str, optional): Configuration file. Defaults to None
             config (dict, optional): Configuration dictionary. Defaults to None
             platform_config (dict, optional): Platform configuration dictionary. Defaults to None
@@ -49,6 +54,7 @@ class DATParser:
         if platform is None:
             raise ValueError("platform must be specified")
         self.platform = platform
+        self.use_subchannels = use_subchannels
 
         if config_file is None and config is None:
             raise ValueError("config_file or config must be specified")
@@ -144,6 +150,14 @@ class DATParser:
             )
             self.logger.warning(f"{self.log_line_sep * self.log_line_length}")
             run_datparser = False
+        if self.use_subchannels and len(self.platform_config.get("subchannels", {})) == 0:
+            self.logger.debug(
+                centred_string(
+                    "No subchannels defined in the platform configuration file",
+                    total_length=self.log_line_length,
+                )
+            )
+            run_datparser = False
 
         if run_datparser:
             rom_dict = self.run_datparser()
@@ -154,57 +168,93 @@ class DATParser:
         """The main meat of running the dat parser"""
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
+        d_str = f"Running DATParser for {self.platform}"
+        if self.use_subchannels:
+            d_str += f" subchannels"
         self.logger.info(
-            centred_string("Running DATParser", total_length=self.log_line_length)
+            centred_string(d_str, total_length=self.log_line_length)
         )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
-        zip_file = self.get_zip_file()
-        if zip_file is None:
-            return False
+        if self.use_subchannels:
 
-        # Unzip the file if it doesn't already exist
-        dat_file_name = zip_file.replace(".zip", ".dat")
-        if not os.path.exists(dat_file_name):
-            unzip_file(zip_file, self.dat_dir)
+            subchannels = self.platform_config.get("subchannels", {})
 
-        dat = get_dat(dat_file_name)
+            rom_dict = {}
 
-        if dat is None:
-            return False
+            for subchannel in subchannels:
 
-        self.logger.info(f"{'-' * self.log_line_length}")
+                # Get the subchannel zip
+                zip_file = self.get_zip_file(subchannel=subchannel)
+                if zip_file is None:
+                    return False
 
-        self.logger.info(
-            centred_string("Using dat file:", total_length=self.log_line_length)
-        )
-        self.logger.info(
-            centred_string(
-                f"{os.path.split(dat_file_name)[-1]}", total_length=self.log_line_length
+                # This actually contains all the files we care about, so
+                # just look inside and get the names
+                with ZipFile(zip_file) as f:
+                    nl = f.namelist()
+                    subchannel_file_list = [os.path.splitext(n)[0] for n in nl]
+
+                rom_dict[subchannel] = copy.deepcopy(subchannel_file_list)
+
+        else:
+
+            zip_file = self.get_zip_file()
+            if zip_file is None:
+                return False
+
+            # Unzip the file if it doesn't already exist
+            dat_file_name = zip_file.replace(".zip", ".dat")
+            if not os.path.exists(dat_file_name):
+                unzip_file(zip_file, self.dat_dir)
+
+            dat = get_dat(dat_file_name)
+
+            if dat is None:
+                return False
+
+            self.logger.info(f"{'-' * self.log_line_length}")
+
+            self.logger.info(
+                centred_string("Using dat file:", total_length=self.log_line_length)
             )
-        )
+            self.logger.info(
+                centred_string(
+                    f"{os.path.split(dat_file_name)[-1]}", total_length=self.log_line_length
+                )
+            )
 
-        rom_dict = format_dat(dat)
+            rom_dict = format_dat(dat)
 
-        self.save_rom_dict(rom_dict)
+            self.save_rom_dict(rom_dict)
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         return rom_dict
 
-    def get_zip_file(self):
+    def get_zip_file(self,
+                     subchannel=None,
+                     ):
         """Get zip file from the dat directory
 
         If this is a Redump file, we can download the latest directly from the
         site. Otherwise, you will need to download them manually
+
+        Args:
+            subchannel: Specific subchannel. Defaults to None, which will use
+                the main dat
         """
 
-        file_mapping = self.dat_config.get("file_mapping", None)
+        if subchannel is None:
+            file_mapping = self.dat_config.get("file_mapping", None)
+        else:
+            file_mapping = self.dat_config.get("subchannels", {}).get(subchannel, {}).get("file_mapping", None)
+
         if file_mapping is None:
             raise ValueError("No file mapping defined in dat config file")
 
         if self.group == "Redump":
-            self.download_latest_redump_dat()
+            self.download_latest_redump_dat(subchannel=subchannel)
 
         zip_files = glob.glob(os.path.join(self.dat_dir, f"{file_mapping}*.zip"))
         zip_files.sort()
@@ -250,10 +300,21 @@ class DATParser:
 
         return zip_files[-1]
 
-    def download_latest_redump_dat(self):
-        """Download Redump zip file for the platform"""
+    def download_latest_redump_dat(self,
+                                   subchannel=None,
+                                   ):
+        """Download Redump zip file for the platform
 
-        web_mapping = self.dat_config.get("web_mapping", None)
+        Args:
+            subchannel: Specific subchannel. Defaults to None, which will use
+                the main dat
+        """
+
+        if subchannel is None:
+            web_mapping = self.dat_config.get("web_mapping", None)
+        else:
+            web_mapping = self.dat_config.get("subchannels", {}).get(subchannel, {}).get("web_mapping", None)
+
         if web_mapping is None:
             raise ValueError("No web mapping defined in dat config file")
 

@@ -71,6 +71,7 @@ class ROMDownloader:
         platform_config=None,
         rclone_method="sync",
         copy_files=None,
+        subchannel_dict=None,
         logger=None,
         include_filter_wildcard=True,
         log_line_sep="=",
@@ -91,6 +92,7 @@ class ROMDownloader:
             rclone_method (str, optional): Should be one of 'sync' or 'copy'. Defaults to 'sync'
             copy_files (list, optional): Must be set if rclone_method is 'copy'. Determines the filenames to copy over.
                 Defaults to None
+            subchannel_dict (dict, optional): Dictionary of subchannel files. Defaults to None
             logger (logging.Logger, optional): Logger instance. Defaults to None
             include_filter_wildcard (bool, optional): If set, will include wildcards in rclone filters. Defaults to
                 True.
@@ -126,6 +128,7 @@ class ROMDownloader:
 
         self.rclone_method = rclone_method
         self.copy_files = copy_files
+        self.subchannel_dict = subchannel_dict
 
         out_dir = self.config.get("dirs", {}).get("raw_dir", None)
         if out_dir is None:
@@ -219,29 +222,30 @@ class ROMDownloader:
             self.post_to_discord(start_files, end_files, name=name)
 
         # If there are potential additional files to download, do that here
-        if "additional_dirs" in self.platform_config:
+        if "subchannels" in self.platform_config:
 
-            for add_dir in self.platform_config["additional_dirs"]:
-                add_remote_dir = self.platform_config["additional_dirs"][add_dir]
+            for sc in self.platform_config["subchannels"]:
+                sc_remote_dir = self.platform_config["subchannels"][sc]
 
                 # If using relative URL, strip the leading slash
                 if not self.use_absolute_url:
-                    if add_remote_dir[0] == "/":
-                        add_remote_dir = add_remote_dir[1:]
+                    if sc_remote_dir[0] == "/":
+                        sc_remote_dir = sc_remote_dir[1:]
 
-                add_out_dir = f"{self.out_dir} {add_dir}"
+                sc_out_dir = f"{self.out_dir} {sc}"
 
-                start_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
+                start_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
 
                 self.rclone_download(
-                    remote_dir=add_remote_dir,
-                    out_dir=add_out_dir,
+                    remote_dir=sc_remote_dir,
+                    out_dir=sc_out_dir,
+                    subchannel=sc
                 )
 
-                end_files = get_tidy_files(os.path.join(str(add_out_dir), "*"))
+                end_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
 
                 if self.discord_url is not None:
-                    name = f"ROMDownloader: {self.platform} ({add_dir})"
+                    name = f"ROMDownloader: {self.platform} ({sc})"
                     self.post_to_discord(start_files, end_files, name=name)
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
@@ -252,6 +256,7 @@ class ROMDownloader:
         self,
         remote_dir,
         out_dir=None,
+        subchannel=None,
         max_retries=5,
     ):
         """Download from rclone, either via sync or copy
@@ -259,6 +264,7 @@ class ROMDownloader:
         Args:
             remote_dir: rclone remote path
             out_dir: directory to download to
+            subchannel: subchannel to download. Defaults to None
             max_retries: maximum number of retries
         """
 
@@ -278,6 +284,7 @@ class ROMDownloader:
             self.rclone_copy(
                 remote_dir=remote_dir,
                 out_dir=out_dir,
+                subchannel=subchannel,
                 max_retries=max_retries,
             )
         else:
@@ -413,6 +420,7 @@ class ROMDownloader:
         self,
         remote_dir,
         out_dir=None,
+        subchannel=None,
         max_retries=5,
     ):
         """Use rclone to copy files one-by-one
@@ -420,6 +428,7 @@ class ROMDownloader:
         Args:
             remote_dir: rclone remote path
             out_dir: directory to download to
+            subchannel: subchannel to copy to
             max_retries: maximum number of retries
         """
 
@@ -427,6 +436,18 @@ class ROMDownloader:
             raise ValueError("copy_files needs to be defined for rclone copy")
 
         for fi, f in enumerate(self.copy_files):
+
+            # If we don't have this file in the subchannel list, then just skip
+            if subchannel is not None:
+                f_noext = os.path.splitext(f)[0]
+                if not f_noext in self.subchannel_dict[subchannel]:
+                    self.logger.debug(
+                        centred_string(
+                            f"{f_noext} not found in subchannel files",
+                            total_length=self.log_line_length,
+                        )
+                    )
+                    continue
 
             remote_file_name = f"{self.remote_name}:{remote_dir}{f}"
 
@@ -510,8 +531,7 @@ class ROMDownloader:
                 if retcode == 9999:
                     self.logger.warning(
                         centred_string(
-                            f"Could not find {self.remote_name}:{remote_dir}{f}. "
-                            f"This may not be an issue",
+                            f"Could not find {self.remote_name}:{remote_dir}{f}.",
                             total_length=self.log_line_length,
                         )
                     )

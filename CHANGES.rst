@@ -7,6 +7,7 @@ Fixes
 General
 ~~~~~~~
 
+- Include potential subchannels better, to avoid unneccesary download/move calls
 - Include upcoming consoles in ``planned_changes.rst``
 
 0.2.0 (2025-03-19)

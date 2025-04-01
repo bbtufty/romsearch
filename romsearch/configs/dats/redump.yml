@@ -1,17 +1,22 @@
-url: "http://redump.org/datfile"
+url: "http://redump.org/"
 
 Nintendo - GameCube:
-  web_mapping: "gc"
+  web_mapping: "datfile/gc"
   file_mapping: "Nintendo - GameCube - Datfile (*)"
 
 Sony - PlayStation:
-  web_mapping: "psx"
+  web_mapping: "datfile/psx"
   file_mapping: "Sony - PlayStation - Datfile (*)"
 
+  subchannels:
+    SBI:
+      web_mapping: "sbi/psx"
+      file_mapping: "Sony - PlayStation - SBI Subchannels (*)"
+
 Sony - PlayStation 2:
-  web_mapping: "ps2"
+  web_mapping: "datfile/ps2"
   file_mapping: "Sony - PlayStation 2 - Datfile (*)"
 
 Sony - PlayStation Portable:
-  web_mapping: "psp"
+  web_mapping: "datfile/psp"
   file_mapping: "Sony - PlayStation Portable - Datfile (*)"

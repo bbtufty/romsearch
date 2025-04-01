@@ -413,10 +413,10 @@ class ROMMover:
                 )
 
                 # If there are additional file to move/unzip, do that now
-                if "additional_dirs" in self.platform_config:
-                    for add_dir in self.platform_config["additional_dirs"]:
+                if "subchannels" in self.platform_config:
+                    for subchannel in self.platform_config["subchannels"]:
 
-                        add_full_dir = f"{self.raw_dir} {add_dir}"
+                        add_full_dir = f"{self.raw_dir} {subchannel}"
                         add_file = os.path.join(add_full_dir, rom_file)
                         if os.path.exists(add_file):
                             move_file_success, moved_files = self.move_file(
@@ -426,14 +426,14 @@ class ROMMover:
                             if not move_file_success:
                                 self.logger.warning(
                                     centred_string(
-                                        f"{rom_file} {add_dir} not found in raw directory, skipping",
+                                        f"{rom_file} {subchannel} not found in raw directory, skipping",
                                         total_length=self.log_line_length,
                                     )
                                 )
                             else:
                                 self.logger.info(
                                     centred_string(
-                                        f"Moved {rom_file} {add_dir}",
+                                        f"Moved {rom_file} {subchannel}",
                                         total_length=self.log_line_length,
                                     )
                                 )

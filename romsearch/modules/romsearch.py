@@ -168,7 +168,7 @@ class ROMSearch:
             # Pull in platform-specific config
             platform_config = self.get_platform_config(platform=platform)
 
-            dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
+            dat_dict, subchannel_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
                 self.get_all_games(
                     platform=platform,
                     platform_config=platform_config,
@@ -249,6 +249,7 @@ class ROMSearch:
                         logger=self.logger,
                         rclone_method="copy",
                         copy_files=all_files,
+                        subchannel_dict=subchannel_dict,
                         log_line_length=log_line_length,
                     )
                     downloader.run()
@@ -385,6 +386,7 @@ class ROMSearch:
 
         # Parse DAT files here, if we're doing that
         dat_dict = None
+        subchannel_dict = None
         if self.run_datparser:
             dat_parser = DATParser(
                 platform=platform,
@@ -394,6 +396,17 @@ class ROMSearch:
                 log_line_length=log_line_length,
             )
             dat_dict = dat_parser.run()
+
+            # Also pull out potential subchannels
+            dat_parser = DATParser(
+                platform=platform,
+                use_subchannels=True,
+                config=self.config,
+                platform_config=platform_config,
+                logger=self.logger,
+                log_line_length=log_line_length,
+            )
+            subchannel_dict = dat_parser.run()
 
         # If we're mapping name changes from one DAT to another, do that here
         dat_mappings = None
@@ -534,7 +547,7 @@ class ROMSearch:
             self.logger.info(centred_string(g, total_length=log_line_length))
         self.logger.info(f"{log_line_sep * log_line_length}")
 
-        return dat_dict, dupe_dict, retool_dict, ra_hash_dict, all_games
+        return dat_dict, subchannel_dict, dupe_dict, retool_dict, ra_hash_dict, all_games
 
     def get_ra_hash_dict(
         self,
