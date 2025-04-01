@@ -7,11 +7,16 @@ but can be easily expanded if necessary.
 
 Syntax: ::
 
-    url: "url"                      # OPTIONAL. Base url to build request from
+    url: "url"                            # OPTIONAL. Base url to build request from
 
-    [platform]:                     # Name of the platform
-      web_mapping: [web_mapping]    # OPTIONAL. If url is defined above, this is used to build the request
-      file_mapping: [file_mapping]  # Name style for the file
+    [platform]:                           # Name of the platform
+      web_mapping: [web_mapping]          # OPTIONAL. If url is defined above, this is used to build the request
+      file_mapping: [file_mapping]        # Name style for the file
+
+      subchannels:                        # OPTIONAL. For subchannels, we can define web and file mappings as above
+        [subchannel_name]:
+          web_mapping: "something"
+          file_mapping: "something_else"
 
 No-Intro
 ========
