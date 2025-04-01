@@ -41,6 +41,11 @@ Nintendo - Pokemon Mini
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Pokemon Mini.yml
 
+Nintendo - Virtual Boy
+======================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Nintendo - Virtual Boy.yml
+
 Nintendo - Nintendo Entertainment System
 ========================================
 

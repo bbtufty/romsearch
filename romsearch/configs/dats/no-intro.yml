@@ -10,6 +10,9 @@ Nintendo - Game Boy Advance:
 Nintendo - Pokemon Mini:
   file_mapping: "Nintendo - Pokemon Mini (*)"
 
+Nintendo - Virtual Boy:
+  file_mapping: "Nintendo - Virtual Boy (*)"
+
 Nintendo - Nintendo Entertainment System:
   file_mapping: "Nintendo - Nintendo Entertainment System (Headered) (*)"
 

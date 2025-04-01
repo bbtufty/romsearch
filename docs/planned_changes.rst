@@ -7,7 +7,6 @@ Consoles
 
 * Nintendo (Handheld)
 
-  * Virtual Boy
   * Game & Watch
   * Nintendo DS
   * Nintendo DSi
