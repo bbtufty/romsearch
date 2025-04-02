@@ -66,6 +66,11 @@ Nintendo - GameCube
 
 .. literalinclude:: ../../romsearch/configs/platforms/Nintendo - GameCube.yml
 
+Sega - Game Gear
+===========================
+
+.. literalinclude:: ../../romsearch/configs/platforms/Sega - Game Gear.yml
+
 Sega - Mega Drive - Genesis
 ===========================
 

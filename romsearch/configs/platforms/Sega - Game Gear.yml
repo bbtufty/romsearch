@@ -1,0 +1,14 @@
+group: "No-Intro"
+dir: "/No-Intro/Sega - Game Gear/"
+unzip: false
+file_exts:
+  - ".gg"
+
+# RetroAchievements
+ra_id: 15
+ra_hash_method: "md5"
+
+# ROMPatcher
+patch_method: "rompatcher.js"
+patch_file_exts:
+  - ".bps"

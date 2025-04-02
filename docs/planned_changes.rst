@@ -18,10 +18,6 @@ Consoles
   * Wii
   * Wii U
 
-* Sega (Handheld)
-
-  * Game Gear
-
 * Sega (Home)
 
   * Master System

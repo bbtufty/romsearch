@@ -4,6 +4,7 @@
 Features
 --------
 
+- Added support for Game Gear
 - Added support for Virtual Boy
 
 Fixes

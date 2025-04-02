@@ -59,6 +59,10 @@ has the capability for:
   * Nintendo 64
   * GameCube
 
+* Sega (Handheld)
+
+  * Game Gear
+
 * Sega (Home)
 
   * Mega Drive/Genesis
