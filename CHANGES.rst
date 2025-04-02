@@ -1,6 +1,11 @@
 0.2.1 (Unreleased)
 ==================
 
+Features
+--------
+
+- Added support for Virtual Boy
+
 Fixes
 -----
 

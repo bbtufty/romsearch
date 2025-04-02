@@ -50,6 +50,7 @@ has the capability for:
   * Game Boy Color
   * Game Boy Advance
   * Pokemon Mini
+  * Virtual Boy
 
 * Nintendo (Home)
 
