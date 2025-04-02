@@ -22,5 +22,8 @@ Nintendo - Super Nintendo Entertainment System:
 Nintendo - Nintendo 64:
   file_mapping: "Nintendo - Nintendo 64 (BigEndian) (*)"
 
+Sega - Game Gear:
+  file_mapping: "Sega - Game Gear (*)"
+
 Sega - Mega Drive - Genesis:
   file_mapping: "Sega - Mega Drive - Genesis (*)"

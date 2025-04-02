@@ -46,6 +46,8 @@ works for the following consoles:
    * Super Nintendo Entertainment System
    * Nintendo 64
    * GameCube
+* Sega (Handheld)
+  * Game Gear
 * Sega (Home)
   * Mega Drive/Genesis
 * Sony (Handheld)
