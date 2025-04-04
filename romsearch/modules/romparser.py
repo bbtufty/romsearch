@@ -740,7 +740,10 @@ class ROMParser:
                 # Ensure we lowercase the hash, just to be sure
                 md5 = copy.deepcopy(h["MD5"].lower())
                 id_name = copy.deepcopy(h[key])
-                id_name = id_name.strip()
+
+                # If for some weird reason there's no ID name, just skip
+                if id_name is None:
+                    continue
 
                 # Also just pull out the ROM name, since we need that later
                 rom_name = copy.deepcopy(h["Name"])
