@@ -37,6 +37,5 @@ Consoles
 Features
 ========
 
-* Improve the RAHasher to use info about when the RA page was last edited, rather than caching
 * More information in the ROMBrowser
 * More granular control over compilations

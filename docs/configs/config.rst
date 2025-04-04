@@ -63,8 +63,8 @@ Syntax: ::
     rahasher:                           # RAHasher specific options
       username: "user"                  # RA username
       api_key: "1234567890abcde"        # RA API key
-      cache_period: 30                  # Cache period for GameList in days. Since this is a heavy API operation, RA
-                                        # suggests caching this aggressively. Defaults to 30
+      cache_period: 1                   # Cache period for GameList in days. Since this is a heavy API operation, RA
+                                        # suggests caching this aggressively. Defaults to 1
 
     dupeparser:                         # DupeParser specific options
       use_retool: true                  # OPTIONAL. Whether to use retool clonelists or not. Defaults to true

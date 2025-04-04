@@ -79,7 +79,7 @@ romchooser:
 rahasher:
   username: "user"
   api_key: "1234567890abcde"
-  cache_period: 30
+  cache_period: 1
 
 rompatcher:
   xdelta_path: F:/Emulation/xdelta3-3.1.0-x86_64.exe

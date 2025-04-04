@@ -7,8 +7,9 @@ achievements.
 
 This requires API access, so you need to supply your RA username and API key. For how to do this, see
 `this page <https://api-docs.retroachievements.org/#api-access>`_. Because GetGameList is heavy on the API,
-there is a cache implemented that by default will only query the full game list once a month. If you need
-to change this, you can with ``cache_period``, but do so at your own risk!
+there is a cache implemented that by default will only query the full game list once a day, and will check
+if anything's changed from hashes you might already have on disk. If you need to change this, you can with
+``cache_period``, but do so at your own risk!
 
 For more details on the RAHasher arguments, see the :doc:`config file documentation <../configs/config>`.
 

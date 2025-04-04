@@ -16,6 +16,11 @@ DATMapper
 - Fix bug with playlist files messing up identification
 - Significant speedup
 
+RAHasher
+~~~~~~~~
+
+- Changed how caching happens, to reduce API calls and find new hashes faster
+
 General
 ~~~~~~~
 
