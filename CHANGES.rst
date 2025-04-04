@@ -10,6 +10,12 @@ Features
 Fixes
 -----
 
+DATMapper
+~~~~~~~~~
+
+- Fix bug with playlist files messing up identification
+- Significant speedup
+
 General
 ~~~~~~~
 

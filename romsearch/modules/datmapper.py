@@ -1,3 +1,4 @@
+import copy
 import os
 
 from ..util import (
@@ -10,6 +11,53 @@ from ..util import (
     format_dat,
     centred_string,
 )
+
+PLAYLIST_EXTS = tuple(
+    [
+        ".cue",
+    ]
+)
+
+
+def get_checksums(
+    dat,
+    sort=False,
+):
+    """Get checksums out of a parsed DAT file
+
+    Args:
+        dat: Parsed DAT file
+        sort: Whether to sort the dictionary. Defaults to False.
+    """
+
+    dat_checksums = {}
+    for d in dat:
+
+        dat_checksums[d] = {}
+
+        # Get list of ROM files out
+        d_roms = dat[d]["rom"]
+        if isinstance(d_roms, dict):
+            d_roms = [d_roms]
+
+        # Record number of files
+        dat_checksums[d]["n_files"] = len(d_roms)
+
+        # Get out MD5 checksums
+        d_md5s = [
+            d_rom["md5"].lower()
+            for d_rom in d_roms
+            if not d_rom["name"].endswith(PLAYLIST_EXTS)
+        ]
+        d_md5s.sort()
+
+        # Record checksums
+        dat_checksums[d]["md5"] = copy.deepcopy(d_md5s)
+
+    if sort:
+        dat_checksums = dict(sorted(dat_checksums.items()))
+
+    return dat_checksums
 
 
 class DATMapper:
@@ -154,6 +202,18 @@ class DATMapper:
 
         dat_mappings = {}
 
+        # Pull out a) the number of files and b) a list of checksums for each
+        # individual ROM file for the two dats. Sort them so we can hunt through
+        # more quickly
+        dat_checksums = get_checksums(
+            dat,
+            sort=True,
+        )
+        old_dat_checksums = get_checksums(
+            old_dat,
+            sort=True,
+        )
+
         # Keep track of ones we've matched for speed, since they should be unique
         d_found = [False] * len(dat)
         od_found = [False] * len(old_dat)
@@ -172,36 +232,21 @@ class DATMapper:
                 if od_found[idx_od]:
                     continue
 
-                # If we already have an exact name match, skip
-                if d == od:
-                    d_found[idx_d] = True
-                    od_found[idx_od] = True
-                    continue
-
-                # Get list of ROM files out
-                d_roms = dat[d]["rom"]
-                od_roms = old_dat[od]["rom"]
-
-                if isinstance(d_roms, dict):
-                    d_roms = [d_roms]
-                if isinstance(od_roms, dict):
-                    od_roms = [od_roms]
-
                 # If we don't have the same number of files, skip
-                if len(d_roms) != len(od_roms):
+                if dat_checksums[d]["n_files"] != dat_checksums[d]["n_files"]:
                     continue
 
-                # Compare by MD5 checksums
-                d_md5s = [d_rom["md5"].lower() for d_rom in d_roms]
-                d_md5s.sort()
-                od_md5s = [od_rom["md5"].lower() for od_rom in od_roms]
-                od_md5s.sort()
+                # Check if names match
+                names_match = d == od
 
-                # If we have a match and the name is different, then append to dictionary and mark as found
-                if d_md5s == od_md5s:
+                # If we have a match, mark as found
+                if dat_checksums[d]["md5"] == old_dat_checksums[od]["md5"]:
                     d_found[idx_d] = True
                     od_found[idx_od] = True
-                    dat_mappings[d] = od
+
+                    # If the names don't match, then append them to the dictionary
+                    if not names_match:
+                        dat_mappings[d] = od
 
         # Save this to yml
         save_yml(out_file, dat_mappings)
