@@ -80,7 +80,7 @@ class RAHasher:
         self.username = self.config.get("rahasher", {}).get("username", None)
         self.api_key = self.config.get("rahasher", {}).get("api_key", None)
 
-        cache_period = self.config.get("rahasher", {}).get("cache_period", 30)
+        cache_period = self.config.get("rahasher", {}).get("cache_period", 1)
         if isinstance(cache_period, str):
             cache_period = float(cache_period)
         self.cache_period = cache_period
@@ -192,49 +192,33 @@ class RAHasher:
             )
             self.download_ra_game_list(out_file=game_list_file)
 
-        # Now pull out the game info
+        # Now get existing game info, if it exists
         game_info_file = os.path.join(
             self.ra_hash_dir,
             f"{self.platform}.json",
         )
-        game_info_modtime = get_file_time(
-            game_info_file,
-            return_as_str=False,
-        )
-        cur_time = datetime.now()
-        diff = cur_time - game_info_modtime
+
+        if not os.path.exists(game_info_file):
+            ra_game_info = {}
+        else:
+            ra_game_info = load_json(game_info_file)
+
+        orig_ra_game_info = copy.deepcopy(ra_game_info)
 
         self.logger.info(
             centred_string(
-                f"Last game info cache {diff.days} days ago",
+                f"Pulling game info out to {game_info_file}",
                 total_length=self.log_line_length,
             )
         )
-        # If we're still in the cache period, don't overwrite
-        if diff.days > self.cache_period:
-            self.logger.info(
-                centred_string(
-                    f"Pulling game info out to {game_info_file}",
-                    total_length=self.log_line_length,
-                )
-            )
-            self.download_ra_game_list(out_file=game_list_file)
+        ra_game_info = self.format_game_list(game_list_file,
+                                             ra_game_info=ra_game_info,
+                                             )
 
-            ra_game_info = self.format_game_list(game_list_file)
-
-            self.save_ra_game_info(
-                ra_game_info,
-                game_info_file,
-            )
-
-        else:
-            self.logger.info(
-                centred_string(
-                    f"Loading existing game info file",
-                    total_length=self.log_line_length,
-                )
-            )
-            ra_game_info = load_json(game_info_file)
+        self.save_ra_game_info(
+            ra_game_info,
+            game_info_file,
+        )
 
         return ra_game_info
 
@@ -261,35 +245,57 @@ class RAHasher:
     def format_game_list(
         self,
         in_file,
+        ra_game_info=None,
         sleep_time=0.5,
     ):
         """Format the GameList neatly
 
         Args:
             in_file (str): Input GameList file
+            ra_game_info (dict): RA game info. Defaults to None, which will use an empty
+                dictionary
             sleep_time (float): Sleep time for API queries. Defaults to 0.5
         """
 
-        data = load_json(in_file)
+        game_list = load_json(in_file)
 
-        ra_game_info = {}
+        if ra_game_info is None:
+            ra_game_info = {}
 
-        # To not totally clutter the terminal, overwrite each line in the loop
-        orig_terminator = self.logger.handlers[-1].terminator
-        self.logger.handlers[-1].terminator = ""
+        # Start by removing things in the RA game info that aren't in the game list
+        all_game_list_titles = [f["Title"] for f in game_list]
+        all_ra_game_info_title = [ra_game_info[f]["Title"] for f in ra_game_info]
 
-        tot = len(data)
-        for i, d in enumerate(data):
+        not_present_list = list(set(all_ra_game_info_title) - set(all_game_list_titles))
+        for np in not_present_list:
+            ra_game_info.pop(np, None)
+
+        self.logger.info(
+            centred_string(
+                f"Found {len(game_list)} RetroAchievements entries with achievements",
+                total_length=self.log_line_length,
+            )
+        )
+
+        n_updated = 0
+        for d in game_list:
 
             # RA uses "Title: Subtitle" logic, while No-Intro/Redump do not
             clean_title = d["Title"].replace(":", " -")
 
+            # Get out modification times, if they exist
+            game_list_mod_time = d["DateModified"]
+            ra_game_info_mod_time = ra_game_info.get(clean_title, {}).get("DateModified", None)
+
+            # If they match, skip
+            if game_list_mod_time == ra_game_info_mod_time:
+                continue
+
             # Format this string neatly
             self.logger.info(
                 centred_string(
-                    f"{i+1}/{tot}: {clean_title}",
+                    f"Getting/updating hashes for {clean_title}",
                     total_length=self.log_line_length,
-                    str_prefix="\rINFO: ",
                 )
             )
 
@@ -302,10 +308,17 @@ class RAHasher:
             # To avoid overloading the API, add a pause here
             time.sleep(sleep_time)
 
-        # Set the logger back to what it was,
-        # and avoid any last minute formatting errors
-        self.logger.handlers[-1].terminator = orig_terminator
-        self.logger.info("")
+            n_updated += 1
+
+        self.logger.info(
+            centred_string(
+                f"Added/updated {n_updated} game entries",
+                total_length=self.log_line_length,
+            )
+        )
+
+        # Finally, sort these hashes
+        ra_game_info = dict(sorted(ra_game_info.items()))
 
         return ra_game_info
 
