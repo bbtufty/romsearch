@@ -218,6 +218,24 @@ class DATMapper:
         d_found = [False] * len(dat)
         od_found = [False] * len(old_dat)
 
+        od_keys = list(old_dat.keys())
+
+        # First, just search for exact matches
+        for idx_d, d in enumerate(dat):
+
+            od_checksums = old_dat_checksums.get(d, {}).get("md5", None)
+            if od_checksums is None:
+                continue
+
+            # If we have a match, mark as found. Names match,
+            # so we don't need to map
+            if dat_checksums[d]["md5"] == od_checksums:
+
+                idx_od = od_keys.index(d)
+
+                d_found[idx_d] = True
+                od_found[idx_od] = True
+
         for idx_d, d in enumerate(dat):
 
             # If we've already matched, move on
@@ -233,7 +251,7 @@ class DATMapper:
                     continue
 
                 # If we don't have the same number of files, skip
-                if dat_checksums[d]["n_files"] != dat_checksums[d]["n_files"]:
+                if dat_checksums[d]["n_files"] != old_dat_checksums[od]["n_files"]:
                     continue
 
                 # Check if names match
@@ -247,6 +265,8 @@ class DATMapper:
                     # If the names don't match, then append them to the dictionary
                     if not names_match:
                         dat_mappings[d] = od
+
+                    break
 
         # Save this to yml
         save_yml(out_file, dat_mappings)
