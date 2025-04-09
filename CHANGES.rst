@@ -24,6 +24,7 @@ RAHasher
 General
 ~~~~~~~
 
+- Fixed crash with GUI if non-string entry is in config
 - Include potential subchannels better, to avoid unneccesary download/move calls
 - Include upcoming consoles in ``planned_changes.rst``
 

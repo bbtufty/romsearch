@@ -599,6 +599,11 @@ class ConfigWindow(QMainWindow):
         for d in text_fields:
             if d in self.config[config_key]:
                 field_val = self.config[config_key][d]
+
+                # Avoid weirdness with non-strings
+                if not isinstance(field_val, str):
+                    field_val = str(field_val)
+
                 text_fields[d].setText(field_val)
 
     def set_romsearch_method(self):
