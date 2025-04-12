@@ -22,9 +22,31 @@ RAHasher
 - Fix bug where titles wouldn't be removed from the list
 - Changed how caching happens, to reduce API calls and find new hashes faster
 
+ROMDownloader
+~~~~~~~~~~~~~
+
+- Include info on how many files will be downloaded when copying files
+
+ROMMover
+~~~~~~~~
+
+- Include info on how many files have been moved
+- Save cache each time a ROM is moved, in case of interruption
+
+ROMParser
+~~~~~~~~~
+
+- Ensure we sanitize versions for checking RetroAchievement hashes
+
+ROMPatcher
+~~~~~~~~~~
+
+- ROMPatcher will now try to find correct patch for file if multiple patches exist
+
 General
 ~~~~~~~
 
+- Added (Animal Crossing) as a Modern Version
 - Fixed crash with GUI if non-string entry is in config
 - Include potential subchannels better, to avoid unneccesary download/move calls
 - Include upcoming consoles in ``planned_changes.rst``

@@ -13,6 +13,7 @@ from ..util import (
     load_json,
     match_retool_search_terms,
     get_short_name,
+    get_sanitized_version,
 )
 
 DICT_DEFAULT_VALS = {"bool": False, "str": "", "list": []}
@@ -705,6 +706,8 @@ class ROMParser:
         # a patch (i.e. the hash will change, but we have the file)
         has_cheevos, patch_file = self.get_parsed_match(
             file_dict=file_dict,
+            ra_dict=ra_dict,
+            want_patched_files=True,
         )
 
         file_dict["has_cheevos"] = has_cheevos
@@ -877,7 +880,8 @@ class ROMParser:
 
                 # Force some version info in here, if the RA name doesn't have it
                 if r_parsed["version_no"] == "" and file_dict["version_no"] != "":
-                    if Version(file_dict["version_no"]) == Version("1"):
+                    f_sanitized = get_sanitized_version(file_dict["version_no"])
+                    if Version(f_sanitized) == Version("1"):
                         r_parsed["version_no"] = copy.deepcopy(file_dict["version_no"])
 
                 # Now, make sure all the useful checks pass

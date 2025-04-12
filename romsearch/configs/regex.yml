@@ -1180,6 +1180,10 @@ wii:
   pattern: "\\(Wii\\)"
   group: "modern_version"
 
+animal_crossing:
+  pattern: "\\(Animal Crossing\\)"
+  group: "modern_version"
+
 gamecube:
   pattern: "\\(Game[Cc]ube.*?\\)"
   group: "modern_version"

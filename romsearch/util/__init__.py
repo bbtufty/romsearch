@@ -9,6 +9,7 @@ from .regex_matching import (
     get_short_name,
     get_disc_free_name,
     get_region_free_name,
+    get_sanitized_version,
 )
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "get_short_name",
     "get_disc_free_name",
     "get_region_free_name",
+    "get_sanitized_version",
     "load_json",
     "save_json",
     "unzip_file",
