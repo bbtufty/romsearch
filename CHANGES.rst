@@ -22,6 +22,11 @@ RAHasher
 - Fix bug where titles wouldn't be removed from the list
 - Changed how caching happens, to reduce API calls and find new hashes faster
 
+ROMPatcher
+~~~~~~~~~~
+
+- ROMPatcher will now try to find correct patch for file if multiple patches exist
+
 General
 ~~~~~~~
 
