@@ -19,6 +19,7 @@ DATMapper
 RAHasher
 ~~~~~~~~
 
+- Fix bug where titles wouldn't be removed from the list
 - Changed how caching happens, to reduce API calls and find new hashes faster
 
 General

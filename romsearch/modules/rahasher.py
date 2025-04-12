@@ -203,8 +203,6 @@ class RAHasher:
         else:
             ra_game_info = load_json(game_info_file)
 
-        orig_ra_game_info = copy.deepcopy(ra_game_info)
-
         self.logger.info(
             centred_string(
                 f"Pulling game info out to {game_info_file}",
@@ -262,14 +260,6 @@ class RAHasher:
         if ra_game_info is None:
             ra_game_info = {}
 
-        # Start by removing things in the RA game info that aren't in the game list
-        all_game_list_titles = [f["Title"] for f in game_list]
-        all_ra_game_info_title = [ra_game_info[f]["Title"] for f in ra_game_info]
-
-        not_present_list = list(set(all_ra_game_info_title) - set(all_game_list_titles))
-        for np in not_present_list:
-            ra_game_info.pop(np, None)
-
         self.logger.info(
             centred_string(
                 f"Found {len(game_list)} RetroAchievements entries with achievements",
@@ -317,8 +307,19 @@ class RAHasher:
             )
         )
 
-        # Finally, sort these hashes
+        # Sort these hashes
         ra_game_info = dict(sorted(ra_game_info.items()))
+
+        # Remove things in the RA game info that aren't in the game list
+        all_game_list_titles = [f["Title"] for f in game_list]
+        all_ra_game_info_fixed_title = list(ra_game_info.keys())
+        all_ra_game_info_title = [ra_game_info[f]["Title"] for f in all_ra_game_info_fixed_title]
+
+        not_present_list = list(set(all_ra_game_info_title) - set(all_game_list_titles))
+        for np in not_present_list:
+            idx_np = all_ra_game_info_title.index(np)
+            np_mapped = all_ra_game_info_fixed_title[idx_np]
+            ra_game_info.pop(np_mapped, None)
 
         return ra_game_info
 
