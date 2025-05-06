@@ -303,6 +303,7 @@ class ROMParser:
 
         # If we're using the RA hashes, pull it out here
         self.ra_hashes = ra_hashes
+        self.ra_dict = None
         if self.use_ra_hashes and self.ra_hashes is None:
             ra_hash_dir = self.config.get("dirs", {}).get("ra_hash_dir", None)
             if ra_hash_dir is None:
@@ -401,6 +402,9 @@ class ROMParser:
             datetime_format=self.default_config["datetime_format"],
         )
         file_dict["file_mod_time"] = file_time
+
+        # And note that this thing has been parsed
+        file_dict["is_parsed"] = True
 
         # Log out these tags in a nice readable way
         self.logger.debug(centred_string(f"{f}:", total_length=self.log_line_length))
@@ -677,12 +681,13 @@ class ROMParser:
             )
             return has_cheevos, patch_file
 
-        ra_dict = self.get_ra_dict()
+        # Get the hash dict, if we don't already have it
+        if self.ra_dict is None:
+            self.ra_dict = self.get_ra_dict()
 
         # Get the potential RA match by name (this won't include potentially patched ROMs)
         has_cheevos, patch_file = self.get_ra_match(
             file_dict=file_dict,
-            ra_dict=ra_dict,
         )
 
         # If we've found something, stop here
@@ -695,7 +700,8 @@ class ROMParser:
         # via parsing the names
         if self.hash_method == "custom":
             has_cheevos, patch_file = self.get_parsed_match(
-                file_dict=file_dict, ra_dict=ra_dict, want_patched_files=False
+                file_dict=file_dict,
+                want_patched_files=False
             )
             if has_cheevos:
                 file_dict["has_cheevos"] = has_cheevos
@@ -706,7 +712,6 @@ class ROMParser:
         # a patch (i.e. the hash will change, but we have the file)
         has_cheevos, patch_file = self.get_parsed_match(
             file_dict=file_dict,
-            ra_dict=ra_dict,
             want_patched_files=True,
         )
 
@@ -779,13 +784,11 @@ class ROMParser:
     def get_ra_match(
         self,
         file_dict,
-        ra_dict=None,
     ):
         """Match a file to RetroAchievements supported files
 
         Args:
             file_dict (dict): Dictionary of ROM descriptions
-            ra_dict (dict): Dictionary of RA hashes
         """
 
         has_cheevos = False
@@ -809,18 +812,18 @@ class ROMParser:
         if len(match_list) == 0:
             return has_cheevos, patch_file
 
-        if ra_dict is None:
-            ra_dict = self.get_ra_dict()
+        if self.ra_dict is None:
+            self.ra_dict = self.get_ra_dict()
 
         # Again, if there's nothing here just return
-        if len(ra_dict) == 0:
+        if len(self.ra_dict) == 0:
             return has_cheevos, patch_file
 
         for m in match_list:
-            for r in ra_dict:
-                if m == ra_dict[r]["name"]:
+            for r in self.ra_dict:
+                if m == self.ra_dict[r]["name"]:
                     has_cheevos = True
-                    patch_file = ra_dict[r]["patch_url"]
+                    patch_file = copy.deepcopy(self.ra_dict[r]["patch_url"])
 
         if patch_file is None:
             patch_file = ""
@@ -830,48 +833,52 @@ class ROMParser:
     def get_parsed_match(
         self,
         file_dict,
-        ra_dict=None,
         want_patched_files=True,
     ):
         """Match a file to RetroAchievements supported files that potentially need patches
 
         Args:
             file_dict (dict): Dictionary of ROM descriptions
-            ra_dict (dict): Dictionary of RA hashes
             want_patched_files (bool): Whether we're looking for hashes with patches or not. Defaults to True
         """
 
         has_cheevos = False
         patch_file = ""
 
-        if ra_dict is None:
-            ra_dict = self.get_ra_dict()
+        if self.ra_dict is None:
+            self.ra_dict = self.get_ra_dict()
 
         # Again, if there's nothing here just return
-        if len(ra_dict) == 0:
+        if len(self.ra_dict) == 0:
             return has_cheevos, patch_file
 
         multiple_patch_files_found = False
 
-        for r in ra_dict:
+        for r in self.ra_dict:
 
             # If we want patch files, and we don't have them, skip
-            if want_patched_files and ra_dict[r]["patch_url"] is None:
+            if want_patched_files and self.ra_dict[r]["patch_url"] is None:
                 continue
 
             if multiple_patch_files_found:
                 continue
 
-            # Start by ensuring the names up to first bracket at least match
-            if file_dict["dir_name"] == ra_dict[r]["dir_name"]:
+            # Start by ensuring the names up to the first bracket at least match
+            if file_dict["dir_name"] == self.ra_dict[r]["dir_name"]:
 
-                r_parsed = self.parse_filename(f=ra_dict[r]["full_name"])
+                # Make sure we're not parsing this every time
+                r_is_parsed = self.ra_dict[r].get("is_parsed", False)
+                if not r_is_parsed:
+                    r_parsed = self.parse_filename(f=self.ra_dict[r]["full_name"])
+                    r_parsed["is_parsed"] = True
+                    self.ra_dict[r].update(r_parsed)
+                r_parsed = self.ra_dict.get(r)
 
                 # If we're a superset, then ensure the short names also match, since
                 # we need to be more stringent
                 is_superset = file_dict.get("is_superset", False)
                 ra_dict_short_name = get_short_name(
-                    ra_dict[r]["full_name"],
+                    self.ra_dict[r]["full_name"],
                     regex_config=self.regex_config,
                     default_config=self.default_config,
                 )
@@ -934,7 +941,7 @@ class ROMParser:
 
                     else:
                         has_cheevos = True
-                        patch_file = ra_dict[r]["patch_url"]
+                        patch_file = copy.deepcopy(self.ra_dict[r]["patch_url"])
 
                     if patch_file is None:
                         patch_file = ""

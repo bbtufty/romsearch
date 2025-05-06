@@ -36,6 +36,7 @@ ROMMover
 ROMParser
 ~~~~~~~~~
 
+- Significant speedup by being smarter with RA handling
 - Ensure we sanitize versions for checking RetroAchievement hashes
 
 ROMPatcher
