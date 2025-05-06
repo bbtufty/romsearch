@@ -266,8 +266,6 @@ class ROMSearch:
                         )
                         all_roms_dict[game][f]["file_mod_time"] = file_mod_time
 
-            no
-
             mover = ROMMover(
                 platform=platform,
                 config=self.config,
