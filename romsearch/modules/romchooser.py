@@ -11,6 +11,7 @@ from ..util import (
     centred_string,
     left_aligned_string,
     load_yml,
+    get_sanitized_version,
 )
 
 DAT_FILTERS = [
@@ -32,36 +33,6 @@ DAT_FILTERS = [
     "unlicensed",
     "video",
 ]
-
-
-def get_sanitized_version(ver):
-    """Get a sanitized version for potentially weird versioning
-
-    Args:
-        ver: version to sanitize
-    """
-
-    # If we don't have a version, assume v0
-    if ver.lower() in [""]:
-        ver = "v0"
-
-    # If we just have "rev", assume a v1
-    if ver.lower() in ["rev"]:
-        ver = "v1"
-
-    # If we have lettered versions, convert these to numbers
-    if ver[1:].isalpha():
-        ver = f"v{ord(ver[1:])}"
-
-    # If we have a v.something, replace that here so versions can be parsed
-    if ver[:2] == "v.":
-        ver = f"v{ver[2:]}"
-
-    # If we have a letter at the end, replace with an ordinal
-    if ver[-1].isalpha():
-        ver = f"{ver[:-1]}.{ord(ver[-1])}"
-
-    return ver
 
 
 def argsort(seq):

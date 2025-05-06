@@ -1,3 +1,4 @@
+import copy
 from urllib import parse as urlparse
 
 import glob
@@ -22,7 +23,10 @@ ALLOWED_PATCH_METHODS = [
 ]
 
 
-def find_file_by_extensions(file_exts, patch_dir):
+def find_file_by_extensions(
+    file_exts,
+    patch_dir,
+):
     """Find a file by extension
 
     Args:
@@ -30,19 +34,13 @@ def find_file_by_extensions(file_exts, patch_dir):
         patch_dir (str): Patch directory
     """
 
-    potential_files = []
+    files = []
 
     for file_ext in file_exts:
-        potential_file = glob.glob(os.path.join(patch_dir, f"*{file_ext}"))
-        potential_files.extend(potential_file)
+        file = glob.glob(os.path.join(patch_dir, f"*{file_ext}"))
+        files.extend(file)
 
-    # If we have multiple potential files, then error out
-    if len(potential_files) > 1:
-        raise ValueError(f'Multiple files found: {", ".join(potential_files)}')
-
-    file = potential_files[0]
-
-    return file
+    return files
 
 
 class ROMPatcher:
@@ -155,6 +153,35 @@ class ROMPatcher:
             patch_dir=patch_dir,
         )
 
+        # If we have multiple potential patch files, try and find one
+        # that matches the name most closely
+        if len(patch_file) > 1:
+            best_patch_file = None
+
+            base_file = os.path.basename(file)
+            base_file = os.path.splitext(base_file)[0]
+
+            for p in patch_file:
+
+                if best_patch_file is not None:
+                    continue
+
+                base_patch_file = os.path.basename(p)
+
+                if base_file in base_patch_file:
+                    best_patch_file = p
+
+            if best_patch_file is not None:
+                patch_file = copy.deepcopy(best_patch_file)
+            else:
+                pretty_patch_files = [os.path.basename(p) for p in patch_file]
+                raise ValueError(
+                    f"Could not find suitable patch file in {pretty_patch_files}"
+                )
+
+        else:
+            patch_file = patch_file[0]
+
         # Now we have everything we need to patch this ROM
         patched_file = self.patch_rom(
             unpatched_file=unpatched_file,
@@ -186,6 +213,12 @@ class ROMPatcher:
             file_exts=file_exts,
             patch_dir=patch_dir,
         )
+
+        # If we've got more than one ROM file, error out
+        if len(rom_file) > 1:
+            raise ValueError("Cannot handle multiple ROM files!")
+
+        rom_file = rom_file[0]
 
         return rom_file
 

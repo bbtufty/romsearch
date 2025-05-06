@@ -198,7 +198,9 @@ class ROMMover:
 
         all_multi_discs = {}
 
-        for game in all_rom_dict:
+        total_games = len(all_rom_dict)
+
+        for game_no, game in enumerate(all_rom_dict):
             rom_dict = all_rom_dict[game]
 
             for rom_no, rom in enumerate(rom_dict):
@@ -304,7 +306,7 @@ class ROMMover:
                 ):
                     self.logger.info(
                         centred_string(
-                            f"No updates for {rom}, skipping",
+                            f"[{game_no + 1}/{total_games}]: No updates for {rom}, skipping",
                             total_length=self.log_line_length,
                         )
                     )
@@ -382,7 +384,9 @@ class ROMMover:
                             "Currently cannot handle compressing of patched files"
                         )
 
-                    rom_compress_file = os.path.join(self.raw_dir, self.platform, rom_file)
+                    rom_compress_file = os.path.join(
+                        self.raw_dir, self.platform, rom_file
+                    )
 
                     full_rom = self.compress_file(
                         rom_compress_file,
@@ -400,7 +404,7 @@ class ROMMover:
                 if not move_file_success:
                     self.logger.warning(
                         centred_string(
-                            f"{rom_file} not found in raw directory, skipping",
+                            f"[{game_no + 1}/{total_games}]: {rom_file} not found in raw directory, skipping",
                             total_length=self.log_line_length,
                         )
                     )
@@ -409,7 +413,10 @@ class ROMMover:
                 out_files.extend(moved_files)
 
                 self.logger.info(
-                    centred_string(f"Moved {rom_file}", total_length=self.log_line_length)
+                    centred_string(
+                        f"[{game_no + 1}/{total_games}]: Moved {rom_file}",
+                        total_length=self.log_line_length,
+                    )
                 )
 
                 # If there are additional file to move/unzip, do that now
@@ -420,7 +427,7 @@ class ROMMover:
                         add_file = os.path.join(add_full_dir, rom_file)
                         if os.path.exists(add_file):
                             move_file_success, moved_files = self.move_file(
-                                add_file,  game=game, out_dir=out_dir, unzip=unzip
+                                add_file, game=game, out_dir=out_dir, unzip=unzip
                             )
 
                             if not move_file_success:
@@ -433,7 +440,7 @@ class ROMMover:
                             else:
                                 self.logger.info(
                                     centred_string(
-                                        f"Moved {rom_file} {subchannel}",
+                                        f"[{game_no + 1}/{total_games}]: Moved {rom_file} {subchannel}",
                                         total_length=self.log_line_length,
                                     )
                                 )
@@ -443,7 +450,7 @@ class ROMMover:
                 if rom_dict[rom]["multi_disc"] and self.handle_multi_discs:
                     all_multi_discs[disc_free_name]["out_files"].extend(out_files)
 
-                # Update the cache
+                # Update and save the cache
                 self.cache_update(
                     game=game,
                     rom=rom,
@@ -451,6 +458,7 @@ class ROMMover:
                     out_dir=dir_name,
                     rom_dict=rom_dict,
                 )
+                self.save_cache()
 
                 roms_moved.append(rom_file)
 
@@ -485,6 +493,7 @@ class ROMMover:
                         files=[m3u_file_name],
                         out_dir=all_multi_discs[multi_disc]["game_dir_name"],
                     )
+                    self.save_cache()
 
                     self.logger.info(
                         centred_string(

@@ -237,9 +237,7 @@ class ROMDownloader:
                 start_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
 
                 self.rclone_download(
-                    remote_dir=sc_remote_dir,
-                    out_dir=sc_out_dir,
-                    subchannel=sc
+                    remote_dir=sc_remote_dir, out_dir=sc_out_dir, subchannel=sc
                 )
 
                 end_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
@@ -435,6 +433,15 @@ class ROMDownloader:
         if self.copy_files is None:
             raise ValueError("copy_files needs to be defined for rclone copy")
 
+        n_files = len(self.copy_files)
+        self.logger.info(
+            centred_string(
+                f"Downloading {n_files} files",
+                total_length=self.log_line_length,
+            )
+        )
+        self.logger.info(f"{'-' * self.log_line_length}")
+
         for fi, f in enumerate(self.copy_files):
 
             # If we don't have this file in the subchannel list, then just skip
@@ -467,7 +474,7 @@ class ROMDownloader:
             if self.dry_run:
                 self.logger.info(
                     centred_string(
-                        f"Dry run, would rclone copy {short_out_dir}, {f} with:",
+                        f"Dry run, would rclone copy {short_out_dir}: {f} with:",
                         total_length=self.log_line_length,
                     )
                 )
@@ -479,7 +486,7 @@ class ROMDownloader:
 
                 self.logger.info(
                     centred_string(
-                        f"Running rclone copy for {short_out_dir}, {f}",
+                        f"[{fi + 1}/{n_files}]: Running rclone copy for {short_out_dir}: {f}",
                         total_length=self.log_line_length,
                     )
                 )
