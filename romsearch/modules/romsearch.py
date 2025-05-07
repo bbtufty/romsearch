@@ -606,8 +606,8 @@ class ROMSearch:
             ra_hashes=ra_hash,
             config=self.config,
             platform_config=platform_config,
-            regex_config=self.regex_config,
             default_config=self.default_config,
+            regex_config=self.regex_config,
             logger=self.logger,
             log_line_length=log_line_length,
         )

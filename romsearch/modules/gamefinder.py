@@ -669,16 +669,23 @@ class GameFinder:
             dupe_entry: Dictionary of game properties
             filters: Filters with conditions and results to apply
         """
-
         # Parse out the filename
         file_to_parse = {game_name["full_name"]: game_name}
+
+        # Don't use RA hashes here
+        rp_config = copy.deepcopy(self.config)
+        if "romparser" not in rp_config:
+            rp_config["romparser"] = {}
+        rp_config["romparser"]["use_ra_hashes"] = False
+
         rp = ROMParser(
             platform=self.platform,
             game=parent_name,
-            config=self.config,
             dat=self.dat,
             retool=self.retool,
             ra_hashes=self.ra_hashes,
+            config=rp_config,
+            platform_config=self.platform_config,
             default_config=self.default_config,
             regex_config=self.regex_config,
             logger=self.logger,
