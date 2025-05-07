@@ -36,6 +36,9 @@ ROMMover
 ROMParser
 ~~~~~~~~~
 
+- Fix bug where if we're not looking for RA entries with patches, we'd still look for them
+- Fix bug where games from the same region with similar languages could mistakenly be assigned
+  as having RetroAchievements
 - Significant speedup by being smarter with RA handling
 - Ensure we sanitize versions for checking RetroAchievement hashes
 

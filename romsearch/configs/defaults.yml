@@ -288,6 +288,7 @@ ra_labels:
 
 ra_patch_checks:
   - "regions"
+  - "languages"
   - "version_no"
   - "revision"
   - "multi_disc"

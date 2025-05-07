@@ -145,14 +145,23 @@ def check_match(i, j, checks_passed=None):
         if not i == j:
             checks_passed = False
 
-    # If a list, then check there's at least some overlap
+    # If a list, treat differently
     elif isinstance(i, list):
         s_i = set(i)
         s_j = set(j)
         s_k = s_i.intersection(s_j)
 
-        if len(s_k) == 0:
+        # Only fail on a 0-length intersection if at least one of the inputs has
+        # non-zero length
+        if len(s_k) == 0 and len(s_i) > 0 and len(s_j) > 0:
             checks_passed = False
+
+        # If we have the case where both entries have more than 1 item, then ensure
+        # they *all* match in at least one of the lists
+        if len(s_i) > 1 and len(s_j) > 1:
+            min_n_match = min(len(s_i), len(s_j))
+            if len(s_k) < min_n_match:
+                checks_passed = False
 
     else:
         t = type(i)
@@ -858,6 +867,11 @@ class ROMParser:
 
             # If we want patch files, and we don't have them, skip
             if want_patched_files and self.ra_dict[r]["patch_url"] is None:
+                continue
+
+            # Conversely, if we don't want patch files, and we do have them,
+            # skip
+            if not want_patched_files and self.ra_dict[r]["patch_url"] is not None:
                 continue
 
             if multiple_patch_files_found:

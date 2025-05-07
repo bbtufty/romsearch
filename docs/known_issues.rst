@@ -13,7 +13,4 @@ Known Issues
 
 * Currently, the code only handles ``retool``'s compilations to a very limited degree.
 
-* Sometimes certain RA listings may not be properly found -- one example of this is the USA version of Super Mario
-  Sunshine. This is because the RA listing has an old name for the ROM.
-
 * Occasionally, multiple ROMs can be found with the same priority.
