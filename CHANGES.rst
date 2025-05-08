@@ -30,6 +30,7 @@ ROMDownloader
 ROMMover
 ~~~~~~~~
 
+- Ensure subchannel files are also moved
 - Include info on how many files have been moved
 - Save cache each time a ROM is moved, in case of interruption
 

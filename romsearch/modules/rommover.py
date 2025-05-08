@@ -419,15 +419,17 @@ class ROMMover:
                     )
                 )
 
-                # If there are additional file to move/unzip, do that now
+                # If there are additional files to move/unzip, do that now
                 if "subchannels" in self.platform_config:
                     for subchannel in self.platform_config["subchannels"]:
 
-                        add_full_dir = f"{self.raw_dir} {subchannel}"
+                        add_full_dir = os.path.join(self.raw_dir, f"{self.platform} {subchannel}")
                         add_file = os.path.join(add_full_dir, rom_file)
                         if os.path.exists(add_file):
+
+                            # These files should *always* be unzipped
                             move_file_success, moved_files = self.move_file(
-                                add_file, game=game, out_dir=out_dir, unzip=unzip
+                                add_file, game=game, out_dir=out_dir, unzip=True
                             )
 
                             if not move_file_success:
@@ -440,7 +442,7 @@ class ROMMover:
                             else:
                                 self.logger.info(
                                     centred_string(
-                                        f"[{game_no + 1}/{total_games}]: Moved {rom_file} {subchannel}",
+                                        f"[{game_no + 1}/{total_games}]: Moved {rom_file} ({subchannel})",
                                         total_length=self.log_line_length,
                                     )
                                 )
