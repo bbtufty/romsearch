@@ -62,6 +62,13 @@ the user. Secondly, supersets are prioritised over everything **except** ROMs th
 RetroAchievements. This will mean that you may get a ROM from a different region than you might expect, but if it
 doesn't have RetroAchievements then this will be below a ROM that does.
 
+A note on compilations/supersets
+---------------------------------
+
+In the case of compilations and supersets, these can be non-unique to a game (e.g. a compilation of multiple games,
+or a superset containing a number of DLC). To avoid duplicating ROMs, if a compilation or superset is chosen then
+this ends up in a directory based on the short name of the ROM, rather than the overarching game name.
+
 End result
 ----------
 

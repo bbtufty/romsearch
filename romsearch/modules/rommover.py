@@ -7,6 +7,7 @@ import romsearch
 from .romcompressor import ROMCompressor
 from .rompatcher import ROMPatcher
 from ..util import (
+    get_directory_name,
     centred_string,
     load_yml,
     setup_logger,
@@ -206,10 +207,23 @@ class ROMMover:
             for rom_no, rom in enumerate(rom_dict):
 
                 # Because the filename can change, keep it here
-                rom_file = rom_dict[rom]["download_name"]
+                full_name = copy.deepcopy(rom_dict[rom]["full_name"])
+                rom_file = copy.deepcopy(rom_dict[rom]["download_name"])
+                short_name = copy.deepcopy(rom_dict[rom]["short_name"])
 
-                # Pull out a clean directory name, and disc-free name in case we need it
-                dir_name = str(copy.deepcopy(rom_dict[rom]["dir_name"]))
+                # If we're either a superset or a compilation, then
+                # inherit a game and directory name from the ROM
+                # instead. This will avoid multiple downloads in
+                # some circumstances
+                is_superset = rom_dict[rom].get("is_superset", False)
+                is_compilation = rom_dict[rom].get("is_compilation", False)
+
+                if is_superset or is_compilation:
+                    dir_name = get_directory_name(full_name)
+                    game = copy.deepcopy(short_name)
+                else:
+                    # Pull out a clean directory name and disc-free name in case we need it
+                    dir_name = str(copy.deepcopy(rom_dict[rom]["dir_name"]))
                 disc_free_name = str(copy.deepcopy(rom_dict[rom]["disc_free_name"]))
 
                 cache_mod_time = (
