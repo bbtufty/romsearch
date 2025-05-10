@@ -133,7 +133,7 @@ class ROMCleaner:
         self,
         rom_dict,
     ):
-        """Check in directory for any ROMs we don't want any more, and delete them
+        """Check in the directory for any ROMs we don't want any more and delete them
 
         Args:
             rom_dict (dict): Dictionary of ROMs we want to keep
@@ -155,9 +155,47 @@ class ROMCleaner:
                     )
 
                     if not is_multi_disc:
-                        # Get whether we've excluded or not. If we don't have it in the ROM dict, it's excluded
-                        # by default
+                        # Get whether we've excluded or not. If we don't have it in the ROM dict, exclude to start
                         excluded = rom_dict.get(r, {}).get(f, {}).get("excluded", True)
+
+                        # If we're not excluded, double-check that it's not a superset or compilation that might
+                        # be hanging around
+                        if not excluded:
+                            f_superset = rom_dict.get(r, {}).get(f, {}).get("is_superset", False)
+                            f_compilation = rom_dict.get(r, {}).get(f, {}).get("is_compilation", False)
+
+                            # If it is a superset or compilation, then exclude if the short name doesn't match
+                            # the directory name
+
+                            if f_superset or f_compilation:
+                                f_short = rom_dict.get(r, {}).get(f, {}).get("short_name", r)
+                                if f_short != r:
+                                    excluded = True
+
+                        # If something has been excluded, but it is an included compilation/superset, then don't exclude
+                        if excluded:
+
+                            truly_excluded = copy.deepcopy(excluded)
+
+                            for rr in rom_dict:
+
+                                if not truly_excluded:
+                                    continue
+
+                                if f in rom_dict[rr].keys():
+
+                                    f_superset = rom_dict[rr][f].get("is_superset", False)
+                                    f_compilation = rom_dict[rr][f].get("is_compilation", False)
+                                    f_excluded = rom_dict[rr][f].get("excluded", True)
+
+                                    # Also, check the directory name against the short name here
+                                    f_short = rom_dict[rr][f]["short_name"]
+
+                                    if (f_superset or f_compilation) and not f_excluded and f_short == r:
+                                        truly_excluded = False
+
+                            excluded = copy.deepcopy(truly_excluded)
+
                     else:
 
                         # If we've got a multi-disc file, but we're not supposed to have them, then exclude
@@ -165,7 +203,7 @@ class ROMCleaner:
                         if self.handle_multi_discs:
                             excluded = False
 
-                    # If we've excluded the file we want to delete it here both from the cache and on disk
+                    # If we've excluded the file, we want to delete it here both from the cache and on disk
                     if excluded:
                         if r not in dict_cleaned:
                             dict_cleaned[r] = []
@@ -176,7 +214,7 @@ class ROMCleaner:
             for r in self.cache[self.platform]:
                 for f in self.cache[self.platform][r]:
 
-                    # Just check if any files exist, to speed things up
+                    # Just check if any files exist to speed things up
                     files_exist = False
 
                     # If we don't have an output directory, we should clear this from the cache

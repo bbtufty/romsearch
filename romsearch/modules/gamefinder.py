@@ -536,20 +536,26 @@ class GameFinder:
             game_name=game,
         )
 
-        for parent in found_parents:
-
-            # If we have multiple matches, and it's not part of a compilation, freak out
-            if len(found_parents) > 1:
+        # If we have multiple matches, and more than one aren't part of a compilation/superset, freak out
+        if len(found_parents) > 1:
+            n_supersets_compilations = 0
+            for parent in found_parents:
                 is_compilation = parent.get("dupe_entry").get("is_compilation", False)
-                if not is_compilation:
-                    self.logger.warning(
-                        centred_string(
-                            f"{game['original_name']} has multiple matches! "
-                            f"This should not generally happen",
-                            total_length=self.log_line_length,
-                        )
-                    )
+                is_superset = parent.get("dupe_entry").get("is_superset", False)
 
+                if is_compilation or is_superset:
+                    n_supersets_compilations += 1
+
+            if not n_supersets_compilations >= len(found_parents) - 1:
+                self.logger.warning(
+                    centred_string(
+                        f"{game['original_name']} has multiple non compilation/superset matches! "
+                        f"This should not generally happen",
+                        total_length=self.log_line_length,
+                    )
+                )
+
+        for parent in found_parents:
             game_dict = add_dupe_entry_to_game_dict(
                 game=game,
                 game_dict=game_dict,
@@ -632,11 +638,16 @@ class GameFinder:
                             filters=filters,
                         )
 
+                    is_compilation = dupe_entry.get("is_compilation", False)
+                    is_superset = dupe_entry.get("is_superset", False)
+
                     # Set up the dictionary
                     found_parent = {
                         "parent_name": parent_name,
                         "dupe_name": c,
                         "dupe_entry": dupe_entry,
+                        "is_compilation": is_compilation,
+                        "is_superset": is_superset,
                     }
 
                     # Don't duplicate
