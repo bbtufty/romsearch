@@ -228,6 +228,7 @@ class ConfigWindow(QMainWindow):
 
         self.all_romdownloader_options = {
             "sync_all": self.ui.checkBoxConfigRomDownloaderSyncAll,
+            "skip_existing_files": self.ui.checkBoxConfigRomDownloaderSkipExistingFiles,
             "use_absolute_url": self.ui.checkBoxConfigRomDownloaderUseAbsoluteUrl,
             "dry_run": self.ui.checkBoxConfigRomDownloaderDryRun,
         }

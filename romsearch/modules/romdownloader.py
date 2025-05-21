@@ -165,6 +165,12 @@ class ROMDownloader:
 
         self.sync_all = sync_all
 
+        # If we're skipping existing files for rclone copy
+        skip_existing_files = self.config.get("romdownloader", {}).get(
+            "skip_existing_files", True
+        )
+        self.skip_existing_files = skip_existing_files
+
         self.include_filter_wildcard = include_filter_wildcard
 
         # Read in the specific platform configuration
@@ -456,98 +462,118 @@ class ROMDownloader:
                     )
                     continue
 
-            remote_file_name = f"{self.remote_name}:{remote_dir}{f}"
+            # If we already have the file, then skip if we have that option turned on
+            out_file = os.path.join(out_dir, f)
+            file_already_exists = os.path.exists(out_file)
 
-            cmd = (
-                f"rclone copy "
-                f"--inplace "
-                f"--no-traverse "
-                f"--disable-http2 "
-                f"--multi-thread-streams=0 "
-                f"--size-only "
-                f'"{remote_file_name}" "{out_dir}" '
-                f"-v "
-            )
+            if file_already_exists and self.skip_existing_files:
 
-            short_out_dir = os.path.split(out_dir)[-1]
-
-            if self.dry_run:
                 self.logger.info(
                     centred_string(
-                        f"Dry run, would rclone copy {short_out_dir}: {f} with:",
+                        f"{f} already in {out_dir}, skipping",
                         total_length=self.log_line_length,
                     )
                 )
-                self.logger.info(centred_string(cmd, total_length=self.log_line_length))
+
             else:
 
-                retry = 0
-                retcode = 1
+                remote_file_name = f"{self.remote_name}:{remote_dir}{f}"
 
-                self.logger.info(
-                    centred_string(
-                        f"[{fi + 1}/{n_files}]: Running rclone copy for {short_out_dir}: {f}",
-                        total_length=self.log_line_length,
-                    )
+                cmd = (
+                    f"rclone copy "
+                    f"--inplace "
+                    f"--no-traverse "
+                    f"--disable-http2 "
+                    f"--multi-thread-streams=0 "
+                    f"--size-only "
+                    f'"{remote_file_name}" "{out_dir}" '
+                    f"-v "
                 )
 
-                # The retcode is set to 9999 if the file doesn't exist
-                while retcode not in [0, 9999] and retry < max_retries:
+                short_out_dir = os.path.split(out_dir)[-1]
 
-                    # Execute the command and capture the output
-                    with subprocess.Popen(
-                        cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-                    ) as process:
-                        for line in process.stdout:
-
-                            # Replace any potential tabs in the line, strip whitespace and skip newline at the end
-                            line = re.sub("\s+", " ", line[:-1])
-                            line = line.lstrip().rstrip()
-
-                            if len(line) == 0:
-                                continue
-
-                            # Skip weird time notifications
-                            if "Time may be set wrong" in line:
-                                continue
-
-                            # If the file doesn't exist, set a high number and immediately terminate the process
-                            if (
-                                "directory not found" in line
-                                or "object not found" in line
-                            ):
-                                retcode = 9999
-                                process.kill()
-                                continue
-
-                            # Log each line of the output using the provided logger
-                            self.logger.info(
-                                centred_string(
-                                    line,  # Exclude the newline character
-                                    total_length=self.log_line_length,
-                                )
-                            )
-
-                    if retcode != 9999:
-                        retcode = process.poll()
-                    retry += 1
-
-                # If we've hit the maximum retries and still we have errors, raise an error with the args
-                if retcode not in [0, 9999]:
-                    raise subprocess.CalledProcessError(retcode, process.args)
-                if retcode == 9999:
-                    self.logger.warning(
+                if self.dry_run:
+                    self.logger.info(
                         centred_string(
-                            f"Could not find {self.remote_name}:{remote_dir}{f}.",
+                            f"Dry run, would rclone copy {short_out_dir}: {f} with:",
                             total_length=self.log_line_length,
                         )
                     )
+                    self.logger.info(
+                        centred_string(cmd, total_length=self.log_line_length)
+                    )
+                else:
+
+                    retry = 0
+                    retcode = 1
+
+                    self.logger.info(
+                        centred_string(
+                            f"[{fi + 1}/{n_files}]: Running rclone copy for {short_out_dir}: {f}",
+                            total_length=self.log_line_length,
+                        )
+                    )
+
+                    # The retcode is set to 9999 if the file doesn't exist
+                    while retcode not in [0, 9999] and retry < max_retries:
+
+                        # Execute the command and capture the output
+                        with subprocess.Popen(
+                            cmd,
+                            text=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                        ) as process:
+                            for line in process.stdout:
+
+                                # Replace any potential tabs in the line, strip whitespace and skip newline at the end
+                                line = re.sub("\s+", " ", line[:-1])
+                                line = line.lstrip().rstrip()
+
+                                if len(line) == 0:
+                                    continue
+
+                                # Skip weird time notifications
+                                if "Time may be set wrong" in line:
+                                    continue
+
+                                # If the file doesn't exist, set a high number and immediately terminate the process
+                                if (
+                                    "directory not found" in line
+                                    or "object not found" in line
+                                ):
+                                    retcode = 9999
+                                    process.kill()
+                                    continue
+
+                                # Log each line of the output using the provided logger
+                                self.logger.info(
+                                    centred_string(
+                                        line,  # Exclude the newline character
+                                        total_length=self.log_line_length,
+                                    )
+                                )
+
+                        if retcode != 9999:
+                            retcode = process.poll()
+                        retry += 1
+
+                    # If we've hit the maximum retries and still we have errors, raise an error with the args
+                    if retcode not in [0, 9999]:
+                        raise subprocess.CalledProcessError(retcode, process.args)
+                    if retcode == 9999:
+                        self.logger.warning(
+                            centred_string(
+                                f"Could not find {self.remote_name}:{remote_dir}{f}.",
+                                total_length=self.log_line_length,
+                            )
+                        )
 
             if fi != len(self.copy_files) - 1:
                 self.logger.info(f"{'-' * self.log_line_length}")
 
         # Do a pass through where we delete all extraneous files at the end
-        # If we're checking files, then do a pass where if we don't find the file in the includes then
+        # If we're checking files, then do a pass where if we don't find the file in the includes, then
         # we delete it
         all_files = get_tidy_files(os.path.join(str(out_dir), "*"))
 

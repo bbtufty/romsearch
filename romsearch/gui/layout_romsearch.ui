@@ -1320,6 +1320,29 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomDownloaderSkipExistingFiles">
+                  <property name="statusTip">
+                   <string>If running copy, then this will skip files that already match a name on disk</string>
+                  </property>
+                  <property name="text">
+                   <string>Skip Existing Files?</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="lineConfigRomDownloaderSkipExistingFilesBottom">
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Plain</enum>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QCheckBox" name="checkBoxConfigRomDownloaderUseAbsoluteUrl">
                   <property name="statusTip">
                    <string>Whether to treat the remote URL as absolute or relative. Should be unchecked for HTTP remotes</string>
