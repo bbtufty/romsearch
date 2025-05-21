@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'layout_romsearch.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.1
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -776,6 +776,19 @@ class Ui_RomSearch(object):
         self.lineConfigRomDownloaderSyncAllDividerBottom.setFrameShape(QFrame.Shape.HLine)
 
         self.verticalLayoutConfigRomDownloaderMiddle.addWidget(self.lineConfigRomDownloaderSyncAllDividerBottom)
+
+        self.checkBoxConfigRomDownloaderSkipExistingFiles = QCheckBox(self.tabConfigRomDownloader)
+        self.checkBoxConfigRomDownloaderSkipExistingFiles.setObjectName(u"checkBoxConfigRomDownloaderSkipExistingFiles")
+        self.checkBoxConfigRomDownloaderSkipExistingFiles.setChecked(True)
+
+        self.verticalLayoutConfigRomDownloaderMiddle.addWidget(self.checkBoxConfigRomDownloaderSkipExistingFiles)
+
+        self.lineConfigRomDownloaderSkipExistingFilesBottom = QFrame(self.tabConfigRomDownloader)
+        self.lineConfigRomDownloaderSkipExistingFilesBottom.setObjectName(u"lineConfigRomDownloaderSkipExistingFilesBottom")
+        self.lineConfigRomDownloaderSkipExistingFilesBottom.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigRomDownloaderSkipExistingFilesBottom.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRomDownloaderMiddle.addWidget(self.lineConfigRomDownloaderSkipExistingFilesBottom)
 
         self.checkBoxConfigRomDownloaderUseAbsoluteUrl = QCheckBox(self.tabConfigRomDownloader)
         self.checkBoxConfigRomDownloaderUseAbsoluteUrl.setObjectName(u"checkBoxConfigRomDownloaderUseAbsoluteUrl")
@@ -2001,6 +2014,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomDownloaderSyncAll.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to sync everything when running ROMDownloader or whether to filter files based on includes/excludes. Default checked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigRomDownloaderSyncAll.setText(QCoreApplication.translate("RomSearch", u"Sync All", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigRomDownloaderSkipExistingFiles.setStatusTip(QCoreApplication.translate("RomSearch", u"If running copy, then this will skip files that already match a name on disk", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigRomDownloaderSkipExistingFiles.setText(QCoreApplication.translate("RomSearch", u"Skip Existing Files?", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigRomDownloaderUseAbsoluteUrl.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether to treat the remote URL as absolute or relative. Should be unchecked for HTTP remotes", None))
 #endif // QT_CONFIG(statustip)

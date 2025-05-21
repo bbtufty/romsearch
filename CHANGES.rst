@@ -25,6 +25,7 @@ RAHasher
 ROMDownloader
 ~~~~~~~~~~~~~
 
+- Add option (on by default) to skip rclone copy if file with same name already exists
 - Include info on how many files will be downloaded when copying files
 
 ROMMover
