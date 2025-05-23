@@ -3,6 +3,8 @@ dir: "/Redump/Sony - PlayStation 2/"
 unzip: true
 file_exts:
   - ".iso"
+  - ".bin"
+  - ".cue"
 
 # RetroAchievements
 ra_id: 21

@@ -4,6 +4,8 @@
 Features
 --------
 
+- ROMChooser now returns priorities, which go through ROMDownloader to avoid missing a game if the highest
+  ranked ROM doesn't exist on disk
 - Added support for Game Gear
 - Added support for Virtual Boy
 

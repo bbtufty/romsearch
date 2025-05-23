@@ -1,3 +1,5 @@
+import numpy as np
+
 from romsearch import ROMParser, ROMChooser
 
 TEST_NAME = "Example Game"
@@ -25,7 +27,18 @@ def test_romchooser_region():
     )
     rom_dict = rc.run(rom_dict)
 
-    roms_found = [r for r in rom_dict]
+    # Sort by priority, pull the highest out
+    priorities = np.unique(
+        [
+            rom_dict[r]["romchooser_score"]
+            for r in rom_dict
+        ]
+    )[::-1]
+
+    roms_found = []
+    for r in rom_dict:
+        if rom_dict[r]["romchooser_score"] == priorities[0]:
+            roms_found.append(r)
 
     assert roms_found == ["Example Game (USA)"]
 
@@ -51,7 +64,18 @@ def test_romchooser_language():
     )
     rom_dict = rc.run(rom_dict)
 
-    roms_found = [r for r in rom_dict]
+    # Sort by priority, pull the highest out
+    priorities = np.unique(
+        [
+            rom_dict[r]["romchooser_score"]
+            for r in rom_dict
+        ]
+    )[::-1]
+
+    roms_found = []
+    for r in rom_dict:
+        if rom_dict[r]["romchooser_score"] == priorities[0]:
+            roms_found.append(r)
 
     assert roms_found == ["Example Game (En,De)"]
 
@@ -79,7 +103,18 @@ def test_romchooser_version():
     )
     rom_dict = rc.run(rom_dict)
 
-    roms_found = [r for r in rom_dict]
+    # Sort by priority, pull the highest out
+    priorities = np.unique(
+        [
+            rom_dict[r]["romchooser_score"]
+            for r in rom_dict
+        ]
+    )[::-1]
+
+    roms_found = []
+    for r in rom_dict:
+        if rom_dict[r]["romchooser_score"] == priorities[0]:
+            roms_found.append(r)
 
     assert roms_found == ["Example Game (v2.00)"]
 
@@ -106,6 +141,17 @@ def test_romchooser_priority():
     )
     rom_dict = rc.run(rom_dict)
 
-    roms_found = [r for r in rom_dict]
+    # Sort by priority, pull the highest out
+    priorities = np.unique(
+        [
+            rom_dict[r]["romchooser_score"]
+            for r in rom_dict
+        ]
+    )[::-1]
+
+    roms_found = []
+    for r in rom_dict:
+        if rom_dict[r]["romchooser_score"] == priorities[0]:
+            roms_found.append(r)
 
     assert roms_found == ["Example Game (Highest Priority)"]

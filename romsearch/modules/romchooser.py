@@ -389,10 +389,11 @@ class ROMChooser:
             rom_dict (dict): Dictionary of ROMs to choose between
         """
 
-        # Add in whether these are excluded or not, and why
+        # Add in whether these are excluded or not, why, and potentially a score
         for r in rom_dict:
             rom_dict[r]["excluded"] = False
             rom_dict[r]["excluded_reason"] = []
+            rom_dict[r]["romchooser_score"] = 0
 
         for f in self.dat_filters:
             self.logger.debug(
@@ -493,32 +494,49 @@ class ROMChooser:
             # Start with found ROMs, then excluded ROMs and reasons
             if np.sum([not rom_dict[r]["excluded"] for r in rom_dict]) > 0:
                 self.logger.info(
-                    centred_string("Included ROMs:", total_length=self.log_line_length)
+                    centred_string("Ranked ROMs:", total_length=self.log_line_length)
                 )
 
-            for r in rom_dict:
+            # Grab all the scores in ascending order
+            rc_scores = np.unique(
+                [
+                    rom_dict[r]["romchooser_score"]
+                    for r in rom_dict
+                    if not rom_dict[r]["excluded"]
+                ]
+            )[::-1]
 
-                # Don't include the excluded ones here
-                if rom_dict[r]["excluded"]:
-                    continue
+            for rc_idx, rc_score in enumerate(rc_scores):
+                for r in rom_dict:
 
-                self.logger.info(
-                    left_aligned_string(f"-> {r}", total_length=self.log_line_length)
-                )
-                if rom_dict[r]["has_cheevos"]:
+                    # Don't include the excluded ones here
+                    if rom_dict[r]["excluded"]:
+                        continue
+
+                    # And if we've not got the right score, skip as well
+                    if rom_dict[r]["romchooser_score"] != rc_score:
+                        continue
+
                     self.logger.info(
                         left_aligned_string(
-                            f"--> Has RetroAchievements",
+                            f"-> {r} [Priority: {rc_idx+1}]",
                             total_length=self.log_line_length,
                         )
                     )
-                if rom_dict[r]["patch_file"] != "":
-                    self.logger.info(
-                        left_aligned_string(
-                            f"--> Patch URL: {rom_dict[r]['patch_file']}",
-                            total_length=self.log_line_length,
+                    if rom_dict[r]["has_cheevos"]:
+                        self.logger.info(
+                            left_aligned_string(
+                                f"--> Has RetroAchievements",
+                                total_length=self.log_line_length,
+                            )
                         )
-                    )
+                    if rom_dict[r]["patch_file"] != "":
+                        self.logger.info(
+                            left_aligned_string(
+                                f"--> Patch URL: {rom_dict[r]['patch_file']}",
+                                total_length=self.log_line_length,
+                            )
+                        )
 
             if (
                 np.sum([rom_dict[r]["excluded"] for r in rom_dict]) > 0
@@ -655,16 +673,13 @@ class ROMChooser:
             np.array([int(rom_dict[f]["priority"]) for f in files]) - 1
         )
 
-        files_idx = np.where(file_scores == np.nanmax(file_scores))[0]
-        files = np.asarray(files)[files_idx]
-
-        return files
+        return file_scores
 
     def get_best_rom(
         self,
         rom_dict,
     ):
-        """Get an overall best ROM using a scoring system"""
+        """Get the overall best ROM using a scoring system"""
 
         roms = []
 
@@ -673,17 +688,11 @@ class ROMChooser:
                 roms.append(key)
 
         if len(roms) > 1:
-            roms = self.get_best_roms(roms, rom_dict)
 
-            keys_to_exclude = []
-            for f in rom_dict:
-                if f not in roms:
-                    keys_to_exclude.append(f)
+            # Get ROM scores and add them to the ROM dictionary
+            rom_scores = self.get_best_roms(roms, rom_dict)
 
-            for key in keys_to_exclude:
-                # Only exclude here if there isn't already another reason
-                if len(rom_dict[key]["excluded_reason"]) == 0:
-                    rom_dict[key]["excluded"] = True
-                    rom_dict[key]["excluded_reason"].append(f"not_highest_score")
+            for i, r in enumerate(roms):
+                rom_dict[r]["romchooser_score"] = float(rom_scores[i])
 
         return rom_dict
