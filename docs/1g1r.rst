@@ -72,4 +72,6 @@ this ends up in a directory based on the short name of the ROM, rather than the 
 End result
 ----------
 
-The final result is that you should get the single best ROM for your preferences. Hooray!
+The final result is that you should get a prioritized ROM list based on your preferences. Hooray! This can then be
+passed to :doc:`ROMDownloader <modules/romdownloader>`, which will loop over these priorities to find the highest
+ranked existing ROM.

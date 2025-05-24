@@ -168,13 +168,18 @@ class ROMSearch:
             # Pull in platform-specific config
             platform_config = self.get_platform_config(platform=platform)
 
-            dat_dict, subchannel_dict, dupe_dict, retool_dict, ra_hash_dict, all_games = (
-                self.get_all_games(
-                    platform=platform,
-                    platform_config=platform_config,
-                    log_line_sep=log_line_sep,
-                    log_line_length=log_line_length,
-                )
+            (
+                dat_dict,
+                subchannel_dict,
+                dupe_dict,
+                retool_dict,
+                ra_hash_dict,
+                all_games,
+            ) = self.get_all_games(
+                platform=platform,
+                platform_config=platform_config,
+                log_line_sep=log_line_sep,
+                log_line_length=log_line_length,
             )
 
             all_roms_dict = {}
@@ -235,11 +240,20 @@ class ROMSearch:
 
             # If we filter then download, this is where we download. Use the download names!
             if self.romsearch_method == "filter_then_download":
-                all_files = []
-                for game in all_roms_dict:
-                    fs = [all_roms_dict[game][f]["download_name"] for f in all_roms_dict[game]]
 
-                    all_files.extend(fs)
+                # Make sure to include priorities here
+                all_files = {}
+                for game in all_roms_dict:
+
+                    all_files[game] = {}
+                    for f in all_roms_dict[game]:
+                        name = copy.deepcopy(all_roms_dict[game][f]["download_name"])
+                        score = all_roms_dict[game][f].get("romchooser_score", 0)
+
+                        all_files[game][name] = {
+                            "name": copy.deepcopy(name),
+                            "score": copy.deepcopy(score),
+                        }
 
                 if self.run_romdownloader:
                     downloader = ROMDownloader(
@@ -257,14 +271,28 @@ class ROMSearch:
                 # Replace the file time with the correct one on disk
                 for game in all_roms_dict:
 
+                    fs_to_pop = []
+
                     for f in all_roms_dict[game]:
-                        full_filename = os.path.join(self.raw_dir, platform, all_roms_dict[game][f]["download_name"])
+                        full_filename = os.path.join(
+                            self.raw_dir,
+                            platform,
+                            all_roms_dict[game][f]["download_name"],
+                        )
+
+                        # Flag things to remove if they don't exist on disk
+                        if not os.path.exists(full_filename):
+                            fs_to_pop.append(f)
+                            continue
 
                         file_mod_time = get_file_time(
                             full_filename,
                             datetime_format=self.default_config["datetime_format"],
                         )
                         all_roms_dict[game][f]["file_mod_time"] = file_mod_time
+
+                    for f_to_pop in fs_to_pop:
+                        all_roms_dict[game].pop(f_to_pop, None)
 
             mover = ROMMover(
                 platform=platform,
@@ -330,7 +358,7 @@ class ROMSearch:
         )
         self.logger.info(
             centred_string(
-                f"Took {time.time()-start:.1f}s", total_length=log_line_length
+                f"Took {time.time() - start:.1f}s", total_length=log_line_length
             )
         )
         self.logger.info(f"{log_line_sep * log_line_length}")
@@ -489,7 +517,9 @@ class ROMSearch:
                 f_no_ext = f.rstrip(".zip")
 
                 if f_no_ext in dat_mappings:
-                    download_name = download_name.replace(f_no_ext, dat_mappings[f_no_ext])
+                    download_name = download_name.replace(
+                        f_no_ext, dat_mappings[f_no_ext]
+                    )
 
             full_name = normalize_name(
                 f,
@@ -547,7 +577,14 @@ class ROMSearch:
             self.logger.info(centred_string(g, total_length=log_line_length))
         self.logger.info(f"{log_line_sep * log_line_length}")
 
-        return dat_dict, subchannel_dict, dupe_dict, retool_dict, ra_hash_dict, all_games
+        return (
+            dat_dict,
+            subchannel_dict,
+            dupe_dict,
+            retool_dict,
+            ra_hash_dict,
+            all_games,
+        )
 
     def get_ra_hash_dict(
         self,
