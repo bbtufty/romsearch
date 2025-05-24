@@ -272,7 +272,7 @@ class ROMChooser:
             regex_config = load_yml(regex_file)
         self.regex_config = regex_config
 
-        # Region preference (usually set USA for retroachievements, can also be a list to fall back to)
+        # Region preference (usually set USA for RetroAchievements, can also be a list to fall back to)
         region_preferences = self.config.get(
             "region_preferences", self.default_config["default_region"]
         )
@@ -301,6 +301,10 @@ class ROMChooser:
                 )
 
         self.language_preferences = language_preferences
+
+        # Also pull out the default list of region and language preferences
+        self.default_region_preferences = list(self.default_config["regions"].keys())
+        self.default_language_preferences = list(self.default_config["languages"].keys())
 
         # Various filters. First are the boolean ones
         dat_filters = self.config.get("romchooser", {}).get(
@@ -580,6 +584,10 @@ class ROMChooser:
     ):
         """Get the best ROM(s) from a list, using a scoring system"""
 
+        # Small bumps for default region and language orders
+        default_language_score = 1e-4
+        default_region_score = 1e-2
+
         # Positive scores
         improved_version_score = 1e2
         version_score = 1e4
@@ -602,6 +610,21 @@ class ROMChooser:
         # Just stepping through the scores in order.
 
         # Positive scores
+
+        # Default language priorities
+        language_score_to_add = add_ordered_score(
+            files, rom_dict, priorities=self.default_language_preferences, score_key="languages"
+        )
+        file_scores += default_language_score * (1 + (language_score_to_add - 1) / 100)
+
+        # Default region priorities
+        region_score_to_add = add_ordered_score(
+            files,
+            rom_dict,
+            priorities=self.default_region_preferences,
+            score_key="regions",
+        )
+        file_scores += default_region_score * (1 + (region_score_to_add - 1) / 100)
 
         # Improved version
         file_scores += improved_version_score * np.array(

@@ -25,6 +25,12 @@ RAHasher
 - Fix bug where titles wouldn't be removed from the list
 - Changed how caching happens, to reduce API calls and find new hashes faster
 
+ROMChooser
+~~~~~~~~~~
+
+- Provide some small bumps to priority based on default regions and languages,
+  to avoid multiple ROMs as much as possible
+
 ROMDownloader
 ~~~~~~~~~~~~~
 

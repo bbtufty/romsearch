@@ -40,6 +40,11 @@ There are also some demotions that go on. The priority is (from most to least de
 * Alternate versions
 * Demoted versions (e.g. arcade versions)
 
+If, after all this, there is still a tie, then we also add on small bonuses based on the default region and
+language preference order (see :doc:`default config <configs/defaults>`). The regions here take higher priority
+than languages. If you don't like this order, you can avoid this by including more languages and/or regions
+in your setup!
+
 Compilations
 ------------
 
