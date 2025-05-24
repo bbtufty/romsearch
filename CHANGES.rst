@@ -4,6 +4,7 @@
 Features
 --------
 
+- Support PS2 bin/cue compression to CHD
 - ROMChooser now returns priorities, which go through ROMDownloader to avoid missing a game if the highest
   ranked ROM doesn't exist on disk
 - Added support for Game Gear

@@ -1,7 +1,9 @@
 import copy
 import glob
+import numpy as np
 import os
 import shutil
+import zipfile
 
 import romsearch
 from .romcompressor import ROMCompressor
@@ -15,6 +17,10 @@ from ..util import (
     load_json,
     save_json,
 )
+
+COMPRESSION_FILES = {
+    "chdman": [".bin", ".cue"],
+}
 
 
 def create_m3u(
@@ -139,10 +145,6 @@ class ROMMover:
         self.unzip = self.platform_config.get("unzip", False)
         self.compress = self.platform_config.get("compress", False)
         self.compress_method = self.platform_config.get("compress_method", None)
-
-        # We should only have one of unzip or compress set
-        if self.unzip and self.compress:
-            raise ValueError("unzip and compress can't be used together")
 
         # If we have compression on, we need to define a compression method
         if self.compress and self.compress_method is None:
@@ -293,8 +295,25 @@ class ROMMover:
                             final_file_exists = True
                             final_file_name = os.path.basename(o)
 
+                # If we have unzip and compress set on, then we need to
+                # figure out which we're actually doing
+                unzip = copy.deepcopy(self.unzip)
+                compress = copy.deepcopy(self.compress)
+
+                if self.unzip and self.compress:
+
+                    raw_file = os.path.join(self.raw_dir, self.platform, rom_file)
+
+                    compress_suitable = self.check_compress_suitable(raw_file)
+                    if compress_suitable:
+                        unzip = False
+                        compress = True
+                    else:
+                        unzip = True
+                        compress = False
+
                 # If we're unzipping (and potentially patching), then pull the expected files out here and check again
-                if self.unzip or expecting_patched_rom:
+                if unzip or expecting_patched_rom:
 
                     final_file_exists, final_file_name = self.check_files_exist(
                         rom=rom_file,
@@ -304,7 +323,7 @@ class ROMMover:
                     )
 
                 # If we're compressing, then pull the expected files out here and check again
-                if self.compress:
+                if compress:
 
                     final_file_exists, final_file_name = self.check_files_exist(
                         rom=rom_file,
@@ -386,12 +405,11 @@ class ROMMover:
                 else:
                     full_dir = os.path.join(self.raw_dir, self.platform)
                     full_rom = os.path.join(str(full_dir), rom_file)
-                    unzip = copy.deepcopy(self.unzip)
 
                     patched = False
 
                 # If we're compressing ROMs, do that here
-                if self.compress:
+                if compress:
 
                     if to_patch_rom:
                         raise NotImplementedError(
@@ -437,7 +455,9 @@ class ROMMover:
                 if "subchannels" in self.platform_config:
                     for subchannel in self.platform_config["subchannels"]:
 
-                        add_full_dir = os.path.join(self.raw_dir, f"{self.platform} {subchannel}")
+                        add_full_dir = os.path.join(
+                            self.raw_dir, f"{self.platform} {subchannel}"
+                        )
                         add_file = os.path.join(add_full_dir, rom_file)
                         if os.path.exists(add_file):
 
@@ -562,6 +582,31 @@ class ROMMover:
                     final_file_name = os.path.basename(o)
 
         return final_file_exists, final_file_name
+
+    def check_compress_suitable(
+        self,
+        rom_file,
+    ):
+        """Check if a file is suitable for compression given compression method
+
+        Args:
+            rom_file: File to check
+        """
+
+        with zipfile.ZipFile(rom_file, "r") as zip_file:
+            # Get the names of all the files in the zip file
+            names = zip_file.namelist()
+
+            name_exts = np.unique([os.path.splitext(n)[-1] for n in names])
+            name_exts = [str(n) for n in name_exts]
+            name_exts.sort()
+
+        if name_exts == COMPRESSION_FILES[self.compress_method]:
+            compress_suitable = True
+        else:
+            compress_suitable = False
+
+        return compress_suitable
 
     def move_file(
         self,

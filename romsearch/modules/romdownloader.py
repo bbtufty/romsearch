@@ -245,7 +245,10 @@ class ROMDownloader:
                 start_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
 
                 self.rclone_download(
-                    remote_dir=sc_remote_dir, out_dir=sc_out_dir, subchannel=sc
+                    remote_dir=sc_remote_dir,
+                    out_dir=sc_out_dir,
+                    subchannel=sc,
+                    subchannel_original_dir=self.out_dir,
                 )
 
                 end_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
@@ -263,6 +266,7 @@ class ROMDownloader:
         remote_dir,
         out_dir=None,
         subchannel=None,
+        subchannel_original_dir=None,
         max_retries=5,
     ):
         """Download from rclone, either via sync or copy
@@ -271,6 +275,7 @@ class ROMDownloader:
             remote_dir: rclone remote path
             out_dir: directory to download to
             subchannel: subchannel to download. Defaults to None
+            subchannel_original_dir: Original directory for subchannel-related files. Defaults to None
             max_retries: maximum number of retries
         """
 
@@ -291,6 +296,7 @@ class ROMDownloader:
                 remote_dir=remote_dir,
                 out_dir=out_dir,
                 subchannel=subchannel,
+                subchannel_original_dir=subchannel_original_dir,
                 max_retries=max_retries,
             )
         else:
@@ -427,6 +433,7 @@ class ROMDownloader:
         remote_dir,
         out_dir=None,
         subchannel=None,
+        subchannel_original_dir=None,
         max_retries=5,
     ):
         """Use rclone to copy files one-by-one
@@ -435,6 +442,7 @@ class ROMDownloader:
             remote_dir: rclone remote path
             out_dir: directory to download to
             subchannel: subchannel to copy to
+            subchannel_original_dir: Original directory for subchannel-related files. Defaults to None
             max_retries: maximum number of retries
         """
 
@@ -442,15 +450,25 @@ class ROMDownloader:
             raise ValueError("copy_files needs to be defined for rclone copy")
 
         n_files = len(self.copy_files)
+        s = f"Downloading {n_files} games"
+        if subchannel is not None:
+            s += f" ({subchannel})"
         self.logger.info(
             centred_string(
-                f"Downloading {n_files} games",
+                s,
                 total_length=self.log_line_length,
             )
         )
-        self.logger.info(f"{'-' * self.log_line_length}")
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         all_files_to_copy = []
+
+        subchannel_original_files = []
+        if subchannel_original_dir is not None:
+            subchannel_original_files = [
+                os.path.splitext(f)[0]
+                for f in get_tidy_files(os.path.join(str(subchannel_original_dir), "*"))
+            ]
 
         for fi, copy_file in enumerate(self.copy_files):
 
@@ -498,9 +516,12 @@ class ROMDownloader:
 
                 for f in fs:
 
-                    # If we don't have this file in the subchannel list, then just skip
                     if subchannel is not None:
                         f_noext = os.path.splitext(f)[0]
+
+                        skip_sc = False
+
+                        # If we don't have this file in the subchannel list, then just skip
                         if not f_noext in self.subchannel_dict[subchannel]:
                             self.logger.debug(
                                 centred_string(
@@ -508,6 +529,20 @@ class ROMDownloader:
                                     total_length=self.log_line_length,
                                 )
                             )
+                            skip_sc = True
+
+                        # And if we don't have the existing file on disc, also skip
+                        if not f_noext in subchannel_original_files:
+                            self.logger.debug(
+                                centred_string(
+                                    f"{f_noext} not found in original directory",
+                                    total_length=self.log_line_length,
+                                )
+                            )
+                            skip_sc = True
+
+                        if skip_sc:
+                            all_files_to_copy.remove(f)
                             continue
 
                     # If we already have the file, then skip if we have that option turned on
@@ -627,8 +662,18 @@ class ROMDownloader:
                             if os.path.exists(out_file):
                                 found_files_at_priority = True
 
-            if fi != len(self.copy_files) - 1:
+            if fi != len(self.copy_files) - 1 and found_files_at_priority:
                 self.logger.info(f"{'-' * self.log_line_length}")
+
+        # If we haven't moved anything, note that here
+        if len(all_files_to_copy) == 0:
+            self.logger.info(
+                centred_string(
+                    f"No files downloaded",
+                    total_length=self.log_line_length,
+                )
+            )
+        self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         # Do a pass through where we delete all extraneous files at the end
         # If we're checking files, then do a pass where if we don't find the file in the includes, then

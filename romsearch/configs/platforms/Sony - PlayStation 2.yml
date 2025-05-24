@@ -5,6 +5,10 @@ file_exts:
   - ".iso"
   - ".bin"
   - ".cue"
+compress: true
+compress_method: "chdman"
+compress_file_exts:
+  - ".chd"
 
 # RetroAchievements
 ra_id: 21
