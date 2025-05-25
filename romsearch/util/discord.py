@@ -1,3 +1,4 @@
+import time
 from discordwebhook import Discord
 
 
@@ -20,5 +21,8 @@ def discord_push(
             }
         ],
     )
+
+    # Sleep for a bit to avoid rate limiting
+    time.sleep(1)
 
     return True

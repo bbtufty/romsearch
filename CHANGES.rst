@@ -63,6 +63,7 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Added a brief sleep to Discord posts, as sometimes they would go missing
 - Added (Animal Crossing) as a Modern Version
 - Fixed crash with GUI if non-string entry is in config
 - Include potential subchannels better, to avoid unneccesary download/move calls
