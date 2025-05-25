@@ -584,47 +584,35 @@ class ROMChooser:
     ):
         """Get the best ROM(s) from a list, using a scoring system"""
 
+        # Because we have a lot of potential regions and languages, use a 2
+        # order of magnitude buffer. Everything else, just 1
+
         # Small bumps for default region and language orders
-        default_language_score = 1e-4
-        default_region_score = 1e-2
+        default_language_score = 1e0
+        default_region_score = 1e2
 
         # Positive scores
-        improved_version_score = 1e2
-        version_score = 1e4
+        improved_version_score = 1e4
+        version_score = 1e5
         revision_score = 1e6
-        budget_edition_score = 1e8
-        language_score = 1e10
-        region_score = 1e12
-        superset_score = 1e14
-        cheevo_score = 1e16
+        budget_edition_score = 1e7
+        language_score = 1e8
+        region_score = 1e10
+        superset_score = 1e12
+        cheevo_score = 1e13
 
         # Negative scores
-        compilation_score = -1
-        demoted_version_score = -1e2
-        alternate_version_score = -1e2
+        compilation_score = -1e0
+        demoted_version_score = -1e1
+        alternate_version_score = -1e3
         modern_version_score = -1e4
-        priority_score = -1e6
+        priority_score = -1e5
 
         file_scores = np.zeros(len(files))
 
         # Just stepping through the scores in order.
 
         # Positive scores
-
-        # Default language priorities
-        language_score_to_add = add_ordered_score(
-            files, rom_dict, priorities=self.default_language_preferences, score_key="languages"
-        )
-        file_scores += default_language_score * (1 + (language_score_to_add - 1) / 100)
-
-        # Default region priorities
-        region_score_to_add = add_ordered_score(
-            files,
-            rom_dict,
-            priorities=self.default_region_preferences,
-            score_key="regions",
-        )
-        file_scores += default_region_score * (1 + (region_score_to_add - 1) / 100)
 
         # Improved version
         file_scores += improved_version_score * np.array(
@@ -695,6 +683,25 @@ class ROMChooser:
         file_scores += priority_score * (
             np.array([int(rom_dict[f]["priority"]) for f in files]) - 1
         )
+
+        # If we have some with matching file scores, then include default priorities. First, regions
+        if len(file_scores) != len(set(file_scores)):
+            # Default region priorities
+            region_score_to_add = add_ordered_score(
+                files,
+                rom_dict,
+                priorities=self.default_region_preferences,
+                score_key="regions",
+            )
+            file_scores += default_region_score * (1 + (region_score_to_add - 1) / 100)
+
+        # If still the same, then languages
+        if len(file_scores) != len(set(file_scores)):
+            # Default language priorities
+            language_score_to_add = add_ordered_score(
+                files, rom_dict, priorities=self.default_language_preferences, score_key="languages"
+            )
+            file_scores += default_language_score * (1 + (language_score_to_add - 1) / 100)
 
         return file_scores
 
