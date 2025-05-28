@@ -14,3 +14,6 @@ Known Issues
 * Currently, the code only handles ``retool``'s compilations to a very limited degree.
 
 * Occasionally, multiple ROMs can be found with the same priority.
+
+* Some ROMs are not properly tagged with languages, which can lead to these ROMs being grabbed when they should
+  be filtered
