@@ -25,6 +25,11 @@ RAHasher
 - Fix bug where titles wouldn't be removed from the list
 - Changed how caching happens, to reduce API calls and find new hashes faster
 
+ROMCompressor
+~~~~~~~~~~~~~
+
+- Create .cue files when compressing to CHD, if they don't already exist
+
 ROMChooser
 ~~~~~~~~~~
 
@@ -63,6 +68,7 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Ensure directory name does not end with periods
 - Added a brief sleep to Discord posts, as sometimes they would go missing
 - Added (Animal Crossing) as a Modern Version
 - Fixed crash with GUI if non-string entry is in config
