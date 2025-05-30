@@ -21,6 +21,70 @@ CHDMAN_EXTS = [
     "gdi",
 ]
 
+CUE_FILE_PLATFORMS = [
+    "Sony - PlayStation",
+]
+
+
+def create_cue_file(
+    rom,
+    in_dir=None,
+):
+    """Create a .cue file for a bunch of files in a directory
+
+    Args:
+        rom (str): ROM file
+        in_dir (str): Directory containing files to compress. Defaults to None
+    """
+
+    orig_dir = None
+    if in_dir is not None:
+        orig_dir = os.getcwd()
+        os.chdir(in_dir)
+
+    # .cue file name
+    cue_file_name = os.path.basename(rom)
+    cue_file_name = os.path.splitext(cue_file_name)[0]
+    cue_file_name = os.path.join(f"{cue_file_name}.cue")
+
+    bin_files = glob.glob("*.bin")
+    bin_files.sort()
+
+    # If we don't find any bin files, panic
+    if len(bin_files) == 0:
+        raise ValueError("No .bin files found in directory")
+
+    # Create the .cue file
+    with open(cue_file_name, "w+") as f:
+
+        # Add the first bin file as the main data
+        data_file = os.path.basename(bin_files[0])
+
+        f.write(f'FILE "{data_file}" BINARY\n')
+        f.write("  TRACK 01 MODE2/2352\n")
+        f.write("    INDEX 01 00:00:00\n")
+
+        # And the rest of the bin files as audio
+        for i, bin_file in enumerate(bin_files[1:]):
+
+            bin_file = os.path.basename(bin_file)
+
+            f.write(f'FILE "{bin_file}" BINARY\n')
+
+            # Increment by 2 to account for 0-indexing and the fact
+            # we've already used the first file
+            f.write(f"  TRACK {i+2:02d} AUDIO\n")
+            f.write("    INDEX 00 00:00:00\n")
+            f.write("    INDEX 01 00:02:00\n")
+
+    # If we've moved, go back to the original directory
+    if in_dir is not None:
+        os.chdir(orig_dir)
+        cue_file_name = os.path.join(in_dir, cue_file_name)
+
+    # Return the .cue file as a list, so it works passing through
+    return [cue_file_name]
+
 
 class ROMCompressor:
 
@@ -135,8 +199,9 @@ class ROMCompressor:
 
             if self.compress_method == "chdman":
                 compress_files = self.compress_chd(
-                    self.compress_dir,
-                    temp_dir,
+                    rom=rom,
+                    rom_dir=self.compress_dir,
+                    temp_dir=temp_dir,
                 )
 
                 if len(compress_files) > 1:
@@ -162,12 +227,14 @@ class ROMCompressor:
 
     def compress_chd(
         self,
+        rom,
         rom_dir,
         temp_dir,
     ):
         """Compress using CHDMAN
 
         Args:
+            rom (str): ROM file to compress
             rom_dir (str): Directory for final, compressed ROM
             temp_dir (str): Directory containing files to compress
         """
@@ -183,6 +250,22 @@ class ROMCompressor:
         # Freak out if we've got more input files than expected
         if len(input_files) > 1:
             raise ValueError(f"More input files than expected!")
+
+        # Alternatively, if we have no files, then create one
+        if len(input_files) == 0:
+            if self.platform in CUE_FILE_PLATFORMS:
+                self.logger.info(
+                    centred_string("No .cue file found, creating one",
+                                   total_length=self.log_line_length
+                                   )
+                )
+                input_files = create_cue_file(
+                    rom=rom,
+                )
+            else:
+                raise ValueError(
+                    f"No input files found, and ROMCompressor cannot create files for {self.platform}"
+                )
 
         # Run CHDMAN
         compress_files = []
