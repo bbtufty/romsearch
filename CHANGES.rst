@@ -1,4 +1,4 @@
-0.3.0 (Unreleased)
+0.3.0 (2025-06-05)
 ==================
 
 Features
@@ -68,6 +68,7 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Bump to 0.3.0
 - Ensure directory name does not end with periods
 - Added a brief sleep to Discord posts, as sometimes they would go missing
 - Added (Animal Crossing) as a Modern Version
