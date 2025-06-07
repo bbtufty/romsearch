@@ -40,6 +40,9 @@ Syntax: ::
     romsearch:                          # ROMSearch specific options
       method: 'filter_then_download'    # OPTIONAL. Method to use, option are 'filter_then_download', or
                                         #           'download_then_filter'. Defaults to 'filter_then_download'
+      separate_directories: false       # OPTIONAL. If false, then ROMs will be moved to a flattened directory structure
+                                        #           (all ROMs in one directory). If true, will separate ROMs out based
+                                        #           on their short names. Defaults to false
       handle_multi_discs: false         # OPTIONAL. Whether to group multi-disc games into a single .m3u file. Defaults
                                         #           to false
       run_romdownloader: true           # OPTIONAL. Whether to run ROMDownloader. Defaults to true

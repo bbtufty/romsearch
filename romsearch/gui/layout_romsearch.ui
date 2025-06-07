@@ -781,7 +781,30 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="Line" name="lineConfigMultiDisc_2">
+                   <widget class="Line" name="lineConfigSeparateDirectoriesTop">
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="checkBoxConfigSeparateDirectories">
+                    <property name="statusTip">
+                     <string>Whether ROMs will be grouped into separate directories for each game</string>
+                    </property>
+                    <property name="text">
+                     <string>ROMs in separate game directories?</string>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="lineConfigMultiDiscTop">
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Plain</enum>
                     </property>
@@ -804,7 +827,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="Line" name="lineConfigMultiDisc">
+                   <widget class="Line" name="lineConfigMultiDiscBottom">
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Plain</enum>
                     </property>

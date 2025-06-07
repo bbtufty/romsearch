@@ -71,8 +71,9 @@ A note on compilations/supersets
 ---------------------------------
 
 In the case of compilations and supersets, these can be non-unique to a game (e.g. a compilation of multiple games,
-or a superset containing a number of DLC). To avoid duplicating ROMs, if a compilation or superset is chosen then
-this ends up in a directory based on the short name of the ROM, rather than the overarching game name.
+or a superset containing a number of DLC). To avoid duplicating ROMs, if ROMs are being separated out to different
+directories, if a compilation or superset is chosen then this ends up in a directory based on the short name of the ROM,
+rather than the overarching game name.
 
 End result
 ----------
