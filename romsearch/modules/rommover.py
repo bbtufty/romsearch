@@ -55,6 +55,7 @@ class ROMMover:
         config_file=None,
         config=None,
         platform_config=None,
+        regex_config=None,
         logger=None,
         log_line_sep="=",
         log_line_length=100,
@@ -68,6 +69,7 @@ class ROMMover:
             config_file (str, optional): path to config file. Defaults to None.
             config (dict, optional): configuration dictionary. Defaults to None.
             platform_config (dict, optional): platform configuration dictionary. Defaults to None.
+            regex_config (dict, optional): regex configuration dictionary. Defaults to None.
             logger (logging.Logger, optional): logger. Defaults to None.
             log_line_length (int, optional): Line length of log. Defaults to 100
         """
@@ -105,6 +107,11 @@ class ROMMover:
         if self.rom_dir is None:
             raise ValueError("rom_dir needs to be defined in config")
 
+        # Whether we'll separate directories or not
+        self.separate_directories = self.config.get("romsearch", {}).get(
+            "separate_directories", True
+        )
+
         # Whether we'll handle multi-disc files or not
         self.handle_multi_discs = self.config.get("romsearch", {}).get(
             "handle_multi_discs", False
@@ -141,6 +148,11 @@ class ROMMover:
             )
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
+
+        if regex_config is None:
+            regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
+        self.regex_config = regex_config
 
         self.unzip = self.platform_config.get("unzip", False)
         self.compress = self.platform_config.get("compress", False)
@@ -220,12 +232,17 @@ class ROMMover:
                 is_superset = rom_dict[rom].get("is_superset", False)
                 is_compilation = rom_dict[rom].get("is_compilation", False)
 
+                # Pull out a clean directory name and disc-free name in case we need it
                 if is_superset or is_compilation:
                     dir_name = get_directory_name(full_name)
                     game = copy.deepcopy(short_name)
                 else:
-                    # Pull out a clean directory name and disc-free name in case we need it
                     dir_name = str(copy.deepcopy(rom_dict[rom]["dir_name"]))
+
+                # Keep track of what this original directory name is, since we might need
+                # it
+                dir_name_original = copy.deepcopy(dir_name)
+
                 disc_free_name = str(copy.deepcopy(rom_dict[rom]["disc_free_name"]))
 
                 cache_mod_time = (
@@ -254,31 +271,42 @@ class ROMMover:
                 if patch_url != "" and self.run_rompatcher:
                     expecting_patched_rom = True
 
+                # Keep track of absolute directories and relative directories to the
+                # platform itself, for cache reasons
+                if self.separate_directories:
+                    out_dir = os.path.join(self.rom_dir, self.platform, dir_name)
+                    out_base_dir = copy.deepcopy(dir_name)
+                else:
+                    out_dir = os.path.join(self.rom_dir, self.platform)
+                    out_base_dir = ""
+
                 # Skip if the file modification time matches the one in the cache, we're not patching, and the
                 # destination file exists
-                out_dir = os.path.join(self.rom_dir, self.platform, dir_name)
 
                 # If we're handling multi-disc files, and we have a multi-disc file, then make the output
                 # directory a hidden one
                 if rom_dict[rom]["multi_disc"] and self.handle_multi_discs:
 
                     m3u_out_dir = copy.deepcopy(out_dir)
-                    out_dir = os.path.join(out_dir, f".{disc_free_name}")
+                    out_dir = os.path.join(str(out_dir), f".{disc_free_name}")
 
                     # Also update the dir name, since we use that later
-                    game_dir_name = copy.deepcopy(dir_name)
-                    dir_name = os.path.join(dir_name, f".{disc_free_name}")
+                    game_dir_name = copy.deepcopy(out_base_dir)
+                    out_base_dir = os.path.join(out_base_dir, f".{disc_free_name}")
 
                     if disc_free_name not in all_multi_discs:
                         all_multi_discs[disc_free_name] = {
                             "m3u_out_dir": m3u_out_dir,
+                            "game": dir_name_original,
                             "game_dir_name": game_dir_name,
                             "relative_dir": f".{disc_free_name}",
                             "out_files": [],
                         }
 
-                # Loop over here, since the extensions might change
-                out_files = glob.glob(os.path.join(out_dir, "*"))
+                # Loop over here, since the extensions might change. Search specifically by the filename
+                # to make things quicker
+                rom_file_no_ext = os.path.splitext(rom_file)[0]
+                out_files = glob.glob(os.path.join(str(out_dir), f"{rom_file_no_ext}*"))
                 short_out_files = [os.path.basename(o) for o in out_files]
 
                 final_file_exists = False
@@ -373,7 +401,7 @@ class ROMMover:
                             game=game,
                             rom=rom,
                             files=short_out_files,
-                            out_dir=dir_name,
+                            out_dir=out_base_dir,
                             rom_dict=rom_dict,
                         )
 
@@ -390,13 +418,16 @@ class ROMMover:
                     patcher = ROMPatcher(
                         platform=self.platform,
                         config=self.config,
+                        platform_config=self.platform_config,
+                        regex_config=self.regex_config,
                         logger=self.logger,
                         log_line_length=self.log_line_length,
                     )
 
                     full_rom = patcher.run(
-                        file=rom_patch_file,
+                        file=str(rom_patch_file),
                         patch_url=patch_url,
+                        rom_dict=rom_dict[rom],
                     )
 
                     unzip = False
@@ -491,7 +522,7 @@ class ROMMover:
                     game=game,
                     rom=rom,
                     files=out_files,
-                    out_dir=dir_name,
+                    out_dir=out_base_dir,
                     rom_dict=rom_dict,
                 )
                 self.save_cache()
@@ -524,7 +555,7 @@ class ROMMover:
                         relative_dir=all_multi_discs[multi_disc]["relative_dir"],
                     )
                     self.cache_update_multi_disc(
-                        game=all_multi_discs[multi_disc]["game_dir_name"],
+                        game=all_multi_discs[multi_disc]["game"],
                         m3u_name=f"{multi_disc} [Multi Disc]",
                         files=[m3u_file_name],
                         out_dir=all_multi_discs[multi_disc]["game_dir_name"],

@@ -451,12 +451,25 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomsearchModules.addItem(self.verticalSpacerConfigRomsearchModulesLower_5)
 
-        self.lineConfigMultiDisc_2 = QFrame(self.tabConfigMain)
-        self.lineConfigMultiDisc_2.setObjectName(u"lineConfigMultiDisc_2")
-        self.lineConfigMultiDisc_2.setFrameShadow(QFrame.Shadow.Plain)
-        self.lineConfigMultiDisc_2.setFrameShape(QFrame.Shape.HLine)
+        self.lineConfigSeparateDirectoriesTop = QFrame(self.tabConfigMain)
+        self.lineConfigSeparateDirectoriesTop.setObjectName(u"lineConfigSeparateDirectoriesTop")
+        self.lineConfigSeparateDirectoriesTop.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigSeparateDirectoriesTop.setFrameShape(QFrame.Shape.HLine)
 
-        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigMultiDisc_2)
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigSeparateDirectoriesTop)
+
+        self.checkBoxConfigSeparateDirectories = QCheckBox(self.tabConfigMain)
+        self.checkBoxConfigSeparateDirectories.setObjectName(u"checkBoxConfigSeparateDirectories")
+        self.checkBoxConfigSeparateDirectories.setChecked(False)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigSeparateDirectories)
+
+        self.lineConfigMultiDiscTop = QFrame(self.tabConfigMain)
+        self.lineConfigMultiDiscTop.setObjectName(u"lineConfigMultiDiscTop")
+        self.lineConfigMultiDiscTop.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigMultiDiscTop.setFrameShape(QFrame.Shape.HLine)
+
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigMultiDiscTop)
 
         self.checkBoxConfigHandleMultiDiscs = QCheckBox(self.tabConfigMain)
         self.checkBoxConfigHandleMultiDiscs.setObjectName(u"checkBoxConfigHandleMultiDiscs")
@@ -464,12 +477,12 @@ class Ui_RomSearch(object):
 
         self.verticalLayoutConfigRomsearchModules.addWidget(self.checkBoxConfigHandleMultiDiscs)
 
-        self.lineConfigMultiDisc = QFrame(self.tabConfigMain)
-        self.lineConfigMultiDisc.setObjectName(u"lineConfigMultiDisc")
-        self.lineConfigMultiDisc.setFrameShadow(QFrame.Shadow.Plain)
-        self.lineConfigMultiDisc.setFrameShape(QFrame.Shape.HLine)
+        self.lineConfigMultiDiscBottom = QFrame(self.tabConfigMain)
+        self.lineConfigMultiDiscBottom.setObjectName(u"lineConfigMultiDiscBottom")
+        self.lineConfigMultiDiscBottom.setFrameShadow(QFrame.Shadow.Plain)
+        self.lineConfigMultiDiscBottom.setFrameShape(QFrame.Shape.HLine)
 
-        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigMultiDisc)
+        self.verticalLayoutConfigRomsearchModules.addWidget(self.lineConfigMultiDiscBottom)
 
         self.verticalSpacerConfigRomsearchModulesLower = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1981,6 +1994,10 @@ class Ui_RomSearch(object):
         self.checkBoxConfigDryRun.setStatusTip(QCoreApplication.translate("RomSearch", u"If checked, will not make any changes to filesystem. Default unchecked", None))
 #endif // QT_CONFIG(statustip)
         self.checkBoxConfigDryRun.setText(QCoreApplication.translate("RomSearch", u"Dry Run", None))
+#if QT_CONFIG(statustip)
+        self.checkBoxConfigSeparateDirectories.setStatusTip(QCoreApplication.translate("RomSearch", u"Whether ROMs will be grouped into separate directories for each game", None))
+#endif // QT_CONFIG(statustip)
+        self.checkBoxConfigSeparateDirectories.setText(QCoreApplication.translate("RomSearch", u"ROMs in separate game directories?", None))
 #if QT_CONFIG(statustip)
         self.checkBoxConfigHandleMultiDiscs.setStatusTip(QCoreApplication.translate("RomSearch", u"Group multi-disc files together and create an m3u playlist?", None))
 #endif // QT_CONFIG(statustip)

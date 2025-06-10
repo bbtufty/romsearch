@@ -51,6 +51,7 @@ class ROMPatcher:
         config_file=None,
         config=None,
         platform_config=None,
+        regex_config=None,
         logger=None,
         log_line_sep="=",
         log_line_length=100,
@@ -65,6 +66,7 @@ class ROMPatcher:
             config_file (str, optional): path to config file. Defaults to None.
             config (dict, optional): configuration dictionary. Defaults to None.
             platform_config (dict, optional): platform configuration dictionary. Defaults to None.
+            regex_config (dict, optional): regex configuration dictionary. Defaults to None.
             logger (logging.Logger, optional): logger. Defaults to None.
             log_line_length (int, optional): Line length of log. Defaults to 100
         """
@@ -108,6 +110,14 @@ class ROMPatcher:
             platform_config = load_yml(platform_config_file)
         self.platform_config = platform_config
 
+        # Read in the various pre-set configs we've got
+        mod_dir = os.path.dirname(romsearch.__file__)
+
+        if regex_config is None:
+            regex_file = os.path.join(mod_dir, "configs", "regex.yml")
+            regex_config = load_yml(regex_file)
+        self.regex_config = regex_config
+
         self.log_line_sep = log_line_sep
         self.log_line_length = log_line_length
 
@@ -115,8 +125,15 @@ class ROMPatcher:
         self,
         file,
         patch_url,
+        rom_dict=None,
     ):
-        """Run the ROMPatcher"""
+        """Run the ROMPatcher
+
+        Args:
+            file (str): file to patch
+            patch_url (str): URL for patch files
+            rom_dict: Parsed ROM dictionary
+        """
 
         filename_no_ext = os.path.splitext(os.path.basename(file))[0]
         patch_dir = str(os.path.join(self.patch_dir, self.platform, filename_no_ext))
@@ -152,6 +169,43 @@ class ROMPatcher:
             patch_url,
             patch_dir=patch_dir,
         )
+        
+        # If we don't find a patch in the base directory, search
+        # via various conditions. For now, just revision
+        if len(patch_file) == 0:
+
+            if rom_dict is not None:
+                revision = rom_dict["revision"]
+                if revision == "":
+                    revision = "v1"
+            else:
+                raise ValueError("Searching for patch files requires ROM parsing!")
+
+            patch_subdirs = [x[0] for x in os.walk(patch_dir)]
+
+            found_patch = False
+            for patch_subdir in patch_subdirs:
+
+                if found_patch:
+                    continue
+
+                rel_patch_subdir = os.path.basename(patch_subdir)
+
+                # Search by revision
+                if "rev" in rel_patch_subdir.lower():
+                    rev_dir_parsed = re.sub(
+                        self.regex_config["revision"]["transform_pattern"],
+                        self.regex_config["revision"]["transform_repl"],
+                        rel_patch_subdir,
+                    )
+                    if revision == rev_dir_parsed:
+                        patch_file = self.find_patch_file(patch_subdir)
+                        if len(patch_file) > 0:
+                            found_patch = True
+
+                # Otherwise, give up and move on
+                else:
+                    continue
 
         # If we have multiple potential patch files, try and find one
         # that matches the name most closely
@@ -179,8 +233,11 @@ class ROMPatcher:
                     f"Could not find suitable patch file in {pretty_patch_files}"
                 )
 
-        else:
+        elif len(patch_file) == 1:
             patch_file = patch_file[0]
+
+        else:
+            raise ValueError("No patch files found!")
 
         # Now we have everything we need to patch this ROM
         patched_file = self.patch_rom(
@@ -245,6 +302,20 @@ class ROMPatcher:
         patch_file = wget.download(urlparse.unquote(patch_url), out=patch_dir)
         if patch_file.endswith(".zip"):
             unzip_file(patch_file, patch_dir)
+
+        patch_file = self.find_patch_file(patch_dir=patch_dir)
+
+        return patch_file
+
+    def find_patch_file(
+            self,
+            patch_dir,
+    ):
+        """ Find potentially multiple patch files within directory
+
+        Args:
+            patch_dir (str): Patch directory to search
+        """
 
         # Find the patch file
         patch_file_exts = self.platform_config.get("patch_file_exts", [])

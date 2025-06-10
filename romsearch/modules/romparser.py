@@ -877,6 +877,11 @@ class ROMParser:
             if multiple_patch_files_found:
                 continue
 
+            # If we do have a patch file, make sure it's not a translation
+            if want_patched_files and self.ra_dict[r]["patch_url"] is not None:
+                if "Translation" in self.ra_dict[r]["patch_url"]:
+                    continue
+
             # Start by ensuring the names up to the first bracket at least match
             if file_dict["dir_name"] == self.ra_dict[r]["dir_name"]:
 

@@ -1,3 +1,24 @@
+0.3.1 (Unreleased)
+==================
+
+Features
+--------
+
+- Added option to not split up ROMs into separate directories
+
+Fixes
+-----
+
+ROMParser
+~~~~~~~~~
+
+- Ensure we don't grab translation patches from RetroAchievements
+
+ROMPatcher
+~~~~~~~~~~
+
+- For patches with multiple subdirectories, add initial support for hunting through those
+
 0.3.0 (2025-06-05)
 ==================
 
