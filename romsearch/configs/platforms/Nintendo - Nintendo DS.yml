@@ -1,0 +1,14 @@
+group: "No-Intro"
+dir: "/No-Intro/Nintendo - Nintendo DS (Decrypted)/"
+unzip: false
+file_exts:
+  - ".nds"
+
+# RetroAchievements
+ra_id: 18
+ra_hash_method: "custom"
+
+# ROMPatcher
+patch_method: "rompatcher.js"
+patch_file_exts:
+  - ".bps"

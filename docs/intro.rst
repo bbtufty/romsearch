@@ -51,6 +51,7 @@ has the capability for:
   * Game Boy Advance
   * Pokemon Mini
   * Virtual Boy
+  * Nintendo DS
 
 * Nintendo (Home)
 
