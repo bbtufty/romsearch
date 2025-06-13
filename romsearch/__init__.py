@@ -19,6 +19,8 @@ from .modules import (
     ROMSearch,
 )
 
+from .scripts import gui
+
 __all__ = [
     "DATMapper",
     "DATParser",
@@ -33,4 +35,5 @@ __all__ = [
     "ROMParser",
     "ROMPatcher",
     "ROMSearch",
+    "gui",
 ]
