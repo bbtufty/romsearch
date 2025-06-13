@@ -13,6 +13,9 @@ Nintendo - Pokemon Mini:
 Nintendo - Virtual Boy:
   file_mapping: "Nintendo - Virtual Boy (*)"
 
+Nintendo - Nintendo DS:
+  file_mapping: "Nintendo - Nintendo DS (Decrypted) (*)"
+
 Nintendo - Nintendo Entertainment System:
   file_mapping: "Nintendo - Nintendo Entertainment System (Headered) (*)"
 

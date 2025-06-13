@@ -4,6 +4,7 @@
 Features
 --------
 
+- Added support for Nintendo DS
 - Added option to not split up ROMs into separate directories
 
 Fixes

@@ -8,7 +8,6 @@ Consoles
 * Nintendo (Handheld)
 
   * Game & Watch
-  * Nintendo DS
   * Nintendo DSi
   * Nintendo 3DS
   * New Nintendo 3DS

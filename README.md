@@ -41,6 +41,7 @@ works for the following consoles:
    * Game Boy Advance
    * Pokemon Mini
    * Virtual Boy
+   * Nintendo DS
 * Nintendo (Home)
    * Nintendo Entertainment System
    * Super Nintendo Entertainment System
