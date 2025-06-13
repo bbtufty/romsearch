@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication
 from romsearch.gui import MainWindow
 
 
-def main():
+def gui():
     app = QApplication(sys.argv)
 
     window = MainWindow()
@@ -16,4 +16,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    gui()

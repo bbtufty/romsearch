@@ -49,6 +49,9 @@ docs = [
     "sphinx-rtd-theme == 3.0.2",
 ]
 
+[project.gui-scripts]
+romsearch = "romsearch:gui"
+
 [project.urls]
 "Homepage" = "https://github.com/bbtufty/romsearch"
 "Bug Reports" = "https://github.com/bbtufty/romsearch/issues"
