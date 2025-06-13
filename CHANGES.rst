@@ -23,6 +23,7 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Include shebang in ``romsearch_gui.py``
 - Ensure regex uses raw strings
 
 0.3.0 (2025-06-05)
