@@ -284,7 +284,7 @@ class ROMCompressor:
                 for line in process.stdout:
 
                     # Replace any potential tabs in the line, strip whitespace and skip newline at the end
-                    line = re.sub("\s+", " ", line[:-1])
+                    line = re.sub(r"\s+", " ", line[:-1])
                     line = line.lstrip().rstrip()
 
                     if len(line) == 0:
