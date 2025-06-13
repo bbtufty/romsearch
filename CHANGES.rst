@@ -20,6 +20,11 @@ ROMPatcher
 
 - For patches with multiple subdirectories, add initial support for hunting through those
 
+General
+~~~~~~~
+
+- Ensure regex uses raw strings
+
 0.3.0 (2025-06-05)
 ==================
 
