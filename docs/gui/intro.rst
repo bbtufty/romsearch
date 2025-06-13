@@ -5,7 +5,8 @@ ROMSearch GUI
 ROMSearch features a GUI mode, which can be downloaded from the
 `GitHub release page <https://github.com/bbtufty/romsearch/releases/latest>`_. Download the .exe file and place in a
 folder of your choice. Note that currently this only works for windows, for Mac and Linux we suggest using the pip
-version within ``python``.
+or pipx version within ``python``. After installing via pip/pipx, you can then access the GUI by typing ``romsearch``
+into a terminal.
 
 **On first run, Windows may complain about the file. Just run anyway, the file is safe.**
 
