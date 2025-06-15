@@ -1,4 +1,4 @@
-0.3.1 (Unreleased)
+0.3.1 (2025-06-15)
 ==================
 
 Features
@@ -23,6 +23,7 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Bump to 0.3.1
 - Include setuptools entrypoint for the GUI
 - Update GitHub workflows
 - Include shebang in ``romsearch_gui.py``
