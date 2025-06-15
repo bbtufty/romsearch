@@ -23,6 +23,8 @@ ROMPatcher
 General
 ~~~~~~~
 
+- Include setuptools entrypoint for the GUI
+- Update GitHub workflows
 - Include shebang in ``romsearch_gui.py``
 - Ensure regex uses raw strings
 

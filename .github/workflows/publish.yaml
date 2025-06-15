@@ -39,7 +39,7 @@ jobs:
           pip install -e .
       - name: Build package
         run: >
-          pyinstaller romsearch_gui.py 
+          pyinstaller romsearch/scripts/romsearch_gui.py 
           --copy-metadata romsearch 
           --collect-data romsearch 
           --icon=romsearch/gui/img/logo.ico
