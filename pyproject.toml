@@ -36,7 +36,7 @@ dependencies = [
     "iso639-lang == 2.6.0",
     "numpy == 2.3.0",
     "packaging == 25.0",
-    "pathvalidate == 3.2.3",
+    "pathvalidate == 3.3.1",
     "PySide6 == 6.9.1",
     "pyyaml == 6.0.2",
     "wget == 3.2",
