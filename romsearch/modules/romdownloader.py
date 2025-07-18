@@ -1,10 +1,9 @@
 import copy
 import glob
+import numpy as np
 import os
 import re
 import subprocess
-
-import numpy as np
 
 import romsearch
 from ..util import (
@@ -14,6 +13,7 @@ from ..util import (
     discord_push,
     split,
     centred_string,
+    remove_case_insensitive_matches,
 )
 
 RCLONE_METHODS = [
@@ -225,9 +225,21 @@ class ROMDownloader:
 
         end_files = get_tidy_files(os.path.join(str(self.out_dir), "*"))
 
+        items_added = list(set(end_files).difference(start_files))
+        items_added.sort()
+        items_deleted = list(set(start_files).difference(end_files))
+        items_deleted.sort()
+
+        self.log_items_added_deleted(items_added=items_added,
+                                     items_deleted=items_deleted,
+                                     )
+
         if self.discord_url is not None:
             name = f"ROMDownloader: {self.platform}"
-            self.post_to_discord(start_files, end_files, name=name)
+            self.post_to_discord(items_added=items_added,
+                                 items_deleted=items_deleted,
+                                 name=name,
+                                 )
 
         # If there are potential additional files to download, do that here
         if "subchannels" in self.platform_config:
@@ -253,9 +265,21 @@ class ROMDownloader:
 
                 end_files = get_tidy_files(os.path.join(str(sc_out_dir), "*"))
 
+                items_added = list(set(end_files).difference(start_files))
+                items_added.sort()
+                items_deleted = list(set(start_files).difference(end_files))
+                items_deleted.sort()
+
+                self.log_items_added_deleted(items_added=items_added,
+                                             items_deleted=items_deleted,
+                                             )
+
                 if self.discord_url is not None:
                     name = f"ROMDownloader: {self.platform} ({sc})"
-                    self.post_to_discord(start_files, end_files, name=name)
+                    self.post_to_discord(items_added=items_added,
+                                         items_deleted=items_deleted,
+                                         name=name,
+                                         )
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
@@ -517,25 +541,25 @@ class ROMDownloader:
                 for f in fs:
 
                     if subchannel is not None:
-                        f_noext = os.path.splitext(f)[0]
+                        f_no_ext = os.path.splitext(f)[0]
 
                         skip_sc = False
 
                         # If we don't have this file in the subchannel list, then just skip
-                        if not f_noext in self.subchannel_dict[subchannel]:
+                        if not f_no_ext in self.subchannel_dict[subchannel]:
                             self.logger.debug(
                                 centred_string(
-                                    f"{f_noext} not found in subchannel files",
+                                    f"{f_no_ext} not found in subchannel files",
                                     total_length=self.log_line_length,
                                 )
                             )
                             skip_sc = True
 
                         # And if we don't have the existing file on disc, also skip
-                        if not f_noext in subchannel_original_files:
+                        if not f_no_ext in subchannel_original_files:
                             self.logger.debug(
                                 centred_string(
-                                    f"{f_noext} not found in original directory",
+                                    f"{f_no_ext} not found in original directory",
                                     total_length=self.log_line_length,
                                 )
                             )
@@ -560,6 +584,14 @@ class ROMDownloader:
                         found_files_at_priority = True
 
                     else:
+
+                        # Check if the file we're trying to download does not match exactly, but does
+                        # match in a case-insensitive way, and remove if so
+                        f_no_ext = os.path.splitext(f)[0]
+                        remove_case_insensitive_matches(file_to_match=f_no_ext,
+                                                        pattern=f,
+                                                        path=str(out_dir),
+                                                        )
 
                         remote_file_name = f"{self.remote_name}:{remote_dir}{f}"
 
@@ -694,41 +726,25 @@ class ROMDownloader:
                 os.remove(os.path.join(str(out_dir), f))
                 found_matches.append(f)
 
-        # Do a nice summary of what we might have removed
-        if len(found_matches) > 0:
-            self.logger.info(f"{'-' * self.log_line_length}")
-            self.logger.info(
-                centred_string(f"Removed files:", total_length=self.log_line_length)
-            )
-            for f in found_matches:
-                self.logger.info(
-                    centred_string(f"{f}", total_length=self.log_line_length)
-                )
-
         return True
 
     def post_to_discord(
         self,
-        start_files,
-        end_files,
+        items_added,
+        items_deleted,
         name,
         max_per_message=10,
     ):
         """Create a discord post summarising files added and removed
 
         Args:
-            start_files (list): list of files at the start of the rclone
-            end_files (list): list of files at the end of the rclone
+            items_added (list): list of files added
+            items_deleted (list): list of files deleted
             name (string): Name of the post title
             max_per_message (int, optional): Maximum number of items per post. Defaults to 10.
         """
 
-        items_added = list(set(end_files).difference(start_files))
-        items_deleted = list(set(start_files).difference(end_files))
-
         if len(items_added) > 0:
-
-            items_added.sort()
 
             for items_split in split(items_added, chunk_size=max_per_message):
 
@@ -746,8 +762,6 @@ class ROMDownloader:
 
         if len(items_deleted) > 0:
 
-            items_deleted.sort()
-
             for items_split in split(items_deleted, chunk_size=max_per_message):
 
                 fields = []
@@ -761,5 +775,38 @@ class ROMDownloader:
                         name=name,
                         fields=fields,
                     )
+
+        return True
+
+    def log_items_added_deleted(self,
+                                items_added,
+                                items_deleted,
+                                ):
+        """Log a summary of items added and removed
+
+        Args:
+            items_added (list): list of items added
+            items_deleted (list): list of items deleted
+        """
+
+        if len(items_added) > 0:
+            self.logger.info(f"{'-' * self.log_line_length}")
+            self.logger.info(
+                centred_string(f"Added files:", total_length=self.log_line_length)
+            )
+            for f in items_added:
+                self.logger.info(
+                    centred_string(f"{f}", total_length=self.log_line_length)
+                )
+
+        if len(items_deleted) > 0:
+            self.logger.info(f"{'-' * self.log_line_length}")
+            self.logger.info(
+                centred_string(f"Removed files:", total_length=self.log_line_length)
+            )
+            for f in items_deleted:
+                self.logger.info(
+                    centred_string(f"{f}", total_length=self.log_line_length)
+                )
 
         return True
