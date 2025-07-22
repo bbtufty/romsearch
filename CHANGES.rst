@@ -1,3 +1,28 @@
+0.3.2 (Unreleased)
+==================
+
+Fixes
+-----
+
+ROMCleaner
+~~~~~~~~~~
+
+- Properly handle multi-disk files
+- Improved logging for ROMs removed from disk
+- Respect ``separate_directories`` when removing ROM files
+
+ROMDownloader
+~~~~~~~~~~~~~
+
+- Improved logging for files added
+- If we have files that have changed upper/lowercase name, remove before doing the rclone copy call
+
+ROMMover
+~~~~~~~~
+
+- Clean out compress/patch directories before moving files
+- If we have files that have changed upper/lowercase name, remove before moving
+
 0.3.1 (2025-06-15)
 ==================
 

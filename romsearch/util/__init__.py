@@ -1,6 +1,15 @@
 from .discord import discord_push
 from .general import split, match_retool_search_terms, normalize_name, get_file_time
-from .io import load_yml, save_yml, unzip_file, load_json, save_json, get_dat, format_dat
+from .io import (
+    load_yml,
+    save_yml,
+    unzip_file,
+    load_json,
+    save_json,
+    get_dat,
+    format_dat,
+    remove_case_insensitive_matches,
+)
 from .logger import setup_logger, centred_string, left_aligned_string
 from .regex_matching import (
     get_file_pattern,
@@ -35,4 +44,5 @@ __all__ = [
     "match_retool_search_terms",
     "get_dat",
     "format_dat",
+    "remove_case_insensitive_matches",
 ]

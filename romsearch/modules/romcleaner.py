@@ -47,6 +47,11 @@ class ROMCleaner:
             config = load_yml(config_file)
         self.config = config
 
+        # Separate directories?
+        self.separate_directories = self.config.get("romsearch", {}).get(
+            "separate_directories", True
+        )
+
         # Whether we'll handle multi-disc files or not
         self.handle_multi_discs = self.config.get("romsearch", {}).get(
             "handle_multi_discs", False
@@ -241,35 +246,24 @@ class ROMCleaner:
                             dict_cleaned[r] = []
                         dict_cleaned[r].append(f)
 
-        # Now pass through, removing items we no longer need and keeping track
-        # of empty cache items
-        cache_items_to_pop = []
-        if self.platform in self.cache:
-            for d in dict_cleaned:
-                for d_i in dict_cleaned[d]:
-                    self.cache[self.platform][d].pop(d_i, None)
-                    if len(self.cache[self.platform][d]) == 0:
-                        cache_items_to_pop.append(d)
+        cache_cleaned = self.clean_cache(dict_cleaned=dict_cleaned,
+                                         cache_cleaned=cache_cleaned,
+                                         )
 
-        cache_items_to_pop = np.unique(cache_items_to_pop)
-        cache_items_to_pop = [str(f) for f in cache_items_to_pop]
-
-        # Clear out any empty cache items
-        if self.platform in self.cache:
-            for d in cache_items_to_pop:
-
-                cache_cleaned.append(d)
-                self.cache[self.platform].pop(d, None)
-                self.logger.info(
-                    centred_string(
-                        f"Removed {d} from cache", total_length=self.log_line_length
-                    )
-                )
-
-        # Find files on disk, searching recursively
-        roms_on_disk = glob.glob(
-            os.path.join(full_rom_dir, "*/", "*.*"), recursive=True
-        )
+        # Find files on disk, searching recursively. This is a little different depending on
+        # whether we're separating out directories or not
+        if self.separate_directories:
+            roms_on_disk = glob.glob(
+                os.path.join(full_rom_dir, "*/", "*.*"),
+                recursive=True,
+                include_hidden=True,
+            )
+        else:
+            roms_on_disk = glob.glob(
+                os.path.join(full_rom_dir, "**", "*.*"),
+                recursive=True,
+                include_hidden=True,
+            )
 
         # Clear out files that are not in the cache
         roms_in_cache = []
@@ -301,6 +295,11 @@ class ROMCleaner:
                     found_rom_in_cache = True
 
             if not found_rom_in_cache:
+
+                # Don't remove directories
+                if os.path.isdir(r):
+                    continue
+
                 r_short = os.path.basename(r)
                 os.remove(r)
                 roms_cleaned.append(r_short)
@@ -314,6 +313,51 @@ class ROMCleaner:
                     if not os.listdir(full_dir):
                         shutil.rmtree(full_dir)
 
+        # After all of this, we can get rid of any multi-disk playlists
+        if self.platform in self.cache:
+            for r in self.cache[self.platform]:
+                for f in self.cache[self.platform][r]:
+
+                    is_multi_disc = self.cache[self.platform][r][f].get(
+                        "multi_disc", False
+                    )
+
+                    if is_multi_disc and self.handle_multi_discs:
+
+                        excluded = False
+
+                        multi_disk_output_dir = self.cache[self.platform][r][f].get("output_directory", "")
+
+                        for multi_disk_file in self.cache[self.platform][r][f].get("all_files", []):
+                            full_multi_disk_file = os.path.join(full_rom_dir, multi_disk_output_dir, multi_disk_file)
+
+                            with open(full_multi_disk_file, "r") as mf:
+
+                                if excluded:
+                                    continue
+
+                                mf_file = mf.readline().strip()
+                                full_mf_file = os.path.join(full_rom_dir, multi_disk_output_dir, mf_file)
+                                if not os.path.exists(full_mf_file):
+                                    excluded = True
+
+                        # If we've excluded the file, we want to delete it here both from the cache and on disk
+                        if excluded:
+                            if r not in dict_cleaned:
+                                dict_cleaned[r] = []
+                            dict_cleaned[r].append(f)
+
+                            for ff in self.cache[self.platform][r][f].get("all_files", []):
+                                full_ff = os.path.join(full_rom_dir, multi_disk_output_dir, ff)
+                                if os.path.exists(full_ff):
+                                    os.remove(full_ff)
+                                    roms_cleaned.append(ff)
+
+
+        cache_cleaned = self.clean_cache(dict_cleaned=dict_cleaned,
+                                         cache_cleaned=cache_cleaned,
+                                         )
+
         # Because there can be some duplicates, remove here
         roms_cleaned = np.unique(roms_cleaned)
         roms_cleaned = [str(f) for f in roms_cleaned]
@@ -321,7 +365,56 @@ class ROMCleaner:
         cache_cleaned = np.unique(cache_cleaned)
         cache_cleaned = [str(f) for f in cache_cleaned]
 
+        # Log these things out
+        for r in roms_cleaned:
+            self.logger.info(
+                centred_string(
+                    f"Removed {r} from disk", total_length=self.log_line_length
+                )
+            )
+
+        for c in cache_cleaned:
+            self.logger.info(
+                centred_string(
+                    f"Removed {c} from cache", total_length=self.log_line_length
+                )
+            )
+
         return roms_cleaned, cache_cleaned
+
+    def clean_cache(self,
+                    dict_cleaned,
+                    cache_cleaned=None,
+                    ):
+        """Remove items from the cache
+
+        Args:
+            dict_cleaned (dict): Dictionary of ROMs we want to remove
+            cache_cleaned (list): List of ROMs we want to remove.
+                Defaults to None, which will create a new list
+        """
+
+        if cache_cleaned is None:
+            cache_cleaned = []
+
+        cache_items_to_pop = []
+        if self.platform in self.cache:
+            for d in dict_cleaned:
+                for d_i in dict_cleaned[d]:
+                    self.cache[self.platform][d].pop(d_i, None)
+                    if len(self.cache[self.platform][d]) == 0:
+                        cache_items_to_pop.append(d)
+
+        cache_items_to_pop = np.unique(cache_items_to_pop)
+        cache_items_to_pop = [str(f) for f in cache_items_to_pop]
+
+        # Clear out any empty cache items
+        if self.platform in self.cache:
+            for d in cache_items_to_pop:
+                cache_cleaned.append(d)
+                self.cache[self.platform].pop(d, None)
+
+        return cache_cleaned
 
     def save_cache(self):
         """Save out the cache file"""

@@ -16,6 +16,7 @@ from ..util import (
     unzip_file,
     load_json,
     save_json,
+    remove_case_insensitive_matches,
 )
 
 COMPRESSION_FILES = {
@@ -24,9 +25,9 @@ COMPRESSION_FILES = {
 
 
 def create_m3u(
-    m3u_file,
-    out_files,
-    relative_dir=None,
+        m3u_file,
+        out_files,
+        relative_dir=None,
 ):
     """Create an m3u playlist file for multi-disc games
 
@@ -50,15 +51,15 @@ def create_m3u(
 class ROMMover:
 
     def __init__(
-        self,
-        platform,
-        config_file=None,
-        config=None,
-        platform_config=None,
-        regex_config=None,
-        logger=None,
-        log_line_sep="=",
-        log_line_length=100,
+            self,
+            platform,
+            config_file=None,
+            config=None,
+            platform_config=None,
+            regex_config=None,
+            logger=None,
+            log_line_sep="=",
+            log_line_length=100,
     ):
         """ROM Moving and cache updating tool
 
@@ -177,8 +178,8 @@ class ROMMover:
             self.compress = False
 
     def run(
-        self,
-        rom_dict,
+            self,
+            rom_dict,
     ):
         """Run the ROMMover
 
@@ -195,12 +196,132 @@ class ROMMover:
         )
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
+        # Clear out the compress and patch directory
+        if self.compress:
+            compress_files_removed = self.clean_compress_dir(rom_dict=rom_dict)
+
+            if len(compress_files_removed) > 0:
+                self.logger.info(
+                    centred_string("Compressed files removed:",
+                                   total_length=self.log_line_length,
+                                   )
+                )
+                for c in compress_files_removed:
+                    self.logger.info(centred_string(f"{c}",
+                                                    total_length=self.log_line_length,
+                                                    )
+                                     )
+                self.logger.info(f"{'-' * self.log_line_length}")
+
+        patch_dirs_removed = self.clean_patch_dir(rom_dict=rom_dict)
+        if len(patch_dirs_removed) > 0:
+            self.logger.info(
+                centred_string("Patch directories removed:",
+                               total_length=self.log_line_length,
+                               )
+            )
+            for p in patch_dirs_removed:
+                self.logger.info(centred_string(f"{p}",
+                                                total_length=self.log_line_length,
+                                                )
+                                 )
+            self.logger.info(f"{'-' * self.log_line_length}")
+
         roms_moved = self.move_roms(rom_dict)
         self.save_cache()
 
         self.logger.info(f"{self.log_line_sep * self.log_line_length}")
 
         return roms_moved
+
+    def clean_compress_dir(self,
+                           rom_dict,
+                           ):
+        """Clean any unneeded files from the compress directory
+
+        Args:
+            rom_dict (dict): ROM dictionary for everything
+        """
+
+        files_removed = []
+
+        compress_dir = self.config.get("dirs", {}).get("compress_dir", None)
+
+        # If we don't have a compress directory set, then just return
+        if compress_dir is None:
+            return files_removed
+
+        # Get a list of all the ROM files, without extensions since they will change
+        all_rom_files = []
+        for game in rom_dict:
+            game_dict = rom_dict[game]
+            all_rom_files.extend([os.path.splitext(game_dict[rom]["download_name"])[0]
+                                  for rom in game_dict]
+                                 )
+
+        # Get a list of files in the compress directory
+        platform_compress_dir = os.path.join(compress_dir, self.platform)
+        compress_files = glob.glob(os.path.join(platform_compress_dir, "*"))
+        compress_files = [os.path.basename(f) for f in compress_files]
+        compress_files.sort()
+        compress_files_no_ext = [os.path.splitext(f)[0] for f in compress_files]
+
+        for c_idx, c in enumerate(compress_files_no_ext):
+            if c not in all_rom_files:
+                c_orig = compress_files[c_idx]
+                file_to_remove = os.path.join(platform_compress_dir, c_orig)
+
+                # For some reason, sometimes this fails, so just keep going
+                success = False
+                while not success:
+                    try:
+                        os.remove(file_to_remove)
+                        success = True
+                    except FileNotFoundError:
+                        pass
+
+                files_removed.append(c_orig)
+
+        return files_removed
+
+    def clean_patch_dir(self,
+                        rom_dict,
+                        ):
+        """Clean any unneeded directories from the patch directory
+
+        Args:
+            rom_dict (dict): ROM dictionary for everything
+        """
+
+        patch_dirs_removed = []
+
+        # If we don't have a patch directory set, then just return
+        if self.patch_dir is None:
+            return patch_dirs_removed
+
+        # If the platform patch directory doesn't exist, just return
+        platform_patch_dir = os.path.join(self.patch_dir, self.platform)
+        if not os.path.exists(platform_patch_dir):
+            return patch_dirs_removed
+
+        # Get a list of all the ROM files, without extensions since we're going into directories here
+        all_rom_files = []
+        for game in rom_dict:
+            game_dict = rom_dict[game]
+            all_rom_files.extend([os.path.splitext(game_dict[rom]["download_name"])[0]
+                                  for rom in game_dict]
+                                 )
+
+        # Get a list of patch directories
+        patch_dirs = os.listdir(platform_patch_dir)
+
+        # If they don't match files we're expecting, then remove
+        for p in patch_dirs:
+            if p not in all_rom_files:
+                shutil.rmtree(os.path.join(platform_patch_dir, p))
+                patch_dirs_removed.append(p)
+
+        return patch_dirs_removed
 
     def move_roms(self, all_rom_dict):
         """Actually move the roms
@@ -342,7 +463,6 @@ class ROMMover:
 
                 # If we're unzipping (and potentially patching), then pull the expected files out here and check again
                 if unzip or expecting_patched_rom:
-
                     final_file_exists, final_file_name = self.check_files_exist(
                         rom=rom_file,
                         files=short_out_files,
@@ -352,7 +472,6 @@ class ROMMover:
 
                 # If we're compressing, then pull the expected files out here and check again
                 if compress:
-
                     final_file_exists, final_file_name = self.check_files_exist(
                         rom=rom_file,
                         files=short_out_files,
@@ -360,10 +479,17 @@ class ROMMover:
                         patched_rom=expecting_patched_rom,
                     )
 
+                # Now check if we've got a match in all but case. Period here is important to avoid
+                # accidentally removing patched files
+                remove_case_insensitive_matches(file_to_match=rom_file_no_ext,
+                                                pattern=f"{rom_file_no_ext}.*",
+                                                path=str(out_dir),
+                                                )
+
                 # If nothing has changed, then move on
                 if (
-                    rom_dict[rom]["file_mod_time"] == cache_mod_time
-                    and final_file_exists
+                        rom_dict[rom]["file_mod_time"] == cache_mod_time
+                        and final_file_exists
                 ):
                     self.logger.info(
                         centred_string(
@@ -572,11 +698,11 @@ class ROMMover:
         return roms_moved
 
     def check_files_exist(
-        self,
-        rom,
-        files,
-        file_ext_key,
-        patched_rom=False,
+            self,
+            rom,
+            files,
+            file_ext_key,
+            patched_rom=False,
     ):
         """Check files exist, so we know whether to move things around or not
 
@@ -615,8 +741,8 @@ class ROMMover:
         return final_file_exists, final_file_name
 
     def check_compress_suitable(
-        self,
-        rom_file,
+            self,
+            rom_file,
     ):
         """Check if a file is suitable for compression given compression method
 
@@ -640,12 +766,12 @@ class ROMMover:
         return compress_suitable
 
     def move_file(
-        self,
-        zip_file_name,
-        game,
-        out_dir=None,
-        unzip=False,
-        delete_folder=False,
+            self,
+            zip_file_name,
+            game,
+            out_dir=None,
+            unzip=False,
+            delete_folder=False,
     ):
         """Move file to directory structure, optionally unzipping"""
 
@@ -683,8 +809,8 @@ class ROMMover:
         return True, moved_files
 
     def compress_file(
-        self,
-        rom,
+            self,
+            rom,
     ):
         """Compress a file
 
@@ -707,12 +833,12 @@ class ROMMover:
         return compressed_file
 
     def cache_update(
-        self,
-        game,
-        rom,
-        files,
-        out_dir,
-        rom_dict,
+            self,
+            game,
+            rom,
+            files,
+            out_dir,
+            rom_dict,
     ):
         """Update the cache with new file data
 
@@ -747,11 +873,11 @@ class ROMMover:
         }
 
     def cache_update_multi_disc(
-        self,
-        game,
-        m3u_name,
-        files,
-        out_dir,
+            self,
+            game,
+            m3u_name,
+            files,
+            out_dir,
     ):
         """Update the cache with m3u playlist info
 
