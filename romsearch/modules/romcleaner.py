@@ -400,14 +400,16 @@ class ROMCleaner:
         cache_items_to_pop = []
         if self.platform in self.cache:
             for d in dict_cleaned:
-                for d_i in dict_cleaned[d]:
 
-                    # Make sure that this is actually in the cache, since
-                    # we do a two-pass
-                    if d in self.cache[self.platform]:
-                        self.cache[self.platform][d].pop(d_i, None)
-                        if len(self.cache[self.platform][d]) == 0:
-                            cache_items_to_pop.append(d)
+                # Make sure that this is actually in the cache, since
+                # we do a two-pass
+                if d not in self.cache[self.platform]:
+                    continue
+
+                for d_i in dict_cleaned[d]:
+                    self.cache[self.platform][d].pop(d_i, None)
+                    if len(self.cache[self.platform][d]) == 0:
+                        cache_items_to_pop.append(d)
 
         cache_items_to_pop = np.unique(cache_items_to_pop)
         cache_items_to_pop = [str(f) for f in cache_items_to_pop]
