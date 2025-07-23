@@ -422,6 +422,7 @@ class ROMMover:
                             "game_dir_name": game_dir_name,
                             "relative_dir": f".{disc_free_name}",
                             "out_files": [],
+                            "modified": False,
                         }
 
                 # Loop over here, since the extensions might change. Search specifically by the filename
@@ -642,6 +643,7 @@ class ROMMover:
                 # Add these to the multi-disc dictionary, if needed
                 if rom_dict[rom]["multi_disc"] and self.handle_multi_discs:
                     all_multi_discs[disc_free_name]["out_files"].extend(out_files)
+                    all_multi_discs[disc_free_name]["modified"] = True
 
                 # Update and save the cache
                 self.cache_update(
@@ -660,6 +662,30 @@ class ROMMover:
 
             for multi_disc in all_multi_discs:
 
+                # Check if any unexpected files are in the out folder, and if so, remove
+                md_files = glob.glob(os.path.join(all_multi_discs[multi_disc]["m3u_out_dir"],
+                                                  all_multi_discs[multi_disc]["relative_dir"],
+                                                  "*.*")
+                                     )
+                md_files_short = [os.path.basename(f) for f in md_files]
+
+                for md_idx, md_file in enumerate(md_files_short):
+                    if md_file not in all_multi_discs[multi_disc]["out_files"]:
+
+                        file_to_remove = md_files[md_idx]
+
+                        success = False
+                        while not success:
+                            try:
+                                print(f"Removing {file_to_remove}")
+                                os.remove(file_to_remove)
+                                success = True
+                            except FileNotFoundError:
+                                pass
+
+                        # Flag as modified so we recreate the m3u
+                        all_multi_discs[multi_disc]["modified"] = True
+
                 # Get the full m3u file name
                 m3u_file_name = f"{multi_disc}.m3u"
                 m3u_full_file_name = os.path.join(
@@ -669,8 +695,8 @@ class ROMMover:
                 # Assume that by sorting we're good on the file order
                 out_files = sorted(all_multi_discs[multi_disc]["out_files"])
 
-                # If we already have this file, then continue on
-                if os.path.exists(m3u_full_file_name):
+                # If we already have this file and nothing's changed, then continue on
+                if os.path.exists(m3u_full_file_name) and not all_multi_discs[multi_disc]["modified"]:
                     continue
 
                 # Or, create the m3u and put this into the cache

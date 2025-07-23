@@ -11,9 +11,6 @@ Known Issues
   For example, having an include of "Crash Bandicoot" for the PS1 will also grab "Crash Bash" and
   "CTR - Crash Team Racing" since at least one of their duplicates starts with "Crash Bandicoot".
 
-* For multi-disc files, occasionally a run can leave files lying around. Running again should clear everything properly
-  and get things as you'd expect
-
 * Currently, the code only handles ``retool``'s compilations to a very limited degree.
 
 * Occasionally, multiple ROMs can be found with the same priority.
