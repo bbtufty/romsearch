@@ -1,4 +1,5 @@
 import os
+import traceback
 from PySide6.QtCore import Slot, Signal, QObject, QThread, QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -97,7 +98,9 @@ class MainWindow(QMainWindow):
 
         # Set up a thread so the UI doesn't hang
         self.romsearch_thread = QThread()
-        self.romsearch_worker = RomSearchWorker(config_file=config_file)
+        self.romsearch_worker = RomSearchWorker(config_file=config_file,
+                                                logger=self.logger,
+                                                )
 
         self.romsearch_worker.moveToThread(self.romsearch_thread)
         self.romsearch_thread.started.connect(self.romsearch_worker.run)
@@ -121,14 +124,24 @@ class MainWindow(QMainWindow):
 class RomSearchWorker(QObject):
     finished = Signal()
 
-    def __init__(self, config_file):
+    def __init__(self, config_file, logger=None, log_level="INFO"):
         super().__init__()
 
         self.config_file = config_file
 
+        if logger is None:
+            logger = get_gui_logger(log_level=log_level)
+        self.logger = logger
+
     def run(self):
 
-        rs = ROMSearch(self.config_file)
-        rs.run()
+        try:
+            rs = ROMSearch(self.config_file)
+            rs.run()
+        except Exception:
+            self.logger.warning("ROMSearch has crashed! Error is:")
+            tb = traceback.format_exc()
+            for line in tb.splitlines():
+                self.logger.warning(line)
 
         self.finished.emit()

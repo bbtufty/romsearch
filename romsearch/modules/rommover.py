@@ -677,7 +677,6 @@ class ROMMover:
                         success = False
                         while not success:
                             try:
-                                print(f"Removing {file_to_remove}")
                                 os.remove(file_to_remove)
                                 success = True
                             except FileNotFoundError:
