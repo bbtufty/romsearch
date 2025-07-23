@@ -4,6 +4,11 @@
 Fixes
 -----
 
+GUI
+~~~
+
+- Fix potential softlocks
+
 ROMCleaner
 ~~~~~~~~~~
 
