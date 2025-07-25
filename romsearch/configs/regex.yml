@@ -1273,7 +1273,7 @@ sonic_mega_collection:
   group: "modern_version"
 
 e_reader_edition:
-  pattern: "\\(e-Reader Edition\\)"
+  pattern: "\\(e-Reader( Edition)?\\)"
   group: "modern_version"
 
 # GENERALLY IGNORE

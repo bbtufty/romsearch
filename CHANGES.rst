@@ -4,6 +4,11 @@
 Fixes
 -----
 
+General
+~~~~~~~
+
+- Update e-Reader modern edition to also match just (e-Reader)
+
 GUI
 ~~~
 
