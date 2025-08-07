@@ -154,7 +154,7 @@ review_code:
 
 # PROMOTIONAL
 promo:
-  pattern: "EPK|Press Kit|\\(Promo\\)"
+  pattern: "EPK|Press Kit|\\(Promo\\)|\\(Movie Promo\\)"
   group: "promotional"
   search_tags: false
   include_in_short_name: true
@@ -1274,6 +1274,10 @@ sonic_mega_collection:
 
 e_reader_edition:
   pattern: "\\(e-Reader( Edition)?\\)"
+  group: "modern_version"
+
+ratalaika_games:
+  pattern: "\\(Ratalaika Games\\)"
   group: "modern_version"
 
 # GENERALLY IGNORE
