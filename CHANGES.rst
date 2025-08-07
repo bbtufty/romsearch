@@ -7,6 +7,9 @@ Fixes
 General
 ~~~~~~~
 
+- Added Ratalaika Games as a modern edition
+- Include "(Movie Promo)" as a promotional edition
+- Move clonelists to bbtufty fork
 - Update e-Reader modern edition to also match just (e-Reader)
 
 GUI
