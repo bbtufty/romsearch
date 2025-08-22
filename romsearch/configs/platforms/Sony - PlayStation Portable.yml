@@ -12,3 +12,6 @@ ra_hash_method: "custom"
 patch_method: "xdelta"
 patch_file_exts:
   - ".xdelta"
+
+#EmulationStation Friendly Name
+es_friendly_name: "psp"

@@ -7,3 +7,5 @@ file_exts:
 # RetroAchievements
 ra_id: 16
 ra_hash_method: "custom"
+#EmulationStation Friendly Name
+es_friendly_name: "gc"
