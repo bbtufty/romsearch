@@ -13,5 +13,5 @@ patch_method: "xdelta"
 patch_file_exts:
   - ".xdelta"
 
-#EmulationStation Friendly Name
+# EmulationStation Friendly Name
 es_friendly_name: "psp"

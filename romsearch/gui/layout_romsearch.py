@@ -1789,7 +1789,7 @@ class Ui_RomSearch(object):
         RomSearch.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(RomSearch)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1298, 21))
+        self.menubar.setGeometry(QRect(0, 0, 1298, 33))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         self.menuHelp = QMenu(self.menubar)
@@ -1813,7 +1813,7 @@ class Ui_RomSearch(object):
         self.retranslateUi(RomSearch)
 
         self.tabWidgetModules.setCurrentIndex(0)
-        self.tabWidgetConfig.setCurrentIndex(4)
+        self.tabWidgetConfig.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(RomSearch)
@@ -2150,7 +2150,7 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomChooserDatFiltersUnlicensed.setText(QCoreApplication.translate("RomSearch", u"Unlicensed", None))
         self.checkBoxConfigRomChooserDatFiltersVideo.setText(QCoreApplication.translate("RomSearch", u"Video", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomChooser), QCoreApplication.translate("RomSearch", u"ROMChooser", None))
-        self.checkBoxConfigRomMoverESFriendlyFolders.setText(QCoreApplication.translate("RomSearch", u"Emulation Station friendly names?", None))
+        self.checkBoxConfigRomMoverESFriendlyFolders.setText(QCoreApplication.translate("RomSearch", u"Emulation Station friendly folder names? (i.e. Nintendo - Game Boy > gb, Sony - Playstation 1 > psx etc.)", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomMover), QCoreApplication.translate("RomSearch", u"ROMMover", None))
         self.labelConfigRomPatcherxdelta.setText(QCoreApplication.translate("RomSearch", u"xdelta path", None))
         self.lineEditConfigRomPatcherxdeltaPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"xdelta.exe", None))

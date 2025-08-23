@@ -8,5 +8,5 @@ file_exts:
 ra_id: 28
 ra_hash_method: "md5"
 
-#EmulationStation Friendly Name
+# EmulationStation Friendly Name
 es_friendly_name: "vb"

@@ -13,5 +13,5 @@ patch_method: "rompatcher.js"
 patch_file_exts:
   - ".bps"
 
-#EmulationStation Friendly Name
+# EmulationStation Friendly Name
 es_friendly_name: "nds"

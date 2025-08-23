@@ -394,9 +394,12 @@ class ROMMover:
 
                 # Keep track of absolute directories and relative directories to the
                 # platform itself, for cache reasons
-                
+
                 # Decide whether to use platform name or ES-friendly name
-                if self.config.get("use_es_friendly_name", True) and self.platform_config.get("es_friendly_name") is not None:
+                if (
+                        self.config.get("use_es_friendly_name", False)
+                        and self.platform_config.get("es_friendly_name", None) is not None
+                ):
                     base_dir = self.platform_config.get("es_friendly_name")
                 else:
                     base_dir = self.platform
