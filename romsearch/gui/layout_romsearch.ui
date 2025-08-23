@@ -2345,6 +2345,57 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tabConfigRomMover">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <attribute name="title">
+            <string>ROMMover</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="2">
+               <spacer name="gridLayoutConfigRomDownloaderRight_2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <widget class="QCheckBox" name="checkBoxConfigRomMoverESFriendlyFolders">
+                  <property name="text">
+                   <string>Emulation Station friendly folder names? (i.e. Nintendo - Game Boy &gt; gb, Sony - Playstation 1 &gt; psx etc.)</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <spacer name="gridLayoutConfigRomDownloaderLeft_2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="tabConfigRomPatcher">
            <attribute name="title">
             <string>ROMPatcher</string>
@@ -3175,7 +3226,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioButtonConfigLoggerLevel"/>
   <buttongroup name="radioButtonConfigRomsearchMethod"/>
+  <buttongroup name="radioButtonConfigLoggerLevel"/>
  </buttongroups>
 </ui>

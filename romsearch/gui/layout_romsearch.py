@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'layout_romsearch.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -1339,6 +1339,35 @@ class Ui_RomSearch(object):
         self.horizontalLayout_11.addLayout(self.gridLayoutConfigRomChooser)
 
         self.tabWidgetConfig.addTab(self.tabConfigRomChooser, "")
+        self.tabConfigRomMover = QWidget()
+        self.tabConfigRomMover.setObjectName(u"tabConfigRomMover")
+        self.tabConfigRomMover.setEnabled(True)
+        self.gridLayout_5 = QGridLayout(self.tabConfigRomMover)
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.gridLayout_4 = QGridLayout()
+        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.gridLayoutConfigRomDownloaderRight_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.gridLayoutConfigRomDownloaderRight_2, 0, 2, 1, 1)
+
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.checkBoxConfigRomMoverESFriendlyFolders = QCheckBox(self.tabConfigRomMover)
+        self.checkBoxConfigRomMoverESFriendlyFolders.setObjectName(u"checkBoxConfigRomMoverESFriendlyFolders")
+
+        self.verticalLayout_6.addWidget(self.checkBoxConfigRomMoverESFriendlyFolders)
+
+
+        self.gridLayout_4.addLayout(self.verticalLayout_6, 0, 1, 1, 1)
+
+        self.gridLayoutConfigRomDownloaderLeft_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.gridLayoutConfigRomDownloaderLeft_2, 0, 0, 1, 1)
+
+
+        self.gridLayout_5.addLayout(self.gridLayout_4, 0, 0, 1, 1)
+
+        self.tabWidgetConfig.addTab(self.tabConfigRomMover, "")
         self.tabConfigRomPatcher = QWidget()
         self.tabConfigRomPatcher.setObjectName(u"tabConfigRomPatcher")
         self.verticalLayout_4 = QVBoxLayout(self.tabConfigRomPatcher)
@@ -2121,6 +2150,8 @@ class Ui_RomSearch(object):
         self.checkBoxConfigRomChooserDatFiltersUnlicensed.setText(QCoreApplication.translate("RomSearch", u"Unlicensed", None))
         self.checkBoxConfigRomChooserDatFiltersVideo.setText(QCoreApplication.translate("RomSearch", u"Video", None))
         self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomChooser), QCoreApplication.translate("RomSearch", u"ROMChooser", None))
+        self.checkBoxConfigRomMoverESFriendlyFolders.setText(QCoreApplication.translate("RomSearch", u"Emulation Station friendly folder names? (i.e. Nintendo - Game Boy > gb, Sony - Playstation 1 > psx etc.)", None))
+        self.tabWidgetConfig.setTabText(self.tabWidgetConfig.indexOf(self.tabConfigRomMover), QCoreApplication.translate("RomSearch", u"ROMMover", None))
         self.labelConfigRomPatcherxdelta.setText(QCoreApplication.translate("RomSearch", u"xdelta path", None))
         self.lineEditConfigRomPatcherxdeltaPath.setPlaceholderText(QCoreApplication.translate("RomSearch", u"xdelta.exe", None))
         self.pushButtonConfigRomPatcherxdeltaPath.setText(QCoreApplication.translate("RomSearch", u"Browse", None))

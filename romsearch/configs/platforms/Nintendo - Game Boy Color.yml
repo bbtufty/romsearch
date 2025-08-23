@@ -12,3 +12,6 @@ ra_hash_method: "md5"
 patch_method: "rompatcher.js"
 patch_file_exts:
   - ".bps"
+
+# EmulationStation Friendly Name
+es_friendly_name: "gbc"

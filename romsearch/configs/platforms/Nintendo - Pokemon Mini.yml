@@ -7,3 +7,6 @@ file_exts:
 # RetroAchievements
 ra_id: 24
 ra_hash_method: "md5"
+
+# EmulationStation Friendly Name
+es_friendly_name: "pm"

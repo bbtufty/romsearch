@@ -12,3 +12,6 @@ ra_hash_method: "custom"
 patch_method: "rompatcher.js"
 patch_file_exts:
   - ".ips"
+
+# EmulationStation Friendly Name
+es_friendly_name: "nes"

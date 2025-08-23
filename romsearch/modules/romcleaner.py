@@ -144,7 +144,15 @@ class ROMCleaner:
             rom_dict (dict): Dictionary of ROMs we want to keep
         """
 
-        full_rom_dir = os.path.join(self.rom_dir, self.platform)
+        # Decide whether to use platform name or ES-friendly name
+        if (
+                self.config.get("use_es_friendly_name", False)
+                and self.platform_config.get("es_friendly_name", None) is not None
+        ):
+            full_rom_dir = self.platform_config.get("es_friendly_name")
+            full_rom_dir = str(os.path.join(self.rom_dir, full_rom_dir))
+        else:
+            full_rom_dir = os.path.join(self.rom_dir, self.platform)
 
         roms_cleaned = []
         cache_cleaned = []

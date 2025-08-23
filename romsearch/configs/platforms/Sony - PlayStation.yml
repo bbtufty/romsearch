@@ -15,3 +15,6 @@ subchannels:
 # RetroAchievements
 ra_id: 12
 ra_hash_method: "custom"
+
+# EmulationStation Friendly Name
+es_friendly_name: "ps"

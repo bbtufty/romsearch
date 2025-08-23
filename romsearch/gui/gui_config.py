@@ -258,6 +258,10 @@ class ConfigWindow(QMainWindow):
             "dry_run": self.ui.checkBoxConfigRomChooserDryRun,
         }
 
+        self.all_rommover_options = {
+            "es_friendly_name": self.ui.checkBoxConfigRomMoverESFriendlyFolders,
+        }
+
         self.all_dat_filters = {
             "add-ons": self.ui.checkBoxConfigRomChooserDatFiltersAddons,
             "applications": self.ui.checkBoxConfigRomChooserDatFiltersApplications,
@@ -520,6 +524,7 @@ class ConfigWindow(QMainWindow):
             "gamefinder": self.all_gamefinder_options,
             "romparser": self.all_romparser_options,
             "romchooser": self.all_romchooser_options,
+            "rommover": self.all_rommover_options
         }
 
         # Set all the various tabs
@@ -719,6 +724,7 @@ class ConfigWindow(QMainWindow):
             "gamefinder": self.all_gamefinder_options,
             "romparser": self.all_romparser_options,
             "romchooser": self.all_romchooser_options,
+            "rommover": self.all_rommover_options
         }
 
         # Module options. Checkboxes first

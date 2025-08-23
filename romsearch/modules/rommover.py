@@ -394,11 +394,22 @@ class ROMMover:
 
                 # Keep track of absolute directories and relative directories to the
                 # platform itself, for cache reasons
+
+                # Decide whether to use platform name or ES-friendly name
+                if (
+                        self.config.get("use_es_friendly_name", False)
+                        and self.platform_config.get("es_friendly_name", None) is not None
+                ):
+                    base_dir = self.platform_config.get("es_friendly_name")
+                else:
+                    base_dir = self.platform
+
+                # Build output path
                 if self.separate_directories:
-                    out_dir = os.path.join(self.rom_dir, self.platform, dir_name)
+                    out_dir = os.path.join(self.rom_dir, base_dir, dir_name)
                     out_base_dir = copy.deepcopy(dir_name)
                 else:
-                    out_dir = os.path.join(self.rom_dir, self.platform)
+                    out_dir = os.path.join(self.rom_dir, base_dir)
                     out_base_dir = ""
 
                 # Skip if the file modification time matches the one in the cache, we're not patching, and the
