@@ -20,6 +20,7 @@ GUI
 ROMCleaner
 ~~~~~~~~~~
 
+- Fix crash trying to remove file that doesn't exist
 - Properly handle multi-disk files
 - Improved logging for ROMs removed from disk
 - Respect ``separate_directories`` when removing ROM files

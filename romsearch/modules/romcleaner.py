@@ -309,7 +309,8 @@ class ROMCleaner:
                     continue
 
                 r_short = os.path.basename(r)
-                os.remove(r)
+                if os.path.exists(r):
+                    os.remove(r)
                 roms_cleaned.append(r_short)
 
         # Remove any empty directories, searching recursively

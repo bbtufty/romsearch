@@ -2,6 +2,8 @@
 Known Issues
 ############
 
+* ROMs like Pokemon - Black Version 2 are currently improperly parsed, which could lead to issues
+
 * For very long filenames in Windows, there may be an error in moving files due to the length of the filename.
 
   * Enabling long paths will fix this. In the Registry Editor, set
