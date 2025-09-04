@@ -259,7 +259,7 @@ class ConfigWindow(QMainWindow):
         }
 
         self.all_rommover_options = {
-            "es_friendly_name": self.ui.checkBoxConfigRomMoverESFriendlyFolders,
+            "use_es_friendly_names": self.ui.checkBoxConfigRomMoverESFriendlyFolders,
         }
 
         self.all_dat_filters = {

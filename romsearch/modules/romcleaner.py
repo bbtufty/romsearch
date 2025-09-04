@@ -146,7 +146,7 @@ class ROMCleaner:
 
         # Decide whether to use platform name or ES-friendly name
         if (
-                self.config.get("use_es_friendly_name", False)
+                self.config.get("rommover", {}).get("use_es_friendly_names", False)
                 and self.platform_config.get("es_friendly_name", None) is not None
         ):
             full_rom_dir = self.platform_config.get("es_friendly_name")
