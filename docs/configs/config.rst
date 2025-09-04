@@ -94,6 +94,9 @@ Syntax: ::
                                         #           ['games', 'applications']. Defaults to 'all_but_games', which will
                                         #           remove everything except games
 
+    rommover:                                  # ROMPatcher specific options
+      use_es_friendly_names                    # Whether to use ES-DE friendly names for the output folders
+
     rompatcher:                                # ROMPatcher specific options
       xdelta_path: [path_to_xdelta]            # OPTIONAL. This is where xdelta is located on your filesystem
       rompatcher_js_path: [path_to_rompatcher] # OPTIONAL. This is where RomPatcher.js is located on your filesystem

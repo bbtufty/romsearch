@@ -33,6 +33,7 @@ ROMDownloader
 ROMMover
 ~~~~~~~~
 
+- Added option to allow for ES-DE friendly folder names
 - Keep better track of whether we need to create .m3u files when things change
 - Clean out compress/patch directories before moving files
 - If we have files that have changed upper/lowercase name, remove before moving
