@@ -1057,6 +1057,24 @@ class ROMParser:
             if regex_key in USE_TITLE_POS:
                 use_title_pos = True
 
+            # Is this something problematic we should be skipping?
+            ignore_names = self.regex_config[regex_key].get("ignore_names", [])
+
+            if len(ignore_names) != 0:
+
+                found_ignore_name = False
+
+                for ignore_name in ignore_names:
+
+                    if found_ignore_name:
+                        continue
+
+                    if re.match(ignore_name, f) is not None:
+                        found_ignore_name = True
+
+                if found_ignore_name:
+                    continue
+
             regex_type = self.regex_config[regex_key].get("type", "bool")
             search_tags = self.regex_config[regex_key].get("search_tags", True)
             group = self.regex_config[regex_key].get("group", None)
