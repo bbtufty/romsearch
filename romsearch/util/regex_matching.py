@@ -87,6 +87,24 @@ def get_short_name(
         if include_in_short_title:
             continue
 
+        # Is this something problematic we should be skipping?
+        ignore_names = regex_config[regex_key].get("ignore_names", [])
+
+        if len(ignore_names) != 0:
+
+            found_ignore_name = False
+
+            for ignore_name in ignore_names:
+
+                if found_ignore_name:
+                    continue
+
+                if re.match(ignore_name, f) is not None:
+                    found_ignore_name = True
+
+            if found_ignore_name:
+                continue
+
         regex_type = regex_config[regex_key].get("type", "bool")
         regex_flags = regex_config[regex_key].get("flags", "I")
 

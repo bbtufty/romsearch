@@ -7,6 +7,7 @@ Fixes
 General
 ~~~~~~~
 
+- Include games with versions in that shouldn't be tagged in regex
 - Added Ratalaika Games as a modern edition
 - Include "(Movie Promo)" as a promotional edition
 - Move clonelists to bbtufty fork
@@ -38,6 +39,11 @@ ROMMover
 - Keep better track of whether we need to create .m3u files when things change
 - Clean out compress/patch directories before moving files
 - If we have files that have changed upper/lowercase name, remove before moving
+
+ROMParser
+~~~~~~~~~
+
+- Add ability to skip things that might get problematically tagged
 
 0.3.1 (2025-06-15)
 ==================
