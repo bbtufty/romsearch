@@ -34,7 +34,7 @@ dependencies = [
     "colorlog == 6.10.1",
     "discordwebhook == 1.0.3",
     "iso639-lang == 2.6.3",
-    "numpy == 2.3.3",
+    "numpy == 2.3.4",
     "packaging == 25.0",
     "pathvalidate == 3.3.1",
     "PySide6 == 6.10.0",
